@@ -6,22 +6,25 @@ date_default_timezone_set("America/New_York");
 if (isset($_POST['new-event'])) {
   $date = strtotime($_POST['date'] . ' ' . $_POST['time']);
   $date2 = strtotime($_POST['date2'] . ' ' . $_POST['time2']);
+  $repeat_end = strtotime($_POST['end_date']);
   if (!$date) {
     $error = "Error parsing date \"{$_POST['date']} {$_POST['time']}\"";
   }
   elseif (!$date2) {
     $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\"";
   }
+  elseif (!$repeat_end) {
+    $error = "Error parsing date \"{$_POST['repeat_end']}\"";
+  }
   elseif (empty($_POST['event'])) {
     $error = 'You forgot to fill in a field';
   }
   elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $repeat_end = (strtotime($_POST['end_date']) === false) ? 0 : strtotime($_POST['end_date']);
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, email, phone, website, repeat_every, repeat_end, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $_POST['repeat_every'], $repeat_end, $_POST['sponsor']));
+    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
     $success = 'Your event was successfully uploaded and will be reviewed';
   }
   else {
@@ -29,9 +32,8 @@ if (isset($_POST['new-event'])) {
     $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
     if (in_array($detectedType, $allowedTypes)) {
       // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
-      $repeat_end = (strtotime($_POST['end_date']) === false) ? 0 : strtotime($_POST['end_date']);
       $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, email, phone, website, repeat_every, repeat_end, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
       $stmt->bindParam(1, $_POST['event']);
       $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
       $stmt->bindParam(2, $volunteer);
@@ -48,8 +50,8 @@ if (isset($_POST['new-event'])) {
       $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
       $stmt->bindParam(11, $phone);
       $stmt->bindParam(12, $_POST['website']);
-      $stmt->bindParam(13, $_POST['repeat_every']);
-      $stmt->bindParam(14, $repeat_end);
+      $stmt->bindParam(13, $repeat_end);
+      $stmt->bindParam(14, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null);
       $stmt->bindParam(15, $_POST['sponsor']);
       $stmt->execute();
       $success = 'Your event was successfully uploaded and will be reviewed';
@@ -160,7 +162,7 @@ if (isset($_POST['new-event'])) {
               </select>
             </div> -->
             <div class="form-group">
-              <p class="m-b-0">Repeat on</p>
+              <p class="m-b-0">Repeat weekly on</p>
               <label class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="0">
                 <span class="custom-control-indicator"></span>
@@ -314,11 +316,10 @@ if (isset($_POST['new-event'])) {
       $('.alert').css('display', 'none');
     })
     $('#add-event').on('submit', function(e) {
-      e.preventDefault();
       var description_len = $('#description').val().length;
       if (description_len > 100 && description_len < 2000) {
-        $('#add-event').submit();
       } else {
+        e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 100 and 2000 charachters.');
       }
