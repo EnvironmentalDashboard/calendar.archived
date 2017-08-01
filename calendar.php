@@ -32,13 +32,13 @@ while ($day_num <= $days_in_month) {
   foreach ($results as $result) {
     if ($result['start'] >= $today && $result['start'] < $tomorrow) {
       $day_color = "bg-primary";
-      $tooltip_title[] = $result['event'];
+      $tooltip_title[] = str_replace('"', '&quot;', $result['event']); //addslashes();
     }
   }
   if (empty($tooltip_title)) {
     echo "<td class=\"day $day_color\">".$day_num."</td>";
   } else {
-    echo "<td class=\"day $day_color\" data-toggle=\"tooltip\" data-html='true' data-placement=\"top\" title=\"".implode('<br>', $tooltip_title)."\">".$day_num."</td>";
+    echo "<td class=\"day $day_color\" data-toggle=\"tooltip\" data-html='true' data-placement=\"top\" title=\"".implode('<br>', $tooltip_title)."\">{$day_num}</td>";
   }
   $day_num++;
   $day_count++;

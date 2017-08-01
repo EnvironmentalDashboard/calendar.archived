@@ -21,10 +21,10 @@ if (isset($_POST['new-event'])) {
   }
   elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
+    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
     $success = 'Your event was successfully uploaded and will be reviewed';
   }
   else {
@@ -33,7 +33,7 @@ if (isset($_POST['new-event'])) {
     if (in_array($detectedType, $allowedTypes)) {
       // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
       $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
       $stmt->bindParam(1, $_POST['event']);
       $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
       $stmt->bindParam(2, $volunteer);
@@ -46,13 +46,15 @@ if (isset($_POST['new-event'])) {
       $implode = implode(',', $_POST['screen_loc']);
       $stmt->bindParam(8, $implode);
       $stmt->bindParam(9, $fp, PDO::PARAM_LOB);
-      $stmt->bindParam(10, $_POST['email']);
+      $stmt->bindParam(10, $_POST['contact_email']);
+      $stmt->bindParam(11, $_POST['email']);
       $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
-      $stmt->bindParam(11, $phone);
-      $stmt->bindParam(12, $_POST['website']);
-      $stmt->bindParam(13, $repeat_end);
-      $stmt->bindParam(14, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null);
-      $stmt->bindParam(15, $_POST['sponsor']);
+      $stmt->bindParam(12, $phone);
+      $stmt->bindParam(13, $_POST['website']);
+      $stmt->bindParam(14, $repeat_end);
+      $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
+      $stmt->bindParam(15, $cant_pass_by_ref);
+      $stmt->bindParam(16, $_POST['sponsor']);
       $stmt->execute();
       $success = 'Your event was successfully uploaded and will be reviewed';
     }
@@ -92,6 +94,11 @@ if (isset($_POST['new-event'])) {
           <h3 style="margin-top: 20px">Upload information</h3>
           <hr>
           <form action="" method="POST" enctype="multipart/form-data" id="add-event">
+            <div class="form-group">
+              <label for="contact_email">Contact email</label>
+              <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : ''; ?>">
+              <p><small class="text-muted">Optionally enter an email to be notified when the event is approved or rejected.</small></p>
+            </div>
             <div class="form-group">
               <label for="event">Event title</label>
               <input type="text" class="form-control" id="event" name="event" value="<?php echo (!empty($_POST['event'])) ? $_POST['event'] : ''; ?>">
@@ -146,7 +153,7 @@ if (isset($_POST['new-event'])) {
             <div class="form-group">
               <label for="description">Event description</label>
               <textarea name="description" id="description" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">2,000 charachter maximum, 100 charachter minimum</small>
+              <small class="text-muted">2,000 character maximum, 100 character minimum</small>
             </div>
             <div class="form-group">
               <label for="img" id="img-txt">Upload image (max size 16MB)</label>

@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT event, volunteer, start, description, loc_id, img FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 $result = $stmt->fetch();
 $stmt = $db->prepare('SELECT `location`, img FROM calendar_locs WHERE id = ? LIMIT 1');
@@ -22,7 +22,8 @@ $loc = $loc_arr['location'];
 $extra_img = (!empty($result['img'])) ? 'data:image/jpeg;base64,'.base64_encode($result['img']) : null;
 $ratio = $bg_width / $bg_height;
 $hd = 16 / 9;
-$image_mode = ($ratio > $hd*0.8 && $ratio < $hd*1.2) ? 'cover' : 'contain';
+// $image_mode = ($ratio > $hd*0.8 && $ratio < $hd*1.2) ? 'cover' : 'contain';
+$image_mode = 'cover';
 if ($bg == "") {
   echo "There was an error when uploading the image for this event\n";
   exit();
@@ -39,15 +40,21 @@ if ($bg == "") {
     <!-- <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="css/animate.min.css">
     <style>
+      @font-face {
+        font-family: 'Bebas Neue';
+        src: url(/oberlin/calendar/bebas_neue/BebasNeueRegular.otf);
+        font-weight: normal;
+      }
       html {
         background: url(<?php echo $bg; ?>) no-repeat center center fixed;
         -webkit-background-size: <?php echo $image_mode; ?>;
         -moz-background-size: <?php echo $image_mode; ?>;
         background-size: <?php echo $image_mode; ?>;
+        letter-spacing: 2px;
       }
       body {
         color: #fff;
-        font-family: 'Roboto', Helvetica, sans-serif;
+        font-family: 'Bebas Neue', Helvetica, sans-serif;
         overflow: hidden;
         margin: 0px;
         background: #000;
@@ -67,24 +74,26 @@ if ($bg == "") {
         left: 0;
       }
       .title {
-        font-size: 5rem;
-        font-size: 5vw;
+        font-size: 8rem;
+        font-size: 8vw;
         display: inline;
-        font-weight: 700;
+        font-weight: bold;
         text-transform: uppercase;
-        font-family: 'Oswald'
+        font-family: 'Bebas Neue';
+        /*font-family: 'tradeGothic';*/
         /*background: rgba(0,0,0,0.8);*/
         /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
       }
       .p {
         font-weight: 700;
-        font-size: 3rem;
-        font-size: 3vw;
-        display: inline;
+        font-size: 3.5rem;
+        font-size: 3.5vw;
+        margin-top: 15px;
+        margin-bottom: 15px;
         /*background: rgba(0,0,0,0.8);*/
         /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
       }
-      .footer {
+      .date {
         font-size: 3vw;
         font-weight: bold;
         position: absolute;
@@ -92,7 +101,7 @@ if ($bg == "") {
         text-align: center;
         width: 100%;
         text-transform: uppercase;
-        font-family: 'Oswald'
+        font-family: 'Bebas Neue'
       }
       span {
         color: rgb(75, 200, 216);
@@ -102,6 +111,7 @@ if ($bg == "") {
         position: absolute;
         right: 0px;
         margin: 10px;
+        margin-right:20px;
       }
       .animated {
         animation-duration: 2s;
@@ -124,19 +134,20 @@ if ($bg == "") {
     <div class="content">
       <h1 class="title animated slideInDown"><?php echo $result['event']; ?></h1>
       <div style="clear:both;height:7vh"></div>
-      <div style="max-width: 66.666%">
+      <div style="max-width: <?php echo ($extra_img !== null) ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
         <p class="p animated slideInDown">
+          <?php echo date('D\. F j \| g:ia\-', $result['start']) . date('g:ia', $result['end']) . ' | ' . $loc; ?>
+        </p>
+        <p class="p animated slideInDown" style="color: #bdc3c7;">
           <?php echo $result['description']; ?>
         </p>
         <!-- <div style="clear:both;height:7vh"></div> -->
       </div>
     </div>
-    <p class="footer">
-      <?php echo date('l n\/j \| g:i a', $result['start']) . ' | ' . $loc; ?>
-    </p>
-    <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 20px; right: 20px; opacity: 0.5">
-    <?php if ($result['volunteer']) { ?>
-    <img src="images/banner.png" alt="Volunteer oppurtunity" style="width: 20vw;position: fixed;bottom: 10px;right: 10px;height: auto;">
+    <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
+    <img src="images/communitycalendardashboardicon.png" alt="Environmental Dashboard logo" style="width: 27vw;position: fixed;bottom: 30px;left: 20px;height: auto;">
+    <?php if (true || $result['volunteer']) { ?>
+    <img src="images/banner.png" alt="Volunteer oppurtunity" style="width: 25vw;position: fixed;bottom: 120px;left: 20px;height: auto;">
     <?php } ?>
   </body>
 </html>

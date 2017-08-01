@@ -6,13 +6,11 @@ date_default_timezone_set('America/New_York');
 $time = time();
 $next30days = $time + (3600 * 24 * 30);
 $stmt = $db->prepare("SELECT id FROM calendar
-                      WHERE (repeat_every = 0 AND `end` >= ? AND `end` <= ?)
-                      OR repeat_end > ?
-                      OR (repeat_end < 1000 AND (`end` + (repeat_end * repeat_every)) > ?)
-                      AND approved = 1
+                      -- WHERE (`end` >= ? AND `end` <= ?)
+                      -- AND approved = 1
                       ORDER BY start ASC, event ASC
                       LIMIT 30");
-$stmt->execute(array($time, $next30days, $time, $time));
+$stmt->execute(array($time, $next30days));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,13 +42,13 @@ $stmt->execute(array($time, $next30days, $time, $time));
       var len = event_ids.length;
       var iframe = $('#iframe');
       var i = 0;
-      iframe.attr('src', 'http://104.131.103.232/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+      iframe.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
       setInterval(function() {
         if (len === i) {
           i = 0;
         }
-        iframe.attr('src', 'http://104.131.103.232/oberlin/calendar/slide.php?id=' + event_ids[i++]);
-      }, 10 * 1000);
+        iframe.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+      }, 15 * 1000);
     </script>
   </body>
 </html>

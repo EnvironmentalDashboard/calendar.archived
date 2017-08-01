@@ -52,37 +52,28 @@ else {
   $prev_month = $month - 1;
   $prev_year = $year;
 }
-$start_of_month = strtotime($month . "/01/" . $year);
-$end_of_month = strtotime($next_month . "/01/" . $next_year);
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_every, repeat_end, img, sponsor, event_type_id FROM calendar
-  WHERE (repeat_every = 0 AND `end` >= ? AND `end` <= ?)
-  OR repeat_end > ?
-  OR (repeat_end < 1000 AND (`end` + (repeat_end * repeat_every)) > ?)');
-$stmt->execute(array($start_of_month, $end_of_month, $start_of_month, $end_of_month));
+// $start_of_month = strtotime($month . "/01/" . $year);
+// $end_of_month = strtotime($next_month . "/01/" . $next_year);
+$start_time = time();
+$end_time = $start_time + 2592000;
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_end, repeat_on, img, sponsor, event_type_id FROM calendar
+  WHERE (`end` >= ? AND `end` <= ?)
+  OR (repeat_end >= ? AND repeat_end <= ?)');
+$stmt->execute(array($start_time, $end_time, $start_time, $end_time));
 // $stmt = $db->prepare('SELECT id, event, start FROM calendar WHERE start > ? AND start < ?');
 // $stmt->execute(array($start_of_month, $end_of_month));
 $raw_results = $stmt->fetchAll();
 $row_count = $stmt->rowCount();
 $results = array(); // Array where events that recur will be expanded
 foreach ($raw_results as $result) {
-  if ($result['repeat_every'] > 0) { // Event recurs
-    if ($result['repeat_every'] < 1000) { // Now, repeat_end = the number of times to repeat
-      $break_after = 0;
-      $total = $result['start'];
-      array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $total));
-      while ($break_after < $result['repeat_end'] && $total + $result['repeat_every'] < $end_of_month) {
-        $break_after++;
-        $total += $result['repeat_every'];
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $total));
+  if ($result['repeat_on'] != null) { // Event recurs
+    $tmp = $result['start'];
+    $repeat_on = json_decode($result['repeat_on'], true); 
+    while ($tmp <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
+      if (in_array(date('w', $tmp), $repeat_on)) {
+        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $result['start']));
       }
-    }
-    else { // Now, repeat_end = the unix timestamp to stop recurring after
-      $total = $result['start'];
-      array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $total));
-      while ($total + $result['repeat_every'] < $end_of_month && $total + $result['repeat_every'] <= $result['repeat_end']) {
-        $total += $result['repeat_every'];
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $total));
-      }
+      $tmp += 86400;// add one day
     }
   }
   else { // Event doesnt recur
@@ -135,7 +126,7 @@ foreach ($raw_results as $result) {
                     <?php if ($result['img'] === null) {
                       echo '<img class="d-block img-fluid" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=No%20image&w=350&h=350">';
                     } else { ?>
-                    <img class="d-block img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
+                    <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
                     <?php } ?>
                   </div>
                   <div class="col-sm-6">
@@ -164,8 +155,6 @@ foreach ($raw_results as $result) {
             <form class="form-inline">
               <span class="navbar-text">
                 <a href="#" id="sort-date" class="btn btn-sm btn-outline-primary">Date</a>
-                <a href="#" id="sort-loc" class="btn btn-sm btn-outline-primary">Location</a>
-                <a href="#" id="sort-sponsor" class="btn btn-sm btn-outline-primary">Sponsor</a>
               </span>
               <span style="position: absolute;right: 10px;">
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search">
@@ -176,7 +165,7 @@ foreach ($raw_results as $result) {
           <?php foreach ($raw_results as $result) {
             $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
             ?>
-          <div class="card iterable-event" id="<?php echo $result['id'] ?>" style="margin-bottom: 10px" data-date="<?php echo $result['start'] ?>" data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $result['sponsor'] ?>" data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>">
+          <div class="card iterable-event" id="<?php echo $result['id'] ?>" style="margin-bottom: 10px" data-date="<?php echo $result['start'] ?>" data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $result['sponsor'] ?>" data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>" data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $result['sponsor'] ?>'>
             <div class="card-block">
               <div class="row">
                 <div class="col-sm-3">
@@ -190,7 +179,7 @@ foreach ($raw_results as $result) {
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $result['sponsor'] ?></h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "slide.php?id={$result['id']}"; ?>" class="card-link">View event</a>
+                  <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="card-link">View event</a>
                 </div>
               </div>
             </div>
@@ -203,11 +192,25 @@ foreach ($raw_results as $result) {
           <?php require 'calendar.php'; ?>
           <p style="margin-bottom: 20px"><span class="bg-inverse" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
-          <div class="list-group">
+          <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
             <!-- <a href="#" class="list-group-item active"> -->
-            <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $event) {
+            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) ORDER BY event_type ASC") as $event) {
               echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
+            } ?>
+          </div>
+          <h5>Event locations</h5>
+          <div class="list-group" style="margin-bottom: 15px">
+            <a href='#' data-value='All' class='list-group-item list-group-item-action event-loc-toggle active'>All</a>
+            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) ORDER BY location ASC") as $loc) {
+              echo "<a href='#' data-value='{$loc['id']}' class='list-group-item list-group-item-action event-loc-toggle'>{$loc['location']}</a>";
+            } ?>
+          </div>
+          <h5>Event sponsors</h5>
+          <div class="list-group">
+            <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
+            <?php foreach ($db->query("SELECT DISTINCT sponsor FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time}) ORDER BY sponsor ASC") as $row) {
+              echo "<a href='#' data-value='{$row['sponsor']}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$row['sponsor']}</a>";
             } ?>
           </div>
         </div>
@@ -227,6 +230,40 @@ foreach ($raw_results as $result) {
         } else {
           $('.iterable-event').each(function() {
             if ($(this).data('eventtype') != type) {
+              $(this).css('display', 'none');
+            } else {
+              $(this).css('display', '');
+            }
+          });
+        }
+      });
+      $('.event-loc-toggle').on('click', function(e) {
+        e.preventDefault();
+        $('.event-loc-toggle').removeClass('active');
+        $(this).addClass('active');
+        var loc = $(this).data('value');
+        if (loc === 'All') {
+          $('.iterable-event').each(function() { $(this).css('display', ''); });  
+        } else {
+          $('.iterable-event').each(function() {
+            if ($(this).data('eventloc') != loc) {
+              $(this).css('display', 'none');
+            } else {
+              $(this).css('display', '');
+            }
+          });
+        }
+      });
+      $('.event-sponsor-toggle').on('click', function(e) {
+        e.preventDefault();
+        $('.event-sponsor-toggle').removeClass('active');
+        $(this).addClass('active');
+        var sponsor = $(this).data('value');
+        if (sponsor === 'All') {
+          $('.iterable-event').each(function() { $(this).css('display', ''); });  
+        } else {
+          $('.iterable-event').each(function() {
+            if ($(this).data('eventsponsor') != sponsor) {
               $(this).css('display', 'none');
             } else {
               $(this).css('display', '');
@@ -255,47 +292,6 @@ foreach ($raw_results as $result) {
           prev_id = id;
         }
       });
-      $('#sort-loc').on('click', function(e) {
-        e.preventDefault();
-        if ($(this).html() === 'Location ↓') {
-          $(this).html('Location &uarr;');
-        } else {
-          $(this).html('Location &darr;');
-        }
-        e.preventDefault();
-        var sort = []
-        $('.iterable-event').each(function() {
-          var div = $(this);
-          sort.push(div.data('loc') + ',' + div.attr('id'));
-        });
-        sort.reverse();
-        var prev_id = 'tail';
-        for (var i = 0; i < sort.length; i++) {
-          var id = sort[i].split(',')[1];
-          $('#' + id).insertAfter('#' + prev_id);
-          prev_id = id;
-        }
-      });
-      $('#sort-sponsor').on('click', function(e) {
-        e.preventDefault();
-        if ($(this).html() === 'Sponsor ↓') {
-          $(this).html('Sponsor &uarr;');
-        } else {
-          $(this).html('Sponsor &darr;');
-        }
-        var sort = []
-        $('.iterable-event').each(function() {
-          var div = $(this);
-          sort.push(div.data('sponsor') + ',' + div.attr('id'));
-        });
-        sort.reverse();
-        var prev_id = 'tail';
-        for (var i = 0; i < sort.length; i++) {
-          var id = sort[i].split(',')[1];
-          $('#' + id).insertAfter('#' + prev_id);
-          prev_id = id;
-        }
-      });
       $('#search').on('input', function() {
         $('.iterable-event').each(function() {
           var query = $('#search').val().toLowerCase();
@@ -306,6 +302,7 @@ foreach ($raw_results as $result) {
           }
         });
       });
+
       $(function () {
         $('[data-toggle="tooltip"]').tooltip()
       })
