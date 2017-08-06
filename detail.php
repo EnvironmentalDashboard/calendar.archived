@@ -29,13 +29,6 @@ $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$event['l
       </div>
       <div class="row">
         <div class="col-md-8 col-sm-12">
-          <?php if ($extra_img !== null) {
-            echo "<img src='{$extra_img}' class='img-fluid'>";
-          } else {
-            echo "<p>No picture for this event</p>";
-          } ?>
-        </div>
-        <div class="col-md-4 col-sm-12">
           <h2><?php echo $event['event']; ?></h2>
           <hr>
           <p><?php echo $event['description']; ?></p>
@@ -47,6 +40,13 @@ $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$event['l
           <?php echo ($event['phone'] == '') ? '' : "{$event['phone']}<br>"; ?>
           <?php echo ($event['website'] == '') ? '' : "{$event['website']}<br>"; ?>
           </p>
+        </div>
+        <div class="col-md-4 col-sm-12">
+          <?php if ($extra_img !== null) {
+            echo "<img src='{$extra_img}' class='img-fluid'>";
+          } else {
+            echo "<p>No picture for this event</p>";
+          } ?>
         </div>
       </div>
     </div>

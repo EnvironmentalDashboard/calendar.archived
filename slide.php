@@ -145,7 +145,7 @@ if ($bg == "") {
       </div>
     </div>
     <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
-    <img src="images/communitycalendardashboardicon.png" alt="Environmental Dashboard logo" style="width: 27vw;position: fixed;bottom: 30px;left: 20px;height: auto;">
+    <img src="images/communitycalendardashboardicon.png" alt="Environmental Dashboard logo" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
     <?php if (true || $result['volunteer']) { ?>
     <img src="images/banner.png" alt="Volunteer oppurtunity" style="width: 25vw;position: fixed;bottom: 120px;left: 20px;height: auto;">
     <?php } ?>

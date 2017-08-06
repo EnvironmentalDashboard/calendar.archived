@@ -2,6 +2,84 @@
 require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
+if (isset($_POST['new-event'])) {
+  $date = strtotime($_POST['date'] . ' ' . $_POST['time']);
+  $date2 = strtotime($_POST['date2'] . ' ' . $_POST['time2']);
+  $repeat_end = strtotime($_POST['end_date']);
+  if (!$repeat_end) {
+    $repeat_end = 0;
+  }
+  if (!$date) {
+    $error = "Error parsing date \"{$_POST['date']} {$_POST['time']}\", your event was not submitted";
+  }
+  elseif (!$date2) {
+    $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event was not submitted";
+  }
+  elseif (empty($_POST['event'])) {
+    $error = 'You forgot to fill in a field, your event was not submitted';
+  }
+  elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+    // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
+    $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
+    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
+    $success = 'Your event was successfully uploaded and will be reviewed';
+    send_emails($_POST['event'], $db->lastInsertId());
+  }
+  else {
+    $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
+    $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
+    if (in_array($detectedType, $allowedTypes)) {
+      // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
+      $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt->bindParam(1, $_POST['event']);
+      $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
+      $stmt->bindParam(2, $volunteer);
+      $stmt->bindParam(3, $date);
+      $stmt->bindParam(4, $date2);
+      $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : '';
+      $stmt->bindParam(5, $_POST['description']);
+      $stmt->bindParam(6, $_POST['event_type']);
+      $stmt->bindParam(7, $_POST['loc']);
+      $implode = implode(',', $_POST['screen_loc']);
+      $stmt->bindParam(8, $implode);
+      $stmt->bindParam(9, $fp, PDO::PARAM_LOB);
+      $stmt->bindParam(10, $_POST['contact_email']);
+      $stmt->bindParam(11, $_POST['email']);
+      $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
+      $stmt->bindParam(12, $phone);
+      $stmt->bindParam(13, $_POST['website']);
+      $stmt->bindParam(14, $repeat_end);
+      $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
+      $stmt->bindParam(15, $cant_pass_by_ref);
+      $stmt->bindParam(16, $_POST['sponsor']);
+      $stmt->execute();
+      $success = 'Your event was successfully uploaded and will be reviewed';
+      send_emails($_POST['event'], $db->lastInsertId());
+    }
+    else {
+      $error = 'Allowed file types are JPEG, PNG, and GIF, your event was not submitted.';
+    }
+  }
+}
+function send_emails($event_name, $event_id) {
+  $handle = fopen('/var/www/html/oberlin/prefs/emails.txt', 'r');
+  if ($handle) {
+      while (($line = fgets($handle)) !== false) {
+        if (filter_var($line, FILTER_VALIDATE_EMAIL)) {
+          mail($line, "New event submission: $event_name", "<html><head></head><body><a href='https://oberlindashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://oberlindashboard.org/oberlin/prefs/review-events.php'>review</a>.<br></body></html>", "MIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\nFrom: Environmental Dashboard <no-reply@environmentaldashboard.org>\r\n");
+        }
+      }
+      fclose($handle);
+  } else {
+      die('Error opening emails.txt');
+  } 
+}
+
+
+
 $date = time();
 $day = date('d', $date);
 // Expected query string example: "month=10&year=2015"
@@ -58,7 +136,7 @@ $start_time = time();
 $end_time = $start_time + 2592000;
 $stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_end, repeat_on, img, sponsor, event_type_id FROM calendar
   WHERE (`end` >= ? AND `end` <= ?)
-  OR (repeat_end >= ? AND repeat_end <= ?)');
+  OR (repeat_end >= ? AND repeat_end <= ?) ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
 // $stmt = $db->prepare('SELECT id, event, start FROM calendar WHERE start > ? AND start < ?');
 // $stmt->execute(array($start_of_month, $end_of_month));
@@ -101,6 +179,14 @@ foreach ($raw_results as $result) {
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Community Events Calendar</h1>
         </div>
+      </div>
+      <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
+        <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+        <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
+      </div>
+      <div class="alert alert-success" id="alert-success" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
+        <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+        <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
       </div>
       <div class="row">
         <div class="col-sm-8">

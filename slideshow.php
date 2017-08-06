@@ -6,8 +6,8 @@ date_default_timezone_set('America/New_York');
 $time = time();
 $next30days = $time + (3600 * 24 * 30);
 $stmt = $db->prepare("SELECT id FROM calendar
-                      -- WHERE (`end` >= ? AND `end` <= ?)
-                      -- AND approved = 1
+                      WHERE (`end` >= ? AND `end` <= ?)
+                      AND approved = 1
                       ORDER BY start ASC, event ASC
                       LIMIT 30");
 $stmt->execute(array($time, $next30days));

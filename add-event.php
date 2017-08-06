@@ -3,66 +3,6 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
 date_default_timezone_set("America/New_York");
-if (isset($_POST['new-event'])) {
-  $date = strtotime($_POST['date'] . ' ' . $_POST['time']);
-  $date2 = strtotime($_POST['date2'] . ' ' . $_POST['time2']);
-  $repeat_end = strtotime($_POST['end_date']);
-  if (!$date) {
-    $error = "Error parsing date \"{$_POST['date']} {$_POST['time']}\"";
-  }
-  elseif (!$date2) {
-    $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\"";
-  }
-  elseif (!$repeat_end) {
-    $error = "Error parsing date \"{$_POST['repeat_end']}\"";
-  }
-  elseif (empty($_POST['event'])) {
-    $error = 'You forgot to fill in a field';
-  }
-  elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-    // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
-    $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
-    $success = 'Your event was successfully uploaded and will be reviewed';
-  }
-  else {
-    $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
-    $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
-    if (in_array($detectedType, $allowedTypes)) {
-      // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
-      $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-      $stmt->bindParam(1, $_POST['event']);
-      $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-      $stmt->bindParam(2, $volunteer);
-      $stmt->bindParam(3, $date);
-      $stmt->bindParam(4, $date2);
-      $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : '';
-      $stmt->bindParam(5, $_POST['description']);
-      $stmt->bindParam(6, $_POST['event_type']);
-      $stmt->bindParam(7, $_POST['loc']);
-      $implode = implode(',', $_POST['screen_loc']);
-      $stmt->bindParam(8, $implode);
-      $stmt->bindParam(9, $fp, PDO::PARAM_LOB);
-      $stmt->bindParam(10, $_POST['contact_email']);
-      $stmt->bindParam(11, $_POST['email']);
-      $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
-      $stmt->bindParam(12, $phone);
-      $stmt->bindParam(13, $_POST['website']);
-      $stmt->bindParam(14, $repeat_end);
-      $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
-      $stmt->bindParam(15, $cant_pass_by_ref);
-      $stmt->bindParam(16, $_POST['sponsor']);
-      $stmt->execute();
-      $success = 'Your event was successfully uploaded and will be reviewed';
-    }
-    else {
-      $error = 'Allowed file types are JPEG, PNG, and GIF';
-    }
-  }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,9 +33,9 @@ if (isset($_POST['new-event'])) {
           <!-- <img src="http://104.131.103.232/oberlin/prefs/images/env_logo.png" class="img-fluid" style="margin-bottom:20px"> -->
           <h3 style="margin-top: 20px">Upload information</h3>
           <hr>
-          <form action="" method="POST" enctype="multipart/form-data" id="add-event">
+          <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">
-              <label for="contact_email">Contact email</label>
+              <label for="contact_email">Your email</label>
               <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : ''; ?>">
               <p><small class="text-muted">Optionally enter an email to be notified when the event is approved or rejected.</small></p>
             </div>
@@ -119,7 +59,7 @@ if (isset($_POST['new-event'])) {
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['event_type']; ?></option>
                 <?php } ?>
               </select>
-              <a href="#" id="add-event-type">Add a new event type</a>
+              <!-- <a href="#" id="add-event-type">Add a new event type</a> -->
             </div>
             <div class="form-group row">
               <div class="col-sm-8">
@@ -158,7 +98,7 @@ if (isset($_POST['new-event'])) {
             <div class="form-group">
               <label for="img" id="img-txt">Upload image (max size 16MB)</label>
               <input type="file" class="form-control-file" id="img" name="file" value="">
-              <small class="text-muted" id="img-help">Optionally upload an image to be shown with the poster art.</small>
+              <small class="text-muted" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small>
             </div>
             <!-- <div class="form-group">
               <label for="repeat_every">Repeat</label>
@@ -231,15 +171,42 @@ if (isset($_POST['new-event'])) {
             </div>
             <div class="custom-controls-stacked">
               <p class="m-b-0">Select the screens the poster will be shown on</p>
-              <?php foreach ($db->query('SELECT id, name FROM calendar_screens ORDER BY name ASC') as $row) {
+              <?php
+              echo "<p style='height:15px'><span style='font-weight:bold'>Public locations</span>
+              <label class=\"custom-control custom-checkbox\">
+              <input type=\"checkbox\" class=\"custom-control-input\" checked='true' id='other-checkbox'>
+              <span class=\"custom-control-indicator\"></span>
+              <span class=\"custom-control-description\">Check all</span>
+              </label>
+              </p><div id='reg-locs'>";
+              foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name NOT LIKE \'%School%\' ORDER BY name ASC') as $row) {
                   echo "<label class=\"custom-control custom-checkbox\">
                         <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\" checked='true'>
                         <span class=\"custom-control-indicator\"></span>
                         <span class=\"custom-control-description\">{$row['name']}</span>
                         </label>\n";
-                } ?>
+                }
+                echo "</div>
+                <p style='height:15px;margin-top:-20px'><span style='font-weight:bold'>Public schools</span>
+                <label class=\"custom-control custom-checkbox\">
+                <input type=\"checkbox\" class=\"custom-control-input\" id='school-checkbox'>
+                <span class=\"custom-control-indicator\"></span>
+                <span class=\"custom-control-description\">Check all</span>
+                </label>
+                </p>
+                <p class='text-muted' style='position:relative;bottom:10px;margin-bottom:0px'>Please don't select schools unless with permission</p>
+                <div id='school-locs'>";
+                foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name LIKE \'%School%\' ORDER BY name ASC') as $row) {
+                  echo "<label class=\"custom-control custom-checkbox\">
+                        <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\">
+                        <span class=\"custom-control-indicator\"></span>
+                        <span class=\"custom-control-description\">{$row['name']}</span>
+                        </label>\n";
+                }
+                echo "</div>";
+                ?>
             </div>
-            <p class="form-group">Optionally provide contact details to be shown on environmentaldashboard.org:</p>
+            <p class="form-group">Provide contact details to be associated with event:</p>
             <div class="form-group">
               <label for="email" class="sr-only">Your email</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="Your email" <?php echo (!empty($_POST['email'])) ? $_POST['email'] : ''; ?>>
@@ -264,6 +231,20 @@ if (isset($_POST['new-event'])) {
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
   <script src="js/jquery-ui.min.js"></script>
   <script>
+    $('#other-checkbox').on('change', function() {
+      if (this.checked) {
+        $('#reg-locs').find('input').prop('checked', true);
+      } else {
+        $('#reg-locs').find('input').prop('checked', false);
+      }
+    });
+    $('#school-checkbox').on('change', function() {
+      if (this.checked) {
+        $('#school-locs').find('input').prop('checked', true);
+      } else {
+        $('#school-locs').find('input').prop('checked', false);
+      }
+    });
     $('#add-event-type').on('click', function() {
       var type = prompt('Enter new event type');
       if (type != null) {
