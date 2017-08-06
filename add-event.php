@@ -221,7 +221,6 @@ date_default_timezone_set("America/New_York");
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
             <input type="submit" name="new-event" value="Submit event for review" class="btn btn-primary">
-            <!-- <button class="optional btn btn-secondary" id="preview">Preview</button> -->
           </form>
         </div>
       </div>
@@ -288,18 +287,6 @@ date_default_timezone_set("America/New_York");
       $( "#date2" ).datepicker();
       $( "#end_date" ).datepicker();
     } );
-    $('#preview').click(function(e) {
-      e.preventDefault();
-      var params = {
-        event: $('#event').val(),
-        description: $('#description').val(),
-        date: $('#date').val(),
-        time: $('#time').val(),
-        location: $('#loc').val()
-      };
-      var q = jQuery.param(params);
-      window.open("http://104.131.103.232/oberlin/calendar/preview-slide.php?" + q);
-    });
     $('.alert > button').on('click', function() {
       $('.alert').css('display', 'none');
     })
