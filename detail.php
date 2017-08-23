@@ -7,7 +7,11 @@ $stmt = $db->prepare('SELECT loc_id, event, description, start, `end`, repeat_en
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 $extra_img = (!empty($event['img'])) ? 'data:image/jpeg;base64,'.base64_encode($event['img']) : null;
-$locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$event['loc_id'])->fetchColumn();
+$loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
+$locname = $loc['location'];
+$locaddr = $loc['address'];
+$google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
+$thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,12 +37,16 @@ $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$event['l
           <hr>
           <p><?php echo $event['description']; ?></p>
           <p><?php echo date('D\. F j \| g:ia\-', $event['start']) . date('g:ia', $event['end']) . ' | ' . $locname; ?></p>
-          <p><a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo urlencode($locname) ?>&sf=true&output=xml">Add</a> to my calendar</p>
           <p>
           For more information, contact<br>
           <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
           <?php echo ($event['phone'] == '') ? '' : "{$event['phone']}<br>"; ?>
           <?php echo ($event['website'] == '') ? '' : "{$event['website']}<br>"; ?>
+          </p>
+          <p>
+            <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="images/google-cal-cropped.png" alt="Google Calendar" width="50"></a>
+            <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $thisurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="images/fb-art.png" alt="Facebook logo" width="50"></a>
+            <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $thisurl ?>" target="_blank"><img src="images/twitter.png" alt="Twitter logo" width="50"></a>
           </p>
         </div>
         <div class="col-md-4 col-sm-12">
@@ -46,7 +54,16 @@ $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$event['l
             echo "<img src='{$extra_img}' class='img-fluid'>";
           } else {
             echo "<p>No picture for this event</p>";
-          } ?>
+          }
+          if ($locaddr != '') {
+            echo '<iframe
+            width="100%"
+            height="450"
+            frameborder="0" style="border:0;margin-top: 20px"
+            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCDAZRPbbNS4w_kBz3bZ4Q5B8RFS46FyhM
+              &q='.$google_cal_loc.'" allowfullscreen></iframe>';
+          }
+          ?>
         </div>
       </div>
     </div>

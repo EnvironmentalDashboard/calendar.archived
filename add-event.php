@@ -55,7 +55,8 @@ date_default_timezone_set("America/New_York");
             <div class="form-group">
               <label for="event_type">Event type</label>
               <select class="form-control" id="event_type" name="event_type">
-                <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $row) { ?>
+                <option value="1">Volunteer opportunities</option>
+                <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types WHERE id != 1 ORDER BY event_type ASC') as $row) { ?>
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['event_type']; ?></option>
                 <?php } ?>
               </select>
@@ -98,7 +99,7 @@ date_default_timezone_set("America/New_York");
             <div class="form-group">
               <label for="img" id="img-txt">Upload image (max size 16MB)</label>
               <input type="file" class="form-control-file" id="img" name="file" value="">
-              <small class="text-muted" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small>
+              <small class="text-danger" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small>
             </div>
             <!-- <div class="form-group">
               <label for="repeat_every">Repeat</label>
@@ -194,7 +195,7 @@ date_default_timezone_set("America/New_York");
                 <span class=\"custom-control-description\">Check all</span>
                 </label>
                 </p>
-                <p class='text-muted' style='position:relative;bottom:10px;margin-bottom:0px'>Please don't select schools unless with permission</p>
+                <p class='text-danger' style='position:relative;bottom:10px;margin-bottom:0px'>Please don't select schools unless with permission</p>
                 <div id='school-locs'>";
                 foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name LIKE \'%School%\' ORDER BY name ASC') as $row) {
                   echo "<label class=\"custom-control custom-checkbox\">

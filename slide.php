@@ -103,9 +103,6 @@ if ($bg == "") {
         text-transform: uppercase;
         font-family: 'Bebas Neue'
       }
-      span {
-        color: rgb(75, 200, 216);
-      }
       img {
         width: 33.333%;
         position: absolute;
@@ -136,7 +133,10 @@ if ($bg == "") {
       <div style="clear:both;height:7vh"></div>
       <div style="max-width: <?php echo ($extra_img !== null) ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
         <p class="p animated slideInDown">
-          <?php echo date('D\. F j \| g:ia\-', $result['start']) . date('g:ia', $result['end']) . ' | ' . $loc; ?>
+          <?php
+          echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
+          echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
+          echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
         </p>
         <p class="p animated slideInDown" style="color: #bdc3c7;">
           <?php echo $result['description']; ?>
@@ -147,7 +147,7 @@ if ($bg == "") {
     <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
     <img src="images/communitycalendardashboardicon.png" alt="Environmental Dashboard logo" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
     <?php if (true || $result['volunteer']) { ?>
-    <img src="images/banner.png" alt="Volunteer oppurtunity" style="width: 25vw;position: fixed;bottom: 120px;left: 20px;height: auto;">
+    <img src="images/calendarvolunteeropportunity2.png" alt="Volunteer oppurtunity" style="width: 25vw;position: fixed;bottom: 30px;left: 20px;height: auto;">
     <?php } ?>
   </body>
 </html>

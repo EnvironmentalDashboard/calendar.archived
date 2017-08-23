@@ -25,7 +25,7 @@ if (isset($_POST['new-event'])) {
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
     $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
     $success = 'Your event was successfully uploaded and will be reviewed';
-    send_emails($_POST['event'], $db->lastInsertId());
+    save_emails($_POST['event'], $db->lastInsertId());
   }
   else {
     $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
@@ -57,19 +57,24 @@ if (isset($_POST['new-event'])) {
       $stmt->bindParam(16, $_POST['sponsor']);
       $stmt->execute();
       $success = 'Your event was successfully uploaded and will be reviewed';
-      send_emails($_POST['event'], $db->lastInsertId());
+      save_emails($_POST['event'], $db->lastInsertId());
     }
     else {
       $error = 'Allowed file types are JPEG, PNG, and GIF, your event was not submitted.';
     }
   }
 }
-function send_emails($event_name, $event_id) {
-  $handle = fopen('/var/www/html/oberlin/prefs/emails.txt', 'r');
+function save_emails($event_name, $event_id) {
+  $handle = fopen('/var/www/html/oberlin/prefs/emails.txt', 'r'); // send emails to all these addressess
   if ($handle) {
       while (($line = fgets($handle)) !== false) {
-        if (filter_var($line, FILTER_VALIDATE_EMAIL)) {
-          mail($line, "New event submission: $event_name", "<html><head></head><body><a href='https://oberlindashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://oberlindashboard.org/oberlin/prefs/review-events.php'>review</a>.<br></body></html>", "MIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\nFrom: Environmental Dashboard <no-reply@environmentaldashboard.org>\r\n");
+        // write to file to be processed later
+        $handle2 = fopen('/var/www/html/oberlin/calendar/email_buffer.txt', 'a');
+        if ($handle2) {
+          fwrite($handle2, "{$line}\$SEP\$New event submission: {$event_name}\$SEP\$<a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://oberlindashboard.org/oberlin/prefs/review-events.php'>review</a>.<br>\n");
+          fclose($handle2);
+        } else {
+          die('Error opening email_buffer.txt');
         }
       }
       fclose($handle);
@@ -145,13 +150,13 @@ $row_count = $stmt->rowCount();
 $results = array(); // Array where events that recur will be expanded
 foreach ($raw_results as $result) {
   if ($result['repeat_on'] != null) { // Event recurs
-    $tmp = $result['start'];
+    $moving_start = $result['start'];
     $repeat_on = json_decode($result['repeat_on'], true); 
-    while ($tmp <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
-      if (in_array(date('w', $tmp), $repeat_on)) {
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $result['start']));
+    while ($moving_start <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
+      if (in_array(date('w', $moving_start), $repeat_on)) {
+        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $moving_start));
       }
-      $tmp += 86400;// add one day
+      $moving_start += 86400; // add one day
     }
   }
   else { // Event doesnt recur
@@ -209,21 +214,23 @@ foreach ($raw_results as $result) {
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6">
-                    <?php if ($result['img'] === null) {
-                      echo '<img class="d-block img-fluid" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=No%20image&w=350&h=350">';
-                    } else { ?>
-                    <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
-                    <?php } ?>
+                    <a href="https://oberlindashboard.org/oberlin/calendar/detail.php?id=<?php echo $result['id'] ?>">
+                      <?php if ($result['img'] === null) {
+                        echo '<img class="d-block img-fluid" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=No%20image&w=350&h=350">';
+                      } else { ?>
+                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
+                      <?php } ?>
+                    </a>
                   </div>
                   <div class="col-sm-6">
                     <h2><?php echo $result['event'] ?></h2>
-                    <p><?php echo $result['description'] ?></p>
+                    <p style="overflow: hidden;height: 120px;"><?php echo $result['description'] ?></p>
                   </div>
                 </div>
               </div>
               <?php
               $counter++;
-              if ($counter > 3) {
+              if ($counter > 2) {
                 break;
               }
               } ?>
