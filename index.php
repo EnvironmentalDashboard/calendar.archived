@@ -20,7 +20,7 @@ if (isset($_POST['new-event'])) {
   }
   elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
     $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
@@ -33,7 +33,7 @@ if (isset($_POST['new-event'])) {
     if (in_array($detectedType, $allowedTypes)) {
       // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
       $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
       $stmt->bindParam(1, $_POST['event']);
       $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
       $stmt->bindParam(2, $volunteer);
@@ -139,9 +139,9 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_end, repeat_on, img, sponsor, event_type_id FROM calendar
-  WHERE (`end` >= ? AND `end` <= ?)
-  OR (repeat_end >= ? AND repeat_end <= ?) ORDER BY `start` ASC');
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_end, repeat_on, img, sponsor_id, event_type_id FROM calendar
+  WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
+  AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
 // $stmt = $db->prepare('SELECT id, event, start FROM calendar WHERE start > ? AND start < ?');
 // $stmt->execute(array($start_of_month, $end_of_month));
@@ -162,6 +162,10 @@ foreach ($raw_results as $result) {
   else { // Event doesnt recur
     array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $result['start']));
   }
+}
+$sponsors = array();
+foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
+  $sponsors[$row['id']] = $row['sponsor'];
 }
 ?>
 <!DOCTYPE html>
@@ -258,7 +262,11 @@ foreach ($raw_results as $result) {
           <?php foreach ($raw_results as $result) {
             $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
             ?>
-          <div class="card iterable-event" id="<?php echo $result['id'] ?>" style="margin-bottom: 10px" data-date="<?php echo $result['start'] ?>" data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $result['sponsor'] ?>" data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>" data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $result['sponsor'] ?>'>
+          <div class="card iterable-event" id="<?php echo $result['id']; ?>"
+          style="margin-bottom: 10px" data-date="<?php echo $result['start']; ?>"
+          data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $sponsors[$result['sponsor_id']]; ?>"
+          data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
+          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $sponsors[$result['sponsor_id']]; ?>'>
             <div class="card-block">
               <div class="row">
                 <div class="col-sm-3">
@@ -270,7 +278,7 @@ foreach ($raw_results as $result) {
                 </div>
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
-                  <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $result['sponsor'] ?></h6>
+                  <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsor[$result['sponsor_id']] ?></h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
                   <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="card-link">View event</a>
                 </div>
@@ -288,22 +296,22 @@ foreach ($raw_results as $result) {
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
             <!-- <a href="#" class="list-group-item active"> -->
-            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) ORDER BY event_type ASC") as $event) {
+            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY event_type ASC") as $event) {
               echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
             } ?>
           </div>
           <h5>Event locations</h5>
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-loc-toggle active'>All</a>
-            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) ORDER BY location ASC") as $loc) {
+            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY location ASC") as $loc) {
               echo "<a href='#' data-value='{$loc['id']}' class='list-group-item list-group-item-action event-loc-toggle'>{$loc['location']}</a>";
             } ?>
           </div>
-          <h5>Event sponsors</h5>
+          <h5>Event sponsor/organizer</h5>
           <div class="list-group">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
-            <?php foreach ($db->query("SELECT DISTINCT sponsor FROM calendar WHERE (`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time}) ORDER BY sponsor ASC") as $row) {
-              echo "<a href='#' data-value='{$row['sponsor']}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$row['sponsor']}</a>";
+            <?php foreach ($sponsors as $sponsor) {
+              echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
             } ?>
           </div>
         </div>

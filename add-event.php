@@ -50,7 +50,12 @@ date_default_timezone_set("America/New_York");
             </div>
             <div class="form-group">
               <label for="sponsor">Who is organizing/sponsoring this event?</label>
-              <input type="text" maxlength="255" class="form-control" id="sponsor" name="sponsor" value="<?php echo (!empty($_POST['sponsor'])) ? $_POST['sponsor'] : ''; ?>">
+              <select class="form-control" id="sponsor" name="sponsor">
+                <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) { ?>
+                <option value="<?php echo $row['id']; ?>"><?php echo $row['sponsor']; ?></option>
+                <?php } ?>
+              </select>
+              <a href="#" id="add-event-sponsor">Add a new sponsor</a>
             </div>
             <div class="form-group">
               <label for="event_type">Event type</label>
@@ -269,6 +274,20 @@ date_default_timezone_set("America/New_York");
             $('#loc').val(resp);
           } else {
             alert('Failed to create event location.');
+          }   
+        }, 'text');
+      }
+    });
+    $('#add-event-sponsor').on('click', function() {
+      var sponsor = prompt('Enter new sponsor');
+      if (sponsor != null) {
+        $.get("includes/add-event-sponsor.php", {sponsor: sponsor}, function(resp) {
+          if (resp) {
+            $('#sponsor').append('<option value='+resp+'>'+sponsor+'</option>');
+            console.log(resp);
+            $('#sponsor').val(resp);
+          } else {
+            alert('Failed to create event sponsor.');
           }   
         }, 'text');
       }
