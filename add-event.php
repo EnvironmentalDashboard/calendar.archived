@@ -13,13 +13,13 @@ date_default_timezone_set("America/New_York");
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Add event</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link rel="stylesheet" href="js/jquery-ui.min.css">
   </head>
   <body style="padding-top:50px">
     <div class="container">
-      <div class="row">
-        <div class="col-sm-6 push-sm-3">
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
           <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
@@ -44,7 +44,7 @@ date_default_timezone_set("America/New_York");
               <input type="text" class="form-control" id="event" name="event" value="<?php echo (!empty($_POST['event'])) ? $_POST['event'] : ''; ?>">
             </div>
             <div class="form-group">
-              <label class="form-check-inline">
+              <label class="form-check-inline" style="position: relative;left: 20px">
                 <input class="form-check-input" type="checkbox" id="volunteer" name="volunteer"> Check if volunteer event
               </label>
             </div>
@@ -102,9 +102,12 @@ date_default_timezone_set("America/New_York");
               <small class="text-muted">2,000 character maximum, 100 character minimum</small>
             </div>
             <div class="form-group">
-              <label for="img" id="img-txt">Upload image (max size 16MB)</label>
-              <input type="file" class="form-control-file" id="img" name="file" value="">
-              <small class="text-danger" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small>
+              <p>Upload image (max size 16MB)</p>
+              <label class="custom-file" id="img-txt" style="max-width: 300px">
+                <input type="file" id="file2" class="custom-file-input" id="img" name="file" value="">
+                <span class="custom-file-control"></span>
+              </label>
+              <p><small class="text-danger" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small></p>
             </div>
             <!-- <div class="form-group">
               <label for="repeat_every">Repeat</label>
@@ -184,9 +187,12 @@ date_default_timezone_set("America/New_York");
               <span class=\"custom-control-indicator\"></span>
               <span class=\"custom-control-description\">Check all</span>
               </label>
-              </p><div id='reg-locs'>";
+              <!--<div style='clear:both;height:5px'></div>-->
+              </p>
+
+              <div id='reg-locs' style='margin-bottom:30px'>";
               foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name NOT LIKE \'%School%\' ORDER BY name ASC') as $row) {
-                  echo "<label class=\"custom-control custom-checkbox\">
+                  echo "<label class=\"custom-control custom-checkbox\" style='display:block'>
                         <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\" checked='true'>
                         <span class=\"custom-control-indicator\"></span>
                         <span class=\"custom-control-description\">{$row['name']}</span>
@@ -201,9 +207,10 @@ date_default_timezone_set("America/New_York");
                 </label>
                 </p>
                 <p class='text-danger' style='position:relative;bottom:10px;margin-bottom:0px'>Please don't select schools unless with permission</p>
+
                 <div id='school-locs'>";
                 foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name LIKE \'%School%\' ORDER BY name ASC') as $row) {
-                  echo "<label class=\"custom-control custom-checkbox\">
+                  echo "<label class=\"custom-control custom-checkbox\" style='display:block'>
                         <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\">
                         <span class=\"custom-control-indicator\"></span>
                         <span class=\"custom-control-description\">{$row['name']}</span>
@@ -233,7 +240,10 @@ date_default_timezone_set("America/New_York");
     </div>
     <div style="height: 100px;clear: both;"></div>
   </body>
+  <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <script src="js/jquery-ui.min.js"></script>
   <script>
     $('#other-checkbox').on('change', function() {
@@ -312,11 +322,18 @@ date_default_timezone_set("America/New_York");
     })
     $('#add-event').on('submit', function(e) {
       var description_len = $('#description').val().length;
-      if (description_len > 100 && description_len < 2000) {
-      } else {
+      if (description_len < 100 || description_len > 2000) {
         e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 100 and 2000 charachters.');
+      } else if ($('#time').val().length < 3 || $('#date').val().length < 3) {
+        e.preventDefault();
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Invalid start date/time');
+      } else if ($('#time2').val().length < 3 || $('#date2').val().length < 3) {
+        e.preventDefault();
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Invalid end date/time');
       }
     })
   </script>

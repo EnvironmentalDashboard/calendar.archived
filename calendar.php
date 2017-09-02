@@ -16,7 +16,7 @@ echo "<tr>
 $day_count = 1;
 echo "<tr>";
 while ($blank > 0) {
-  echo "<td class='bg-faded'></td>";
+  echo "<td class='bg-light'></td>";
   $blank--;
   $day_count++;
 }
@@ -26,7 +26,7 @@ while ($day_num <= $days_in_month) {
   $tomorrow = $today + 86400;
   $day_color = "";
   if ($today < time() && $tomorrow > time()) {
-    $day_color = "bg-inverse";
+    $day_color = "bg-dark";
   }
   $tooltip_title = array();
   foreach ($results as $result) {
@@ -48,7 +48,7 @@ while ($day_num <= $days_in_month) {
   }
 }
 while ($day_count > 1 && $day_count <= 7) {
-  echo "<td class='bg-faded'></td>";
+  echo "<td class='bg-light'></td>";
   $day_count++;
 }
 echo "</tr></table>";

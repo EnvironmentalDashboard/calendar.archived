@@ -177,24 +177,25 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <style>
-      .bg-primary, .bg-inverse {color:#fff;}
+      .bg-primary, .bg-dark {color:#fff;}
     </style>
   </head>
   <body style="padding-bottom: 100px">
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
-          <h1>Community Events Calendar</h1>
+          <!-- <h1>Community Events Calendar</h1> -->
+          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
         </div>
       </div>
-      <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
-        <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
       </div>
-      <div class="alert alert-success" id="alert-success" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
-        <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+      <div class="alert alert-success alert-dismissible fade show" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
       </div>
       <div class="row">
@@ -248,7 +249,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
               <span class="sr-only">Next</span>
             </a>
           </div>
-          <nav class="navbar navbar-light bg-faded" style="margin-bottom: 10px;margin-top: 40px">
+          <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline">
               <span class="navbar-text">
                 <a href="#" id="sort-date" class="btn btn-sm btn-outline-primary">Date</a>
@@ -267,7 +268,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
           data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $sponsors[$result['sponsor_id']]; ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
           data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $sponsors[$result['sponsor_id']]; ?>'>
-            <div class="card-block">
+            <div class="card-body">
               <div class="row">
                 <div class="col-sm-3">
                   <?php if ($result['img'] === null) {
@@ -278,9 +279,9 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
                 </div>
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
-                  <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsor[$result['sponsor_id']] ?></h6>
+                  <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsors[$result['sponsor_id']] ?></h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="card-link">View event</a>
+                  <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
               </div>
             </div>
@@ -291,7 +292,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
           <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
           <?php require 'calendar.php'; ?>
-          <p style="margin-bottom: 20px"><span class="bg-inverse" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
+          <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
@@ -317,9 +318,9 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
         </div>
       </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script>
       $('.event-type-toggle').on('click', function(e) {
         e.preventDefault();

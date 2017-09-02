@@ -36,7 +36,7 @@ $stmt->execute(array($time, $next30days));
   </head>
   <body>
     <iframe id="iframe"></iframe>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>
       var event_ids = <?php echo json_encode(array_column($stmt->fetchAll(), 'id')); ?>;
       var len = event_ids.length;
