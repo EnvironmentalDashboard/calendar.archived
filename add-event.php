@@ -99,7 +99,12 @@ date_default_timezone_set("America/New_York");
             <div class="form-group">
               <label for="description">Event description</label>
               <textarea name="description" id="description" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">2,000 character maximum, 100 character minimum</small>
+              <small class="text-muted">1,000 character maximum, 50 character minimum</small>
+            </div>
+            <div class="form-group">
+              <label for="ex_description">Extended description</label>
+              <textarea name="ex_description" id="ex_description" class="form-control"><?php echo (!empty($_POST['ex_description'])) ? $_POST['ex_description'] : ''; ?></textarea>
+              <small class="text-muted">Will not be displayed on digital signage</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
@@ -322,10 +327,10 @@ date_default_timezone_set("America/New_York");
     })
     $('#add-event').on('submit', function(e) {
       var description_len = $('#description').val().length;
-      if (description_len < 100 || description_len > 2000) {
+      if (description_len < 50 || description_len > 1000) {
         e.preventDefault();
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event description must be between 100 and 2000 charachters.');
+        $('#alert-warning-text').text('Event description must be between 50 and 1000 charachters.');
       } else if ($('#time').val().length < 3 || $('#date').val().length < 3) {
         e.preventDefault();
         $('#alert-warning').css('display', 'block');

@@ -20,10 +20,9 @@ if (isset($_POST['new-event'])) {
   }
   elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : ''; // if a description isnt in form, empty string
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
+    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
     $success = 'Your event was successfully uploaded and will be reviewed';
     save_emails($_POST['event'], $db->lastInsertId());
   }
@@ -33,28 +32,28 @@ if (isset($_POST['new-event'])) {
     if (in_array($detectedType, $allowedTypes)) {
       // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
       $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
       $stmt->bindParam(1, $_POST['event']);
       $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
       $stmt->bindParam(2, $volunteer);
       $stmt->bindParam(3, $date);
       $stmt->bindParam(4, $date2);
-      $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : '';
       $stmt->bindParam(5, $_POST['description']);
-      $stmt->bindParam(6, $_POST['event_type']);
-      $stmt->bindParam(7, $_POST['loc']);
+      $stmt->bindParam(6, $_POST['ex_description']);
+      $stmt->bindParam(7, $_POST['event_type']);
+      $stmt->bindParam(8, $_POST['loc']);
       $implode = implode(',', $_POST['screen_loc']);
-      $stmt->bindParam(8, $implode);
-      $stmt->bindParam(9, $fp, PDO::PARAM_LOB);
-      $stmt->bindParam(10, $_POST['contact_email']);
-      $stmt->bindParam(11, $_POST['email']);
+      $stmt->bindParam(9, $implode);
+      $stmt->bindParam(10, $fp, PDO::PARAM_LOB);
+      $stmt->bindParam(11, $_POST['contact_email']);
+      $stmt->bindParam(12, $_POST['email']);
       $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
-      $stmt->bindParam(12, $phone);
-      $stmt->bindParam(13, $_POST['website']);
-      $stmt->bindParam(14, $repeat_end);
+      $stmt->bindParam(13, $phone);
+      $stmt->bindParam(14, $_POST['website']);
+      $stmt->bindParam(15, $repeat_end);
       $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
-      $stmt->bindParam(15, $cant_pass_by_ref);
-      $stmt->bindParam(16, $_POST['sponsor']);
+      $stmt->bindParam(16, $cant_pass_by_ref);
+      $stmt->bindParam(17, $_POST['sponsor']);
       $stmt->execute();
       $success = 'Your event was successfully uploaded and will be reviewed';
       save_emails($_POST['event'], $db->lastInsertId());
@@ -139,7 +138,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, repeat_end, repeat_on, img, sponsor_id, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsor_id, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -221,7 +220,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
                   <div class="col-sm-6">
                     <a href="https://oberlindashboard.org/oberlin/calendar/detail.php?id=<?php echo $result['id'] ?>">
                       <?php if ($result['img'] === null) {
-                        echo '<img class="d-block img-fluid" src="https://placeholdit.imgix.net/~text?txtsize=33&txt=No%20image&w=350&h=350">';
+                        echo '<img class="d-block img-fluid" src="images/default.png">';
                       } else { ?>
                       <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
                       <?php } ?>
@@ -272,14 +271,20 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
               <div class="row">
                 <div class="col-sm-3">
                   <?php if ($result['img'] === null) {
-                      echo '<img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=No%20image&w=350&h=350" class="thumbnail img-fluid">';
+                      echo '<img src="images/default.png" class="thumbnail img-fluid">';
                     } else { ?>
                     <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
                     <?php } ?>
                 </div>
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
-                  <h6 class="card-subtitle mb-2 text-muted"><?php echo date("F jS\, g\:i A", $result['start']) ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsors[$result['sponsor_id']] ?></h6>
+                  <h6 class="card-subtitle mb-2 text-muted">
+                    <?php echo date("F jS\, g\:i A", $result['start']);
+                    if (date('F j', $result['start']) === date('F j', $result['end'])) {
+                      echo " to ".date('g\:i A', $result['end']);
+                    } else {
+                      echo " to ".date('F jS\, g\:i A', $result['end']);
+                    } ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsors[$result['sponsor_id']] ?></h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
                   <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>

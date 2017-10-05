@@ -3,9 +3,13 @@ require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
 $id = (isset($_GET['id'])) ? $_GET['id'] : 25;
-$stmt = $db->prepare('SELECT loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsor, event_type_id, email, phone, website FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT loc_id, event, description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
+if (!$event) {
+  header("location:javascript://history.go(-1)");
+  die();
+}
 $extra_img = (!empty($event['img'])) ? 'data:image/jpeg;base64,'.base64_encode($event['img']) : null;
 $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
 $locname = $loc['location'];
@@ -70,99 +74,5 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-    <script>
-      $('.event-type-toggle').on('click', function(e) {
-        e.preventDefault();
-        $('.event-type-toggle').removeClass('active');
-        $(this).addClass('active');
-        var type = $(this).data('value');
-        if (type === 'All') {
-          $('.iterable-event').each(function() { $(this).css('display', ''); });  
-        } else {
-          $('.iterable-event').each(function() {
-            if ($(this).data('eventtype') != type) {
-              $(this).css('display', 'none');
-            } else {
-              $(this).css('display', '');
-            }
-          });
-        }
-      });
-      $('#sort-date').on('click', function(e) {
-        e.preventDefault();
-        if ($(this).html() === 'Date ↓') {
-          $(this).html('Date &uarr;');
-        } else {
-          $(this).html('Date &darr;');
-        }
-        e.preventDefault();
-        var sort = []
-        $('.iterable-event').each(function() {
-          var div = $(this);
-          sort.push(div.data('date') + ',' + div.attr('id'));
-        });
-        sort.reverse();
-        var prev_id = 'tail';
-        for (var i = 0; i < sort.length; i++) {
-          var id = sort[i].split(',')[1];
-          $('#' + id).insertAfter('#' + prev_id);
-          prev_id = id;
-        }
-      });
-      $('#sort-loc').on('click', function(e) {
-        e.preventDefault();
-        if ($(this).html() === 'Location ↓') {
-          $(this).html('Location &uarr;');
-        } else {
-          $(this).html('Location &darr;');
-        }
-        e.preventDefault();
-        var sort = []
-        $('.iterable-event').each(function() {
-          var div = $(this);
-          sort.push(div.data('loc') + ',' + div.attr('id'));
-        });
-        sort.reverse();
-        var prev_id = 'tail';
-        for (var i = 0; i < sort.length; i++) {
-          var id = sort[i].split(',')[1];
-          $('#' + id).insertAfter('#' + prev_id);
-          prev_id = id;
-        }
-      });
-      $('#sort-sponsor').on('click', function(e) {
-        e.preventDefault();
-        if ($(this).html() === 'Sponsor ↓') {
-          $(this).html('Sponsor &uarr;');
-        } else {
-          $(this).html('Sponsor &darr;');
-        }
-        var sort = []
-        $('.iterable-event').each(function() {
-          var div = $(this);
-          sort.push(div.data('sponsor') + ',' + div.attr('id'));
-        });
-        sort.reverse();
-        var prev_id = 'tail';
-        for (var i = 0; i < sort.length; i++) {
-          var id = sort[i].split(',')[1];
-          $('#' + id).insertAfter('#' + prev_id);
-          prev_id = id;
-        }
-      });
-      $('#search').on('input', function() {
-        $('.iterable-event').each(function() {
-          var query = $('#search').val().toLowerCase();
-          if ($(this).data('name').toLowerCase().indexOf(query) === -1) {
-            $(this).css('display', 'none');
-          } else {
-            $(this).css('display', 'block');
-          }
-        });
-      });
-      $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      })
-    </script>
   </body>
 </html>
