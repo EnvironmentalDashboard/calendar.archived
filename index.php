@@ -153,13 +153,13 @@ foreach ($raw_results as $result) {
     $repeat_on = json_decode($result['repeat_on'], true); 
     while ($moving_start <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
       if (in_array(date('w', $moving_start), $repeat_on)) {
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $moving_start));
+        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start));
       }
       $moving_start += 86400; // add one day
     }
   }
   else { // Event doesnt recur
-    array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'start' => $result['start']));
+    array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $result['start']));
   }
 }
 $sponsors = array();
@@ -228,7 +228,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
                   </div>
                   <div class="col-sm-6">
                     <h2><?php echo $result['event'] ?></h2>
-                    <p style="overflow: hidden;height: 120px;"><?php echo $result['description'] ?></p>
+                    <p style="overflow: scroll;height: 120px;"><?php echo $result['description'] ?></p>
                   </div>
                 </div>
               </div>
@@ -411,8 +411,8 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
       });
 
       $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      })
+        $('[data-toggle="popover"]').popover()
+      });
     </script>
   </body>
 </html>

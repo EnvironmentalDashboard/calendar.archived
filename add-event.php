@@ -112,6 +112,7 @@ date_default_timezone_set("America/New_York");
                 <input type="file" id="file2" class="custom-file-input" id="img" name="file" value="">
                 <span class="custom-file-control"></span>
               </label>
+              <p><small class="text-success" id="filename"></small></p>
               <p><small class="text-danger" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small></p>
             </div>
             <!-- <div class="form-group">
@@ -340,6 +341,9 @@ date_default_timezone_set("America/New_York");
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date/time');
       }
+    });
+    $('#file2').on('change', function() {
+      $('#filename').text('You selected ' + $(this)[0].files[0].name);
     })
   </script>
 </html>

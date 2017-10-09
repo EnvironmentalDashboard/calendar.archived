@@ -28,17 +28,27 @@ while ($day_num <= $days_in_month) {
   if ($today < time() && $tomorrow > time()) {
     $day_color = "bg-dark";
   }
-  $tooltip_title = array();
+  $popover_descripts = array();
+  $popover_titles = array();
+  $popover_ids = array();
   foreach ($results as $result) {
     if ($result['start'] >= $today && $result['start'] < $tomorrow) {
       $day_color = "bg-primary";
-      $tooltip_title[] = str_replace('"', '&quot;', $result['event']); //addslashes();
+      $popover_descripts[] = str_replace('"', '&quot;', $result['description']); //addslashes();
+      $popover_titles[] = str_replace('"', '&quot;', $result['event']);
+      $popover_ids[] = $result['id'];
     }
   }
-  if (empty($tooltip_title)) {
+  if (empty($popover_descripts)) {
     echo "<td class=\"day $day_color\">".$day_num."</td>";
   } else {
-    echo "<td class=\"day $day_color\" data-toggle=\"tooltip\" data-html='true' data-placement=\"top\" title=\"".implode('<br>', $tooltip_title)."\">{$day_num}</td>";
+    echo "<td class=\"day $day_color\"><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#fff;padding:5px;margin:-5px;text-decoration:none' title='";
+    echo date('F j', $today);
+    echo "' data-content=\"";
+    for ($i=0; $i < count($popover_titles); $i++) { 
+      echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+    }
+    echo "\">{$day_num}</a></td>";
   }
   $day_num++;
   $day_count++;
