@@ -35,7 +35,7 @@ if ($bg == "") {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Oswald:700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:400,700" rel="stylesheet">
     <!-- <link href="https://fonts.googleapis.com/css?family=Lato:700|Merriweather:700|Open+Sans:700|Roboto:700|Oswald:700" rel="stylesheet"> -->
     <!-- <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="css/animate.min.css">
@@ -54,7 +54,8 @@ if ($bg == "") {
       }
       body {
         color: #fff;
-        font-family: 'Bebas Neue', Helvetica, sans-serif;
+        /*font-family: 'Bebas Neue', Helvetica, sans-serif;*/
+        font-family: 'Fira Sans Extra Condensed';
         overflow: hidden;
         margin: 0px;
         background: #000;
@@ -80,6 +81,8 @@ if ($bg == "") {
         font-weight: bold;
         text-transform: uppercase;
         font-family: 'Bebas Neue';
+        margin-bottom: 10px;
+        /*font-family: 500;*/
         /*font-family: 'tradeGothic';*/
         /*background: rgba(0,0,0,0.8);*/
         /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
@@ -87,14 +90,20 @@ if ($bg == "") {
       .p {
         font-weight: 700;
         font-size: 3.5rem;
-        font-size: 3.5vw;
-        margin-top: 15px;
+        font-size: 2.5vw;
+        font-weight: normal;
+        margin-top: 20px;
         margin-bottom: 15px;
         /*background: rgba(0,0,0,0.8);*/
         /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
       }
-      .date {
+      .description {
+        text-transform: initial;
+        font-weight: 400;
         font-size: 3vw;
+      }
+      .date {
+        font-size: 6vw;
         font-weight: bold;
         position: absolute;
         bottom: 10px;
@@ -130,15 +139,14 @@ if ($bg == "") {
     <?php if ($extra_img !== null) {  ?><img style="top:20%" src="<?php echo $extra_img; ?>" alt="" class="animated slideInDown"><?php } ?>
     <div class="content">
       <h1 class="title animated slideInDown"><?php echo $result['event']; ?></h1>
-      <div style="clear:both;height:7vh"></div>
       <div style="max-width: <?php echo ($extra_img !== null) ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
-        <p class="p animated slideInDown">
+        <p class="p animated slideInDown" style="font-size: 3.5vw;color: #badbf2;">
           <?php
           echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
           echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
           echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
         </p>
-        <p class="p animated slideInDown" style="color: #bdc3c7;">
+        <p class="p description animated slideInDown">
           <?php echo $result['description']; ?>
         </p>
         <!-- <div style="clear:both;height:7vh"></div> -->

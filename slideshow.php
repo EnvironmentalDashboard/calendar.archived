@@ -48,7 +48,7 @@ $stmt->execute(array($time, $next30days));
           i = 0;
         }
         iframe.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
-      }, 15 * 1000);
+      }, <?php echo isset($_GET['t']) ? $_GET['t'] : 15 ?> * 1000);
     </script>
   </body>
 </html>
