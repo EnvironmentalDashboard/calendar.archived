@@ -75,6 +75,7 @@ date_default_timezone_set("America/New_York");
               <div class="col-sm-4">
                 <label for="time">Time event begins</label>
                 <input type="text" class="form-control" id="time" name="time" value="<?php echo (!empty($_POST['time'])) ? $_POST['time'] : ''; ?>" placeholder="12:30pm">
+                <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
               </div>
             </div>
             <div class="form-group row">
@@ -85,6 +86,7 @@ date_default_timezone_set("America/New_York");
               <div class="col-sm-4">
                 <label for="time2">Time event ends</label>
                 <input type="text" class="form-control" id="time2" name="time2" value="<?php echo (!empty($_POST['time2'])) ? $_POST['time2'] : ''; ?>" placeholder="12:30pm">
+                <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
               </div>
             </div>
             <div class="form-group">
@@ -332,14 +334,18 @@ date_default_timezone_set("America/New_York");
         e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 50 and 1000 charachters.');
-      } else if ($('#time').val().length < 3 || $('#date').val().length < 3) {
+      } else if ($('#event').val().length == 0) {
         e.preventDefault();
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Invalid start date/time');
-      } else if ($('#time2').val().length < 3 || $('#date2').val().length < 3) {
+        $('#alert-warning-text').text('Event title is empty');
+      } else if ($('#date').val().length < 9) {
         e.preventDefault();
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Invalid end date/time');
+        $('#alert-warning-text').text('Invalid start date');
+      } else if ($('#date2').val().length < 9) {
+        e.preventDefault();
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Invalid end date');
       }
     });
     $('#file2').on('change', function() {

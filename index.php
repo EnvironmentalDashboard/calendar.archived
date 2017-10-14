@@ -6,6 +6,10 @@ if (isset($_POST['new-event'])) {
   $date = strtotime($_POST['date'] . ' ' . $_POST['time']);
   $date2 = strtotime($_POST['date2'] . ' ' . $_POST['time2']);
   $repeat_end = strtotime($_POST['end_date']);
+  $no_time = 0;
+  if ($_POST['time'] === '' || $_POST['time2'] === '') {
+    $no_time = 1;
+  }
   if (!$repeat_end) {
     $repeat_end = 0;
   }
@@ -15,14 +19,11 @@ if (isset($_POST['new-event'])) {
   elseif (!$date2) {
     $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event was not submitted";
   }
-  elseif (empty($_POST['event'])) {
-    $error = 'You forgot to fill in a field, your event was not submitted';
-  }
   elseif (!file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
-    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor']));
+    $stmt->execute(array($_POST['event'], $volunteer, $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor'], $no_time));
     $success = 'Your event was successfully uploaded and will be reviewed';
     save_emails($_POST['event'], $db->lastInsertId());
   }
@@ -32,7 +33,7 @@ if (isset($_POST['new-event'])) {
     if (in_array($detectedType, $allowedTypes)) {
       // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
       $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+      $stmt = $db->prepare('INSERT INTO calendar (event, volunteer, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
       $stmt->bindParam(1, $_POST['event']);
       $volunteer = (isset($_POST['volunteer'])) ? 1 : 0;
       $stmt->bindParam(2, $volunteer);
@@ -54,6 +55,7 @@ if (isset($_POST['new-event'])) {
       $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
       $stmt->bindParam(16, $cant_pass_by_ref);
       $stmt->bindParam(17, $_POST['sponsor']);
+      $stmt->bindParam(18, $_POST['no_time']);
       $stmt->execute();
       $success = 'Your event was successfully uploaded and will be reviewed';
       save_emails($_POST['event'], $db->lastInsertId());
@@ -61,6 +63,9 @@ if (isset($_POST['new-event'])) {
     else {
       $error = 'Allowed file types are JPEG, PNG, and GIF, your event was not submitted.';
     }
+  }
+  if (isset($error)) {
+    $error .= " <a href='add-event?".http_build_query($_POST)."'>Return to form</a>.";
   }
 }
 function save_emails($event_name, $event_id) {
