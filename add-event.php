@@ -241,7 +241,7 @@ date_default_timezone_set("America/New_York");
               <input type="text" class="form-control" id="website" name="website" placeholder="Your website URL" <?php echo (!empty($_POST['website'])) ? $_POST['website'] : ''; ?>>
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
-            <input type="submit" name="new-event" value="Submit event for review" class="btn btn-primary">
+            <input type="submit" name="new-event" id="new-event" value="Submit event for review" class="btn btn-primary">
           </form>
         </div>
       </div>
@@ -320,6 +320,23 @@ date_default_timezone_set("America/New_York");
     //     $('#end-times').css('display', 'initial'); 
     //   }
     // });
+    (function($) { // from https://stackoverflow.com/a/12426630/2624391
+    $.fn.serializefiles = function() {
+        var obj = $(this);
+        /* ADD FILE TO PARAM AJAX */
+        var formData = new FormData();
+        $.each($(obj).find("input[type='file']"), function(i, tag) {
+            $.each($(tag)[0].files, function(i, file) {
+                formData.append(tag.name, file);
+            });
+        });
+        var params = $(obj).serializeArray();
+        $.each(params, function (i, val) {
+            formData.append(val.name, val.value);
+        });
+        return formData;
+    };
+    })(jQuery);
     $( function() {
       $( "#date" ).datepicker();
       $( "#date2" ).datepicker();
@@ -329,23 +346,43 @@ date_default_timezone_set("America/New_York");
       $('.alert').css('display', 'none');
     })
     $('#add-event').on('submit', function(e) {
+      e.preventDefault();
       var description_len = $('#description').val().length;
       if (description_len < 50 || description_len > 1000) {
-        e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 50 and 1000 charachters.');
       } else if ($('#event').val().length == 0) {
-        e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title is empty');
       } else if ($('#date').val().length < 9) {
-        e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid start date');
       } else if ($('#date2').val().length < 9) {
-        e.preventDefault();
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date');
+      } else {
+        var submit_btn = $('#new-event');
+        submit_btn.val('Loading');
+        $('#alert-success').css('display', 'block');
+        $('#alert-success-text').text('Loading');
+        var data = $(this).serializefiles();
+        $.ajax({
+          url: 'includes/submit.php',
+          cache: false,
+          method: 'POST',
+          data: data,
+          processData: false,
+          contentType: false,
+          type: 'POST',
+          success: function(resp) {
+            if (resp == '0') {
+              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed');
+              submit_btn.val('Success!');
+              setTimeout(function(){ submit_btn.val('Submit event for review'); }, 2000);
+              console.log(resp);
+            }
+          }
+        });
       }
     });
     $('#file2').on('change', function() {

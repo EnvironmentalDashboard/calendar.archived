@@ -42,7 +42,7 @@ while ($day_num <= $days_in_month) {
   if (empty($popover_descripts)) {
     echo "<td class=\"day $day_color\">".$day_num."</td>";
   } else {
-    echo "<td class=\"day $day_color\"><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#fff;padding:5px;margin:-5px;text-decoration:none' title='";
+    echo "<td class=\"day $day_color\" data-mdy='".date('mdy', $today)."'><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#fff;padding:5px;margin:-5px;text-decoration:none' title='";
     echo date('F j', $today);
     echo "' data-content=\"";
     for ($i=0; $i < count($popover_titles); $i++) { 
