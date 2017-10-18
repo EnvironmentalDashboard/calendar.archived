@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img, no_time FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 $result = $stmt->fetch();
 $stmt = $db->prepare('SELECT `location`, img FROM calendar_locs WHERE id = ? LIMIT 1');
@@ -143,7 +143,9 @@ if ($bg == "") {
         <p class="p animated slideInDown" style="font-size: 3.5vw;color: #badbf2;">
           <?php
           echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
-          echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
+          if ($result['no_time'] == '0') {
+            echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
+          }
           echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
         </p>
         <p class="p description animated slideInDown">

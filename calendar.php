@@ -40,15 +40,33 @@ while ($day_num <= $days_in_month) {
     }
   }
   if (empty($popover_descripts)) {
-    echo "<td class=\"day $day_color\">".$day_num."</td>";
-  } else {
-    echo "<td class=\"day $day_color\" data-mdy='".date('mdy', $today)."'><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#fff;padding:5px;margin:-5px;text-decoration:none' title='";
-    echo date('F j', $today);
-    echo "' data-content=\"";
-    for ($i=0; $i < count($popover_titles); $i++) { 
-      echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+    if (SMALL) {
+      echo "<td class=\"day $day_color\"><span class='day-num'>".$day_num."</span></td>";
+    } else {
+      echo "<td class=\"day\"><span class='day-num $day_color'>".$day_num."</span></td>";
     }
-    echo "\">{$day_num}</a></td>";
+  } else {
+    if (SMALL) {
+      echo "<td class=\"day $day_color\" data-mdy='".date('mdy', $today)."'><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#fff;padding:5px;margin:-5px;text-decoration:none' title='";
+      echo date('F j', $today);
+      echo "' data-content=\"";
+      for ($i=0; $i < count($popover_titles); $i++) { 
+        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+      }
+      echo "\"><span class='day-num'>{$day_num}</span></a></td>";
+    } else {
+      echo "<td class=\"day\" data-mdy='".date('mdy', $today)."'><a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#333;padding:5px;margin:-5px;text-decoration:none' title='";
+      echo date('F j', $today);
+      echo "' data-content=\"";
+      for ($i=0; $i < count($popover_titles); $i++) { 
+        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+      }
+      echo "\"><span class='day-num $day_color'>{$day_num}</span>";
+      for ($i=0; $i < count($popover_titles); $i++) { 
+        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+      }
+      echo "</a></td>";
+    }
   }
   $day_num++;
   $day_count++;

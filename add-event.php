@@ -44,11 +44,6 @@ date_default_timezone_set("America/New_York");
               <input type="text" class="form-control" id="event" name="event" value="<?php echo (!empty($_POST['event'])) ? $_POST['event'] : ''; ?>">
             </div>
             <div class="form-group">
-              <label class="form-check-inline" style="position: relative;left: 20px">
-                <input class="form-check-input" type="checkbox" id="volunteer" name="volunteer"> Check if volunteer event
-              </label>
-            </div>
-            <div class="form-group">
               <label for="sponsor">Who is organizing/sponsoring this event?</label>
               <select class="form-control" id="sponsor" name="sponsor">
                 <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) { ?>
@@ -101,7 +96,7 @@ date_default_timezone_set("America/New_York");
             <div class="form-group">
               <label for="description">Event description</label>
               <textarea name="description" id="description" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">1,000 character maximum, 50 character minimum</small>
+              <small class="text-muted">750 character maximum, 50 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
               <label for="ex_description">Extended description</label>
@@ -348,9 +343,9 @@ date_default_timezone_set("America/New_York");
     $('#add-event').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
-      if (description_len < 50 || description_len > 1000) {
+      if (description_len < 50 || description_len > 750) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event description must be between 50 and 1000 charachters.');
+        $('#alert-warning-text').text('Event description must be between 50 and 760 charachters.');
       } else if ($('#event').val().length == 0) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title is empty');
@@ -385,8 +380,12 @@ date_default_timezone_set("America/New_York");
         });
       }
     });
+    $('#description').on('input', function() {
+      var left = $(this).val().length;
+      $('#chars-left').text(', ' + left + ' charachters so far');
+    });
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);
-    })
+    });
   </script>
 </html>

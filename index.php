@@ -82,7 +82,7 @@ foreach ($raw_results as $result) {
   }
 }
 $sponsors = array();
-foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
+foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsor_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
   $sponsors[$row['id']] = $row['sponsor'];
 }
 ?>
@@ -131,7 +131,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
                   <div class="col-sm-6">
                     <a href="https://oberlindashboard.org/oberlin/calendar/detail.php?id=<?php echo $result['id'] ?>">
                       <?php if ($result['img'] === null) {
-                        echo '<img class="d-block img-fluid" src="images/default.png">';
+                        echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else { ?>
                       <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
                       <?php } ?>
@@ -182,7 +182,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
               <div class="row">
                 <div class="col-sm-3">
                   <?php if ($result['img'] === null) {
-                      echo '<img src="images/default.png" class="thumbnail img-fluid">';
+                      echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { ?>
                     <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
                     <?php } ?>
@@ -207,7 +207,7 @@ foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $row) {
         <div class="col-sm-4">
           <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
-          <?php require 'calendar.php'; ?>
+          <?php define('SMALL', true); require 'calendar.php'; ?>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
