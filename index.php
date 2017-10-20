@@ -66,21 +66,32 @@ $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
 $raw_results = $stmt->fetchAll();
 $row_count = $stmt->rowCount();
 $results = array(); // Array where events that recur will be expanded
+// echo "<!--\n";
 foreach ($raw_results as $result) {
   if ($result['repeat_on'] != null) { // Event recurs
     $moving_start = $result['start'];
     $repeat_on = json_decode($result['repeat_on'], true); 
+    // echo "{$result['event']} to be added, recurs on {$result['repeat_on']}, until ".date('F jS\, g\:i A', $result['repeat_end'])."\n";
+    // echo "test: ms is ".date('F jS\, g\:i A', $moving_start)."\n";
     while ($moving_start <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
+      // echo "test: ms is ".date('F jS\, g\:i A', $moving_start)."\n";
       if (in_array(date('w', $moving_start), $repeat_on)) {
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start));
+        $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start);
       }
       $moving_start += 86400; // add one day
     }
+    if ($moving_start == $result['start']) { // this event was improperly configured. the repeat_end is set to before the start date of the event, so pretend the event does not recur
+      $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start);
+    }
   }
   else { // Event doesnt recur
-    array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $result['start']));
+    $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $result['start']);
+    // echo "{$result['event']} added (doesnt recur)\n";
   }
 }
+// print_r($results);
+// print_r(array_column($raw_results, 'event'));
+// echo "-->\n";
 $sponsors = array();
 foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsor_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
   $sponsors[$row['id']] = $row['sponsor'];
