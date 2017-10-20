@@ -61,9 +61,9 @@ while ($day_num <= $days_in_month) {
       for ($i=0; $i < count($popover_titles); $i++) { 
         echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
       }
-      echo "\"><span class='day-num $day_color'>{$day_num}</span>";
+      echo "\"><span class='day-num $day_color'>{$day_num}</span><div style='clear:both;height:20px;'></div>";
       for ($i=0; $i < count($popover_titles); $i++) { 
-        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+        echo "<h6><a href='detail.php?id={$popover_ids[$i]}'>{$popover_titles[$i]}</a></h6>";
       }
       echo "</a></td>";
     }

@@ -155,9 +155,10 @@ if ($bg == "") {
       </div>
     </div>
     <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
-    <img src="images/communitycalendardashboardicon.png" alt="Environmental Dashboard logo" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
+    <img src="images/findmoreAT.png" alt="Community Calendar" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
+    <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
     <?php if ($result['volunteer']) { ?>
-    <img src="images/calendarvolunteeropportunity2.png" alt="Volunteer oppurtunity" style="width: 23vw;position: fixed;bottom: 30px;left: -15px;height: auto;">
+    <img src="images/calendarvolunteeropportunity2.png" style="width: 23vw;position: fixed;bottom: 30px;left: -15px;height: auto;">
     <?php } ?>
   </body>
 </html>

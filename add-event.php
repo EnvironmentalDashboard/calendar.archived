@@ -95,13 +95,13 @@ date_default_timezone_set("America/New_York");
             </div>
             <div class="form-group">
               <label for="description">Event description</label>
-              <textarea name="description" id="description" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">750 character maximum, 50 character minimum<span id="chars-left"></span></small>
+              <textarea name="description" id="description" maxlength="350" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
+              <small class="text-muted">350 character maximum, 50 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
               <label for="ex_description">Extended description</label>
               <textarea name="ex_description" id="ex_description" class="form-control"><?php echo (!empty($_POST['ex_description'])) ? $_POST['ex_description'] : ''; ?></textarea>
-              <small class="text-muted">Will not be displayed on digital signage</small>
+              <small class="text-muted">Will only be displayed on website and not digitial signage</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
@@ -343,7 +343,7 @@ date_default_timezone_set("America/New_York");
     $('#add-event').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
-      if (description_len < 50 || description_len > 750) {
+      if (description_len < 50 || description_len > 350) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 50 and 760 charachters.');
       } else if ($('#event').val().length == 0) {
@@ -382,7 +382,7 @@ date_default_timezone_set("America/New_York");
     });
     $('#description').on('input', function() {
       var left = $(this).val().length;
-      $('#chars-left').text(', ' + left + ' charachters so far');
+      $('#chars-left').text(', ' + (350-left) + ' charachters left');
     });
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);

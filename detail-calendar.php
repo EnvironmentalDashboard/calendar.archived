@@ -98,8 +98,8 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
-      .day { height: 200px; overflow: scroll; width: 14.2857%;}
-      .day-num { position: relative; right: 50px; margin-bottom: 10px; border-radius: 100%; padding: 12px; }
+      .day { height: 200px; overflow: scroll; width: 14.2857%;padding-bottom: -20px}
+      .day-num { position: relative; right: 30px; margin-bottom: 10px; border-radius: 100%; padding: 12px; }
     </style>
   </head>
   <body style="padding-bottom: 100px">
@@ -111,8 +111,30 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12" style="width: 100%">
+        <div class="col-xs-12">
+          <p><a href="..">Go back</a></p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
           <?php define('SMALL', false); require 'calendar.php'; ?>
+        </div>
+        <div class="col-sm-4">
+          <div class="list-group">
+            <?php
+            foreach ($db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on FROM calendar WHERE approved = 1 AND start >= UNIX_TIMESTAMP() ORDER BY start ASC LIMIT 5") as $row) {
+              // TODO: This query wont get recurring events that are happening past the first occurance
+            ?>
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><?php echo $row['event']; ?></h5>
+                <small><?php echo $db->query('SELECT location FROM calendar_locs WHERE id = '.intval($row['loc_id']))->fetchColumn(); ?></small>
+              </div>
+              <p class="mb-1"><?php echo $row['description'] ?></p>
+              <small><?php echo date("F jS\, g\:i A", $row['start']); ?></small>
+            </a>
+            <?php } ?>
+          </div>
         </div>
       </div>
     </div>

@@ -208,6 +208,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
           <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
           <?php define('SMALL', true); require 'calendar.php'; ?>
+          <p><a href="detail-calendar">Detail view</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
