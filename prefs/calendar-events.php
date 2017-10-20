@@ -17,7 +17,7 @@ if (!empty($_POST['submit'])) {
   }
   if (isset($_FILES['edit-img']) && file_exists($_FILES['edit-img']['tmp_name']) && is_uploaded_file($_FILES['edit-img']['tmp_name'])) {
     $fp = fopen($_FILES['edit-img']['tmp_name'], 'rb'); // read binary
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsor_id = ?, img = ? WHERE id = ?');
+    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ?, img = ? WHERE id = ?');
     $stmt->bindParam(1, $_POST['event']);
     $stmt->bindParam(2, strtotime($_POST['start']));
     $stmt->bindParam(3, strtotime($_POST['end']));
@@ -35,13 +35,13 @@ if (!empty($_POST['submit'])) {
     $stmt->bindParam(15, $_POST['website']);
     $stmt->bindParam(16, strtotime($_POST['repeat_end']));
     $stmt->bindParam(17, (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']));
-    $stmt->bindParam(18, $_POST['sponsor_id']);
+    $stmt->bindParam(18, $_POST['sponsors']);
     $stmt->bindParam(19, $fp, PDO::PARAM_LOB);
     $stmt->bindParam(20, $_POST['id']);
     $stmt->execute();
   } else {
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsor_id = ? WHERE id = ?');
-    $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), (strtolower($_POST['volunteer']) === 'yes') ? 1 : 0, $approved, (strtolower($_POST['no_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsor_id'], $_POST['id']));
+    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ? WHERE id = ?');
+    $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), (strtolower($_POST['volunteer']) === 'yes') ? 1 : 0, $approved, (strtolower($_POST['no_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsors'], $_POST['id']));
   }
 }
 
@@ -198,9 +198,9 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 }
                 echo "<input type='text' name='repeat_end' value='".date('c', $event['repeat_end'])."' class='form-control'>";
                 echo "</td>";
-                echo "<td><select name='sponsor_id' class='custom-select'>";
+                echo "<td><select name='sponsors' class='custom-select'>";
                 foreach ($sponsors as $id => $sponsor) {
-                  if ($id == $event['sponsor_id']) {
+                  if ($id == $event['sponsors']) {
                     echo "<option selected value='{$id}'>{$sponsor}</option>";
                   } else {
                     echo "<option value='{$id}'>{$sponsor}</option>";

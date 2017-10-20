@@ -32,6 +32,7 @@ date_default_timezone_set("America/New_York");
           <h4 class="text-muted">Add Event</h4>
           <!-- <img src="http://104.131.103.232/oberlin/prefs/images/env_logo.png" class="img-fluid" style="margin-bottom:20px"> -->
           <h3 style="margin-top: 20px">Upload information</h3>
+          <p><a href="index">&larr; Go Back</a></p>
           <hr>
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">
@@ -45,7 +46,7 @@ date_default_timezone_set("America/New_York");
             </div>
             <div class="form-group">
               <label for="sponsor">Who is organizing/sponsoring this event?</label>
-              <select class="form-control" id="sponsor" name="sponsor">
+              <select multiple class="form-control" id="sponsor" name="sponsor[]">
                 <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) { ?>
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['sponsor']; ?></option>
                 <?php } ?>
@@ -297,8 +298,8 @@ date_default_timezone_set("America/New_York");
         $.get("includes/add-event-sponsor.php", {sponsor: sponsor}, function(resp) {
           if (resp) {
             $('#sponsor').append('<option value='+resp+'>'+sponsor+'</option>');
-            console.log(resp);
-            $('#sponsor').val(resp);
+            // console.log(resp);
+            // $('#sponsor').val(resp);
           } else {
             alert('Failed to create event sponsor.');
           }   
@@ -371,9 +372,9 @@ date_default_timezone_set("America/New_York");
           type: 'POST',
           success: function(resp) {
             if (resp == '0') {
-              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed');
+              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 10 seconds.');
               submit_btn.val('Success!');
-              setTimeout(function(){ submit_btn.val('Submit event for review'); }, 2000);
+              setTimeout(function(){ window.location.href = "index"; }, 3000);
               console.log(resp);
             }
           }

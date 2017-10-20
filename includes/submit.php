@@ -20,8 +20,8 @@ $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event
 }
 elseif (!isset($_FILES['file']) || !file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
 // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-$stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-$stmt->execute(array($_POST['event'], $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, $_POST['sponsor'], $no_time));
+$stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+$stmt->execute(array($_POST['event'], $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsor']), $no_time));
 $success = 'Your event was successfully uploaded and will be reviewed';
 save_emails($_POST['event'], $db->lastInsertId());
 }
@@ -31,7 +31,7 @@ $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
 if (in_array($detectedType, $allowedTypes)) {
   // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
   $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-  $stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsor_id, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  $stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   $stmt->bindParam(1, $_POST['event']);
   $stmt->bindParam(2, $date);
   $stmt->bindParam(3, $date2);
@@ -50,7 +50,7 @@ if (in_array($detectedType, $allowedTypes)) {
   $stmt->bindParam(14, $repeat_end);
   $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
   $stmt->bindParam(15, $cant_pass_by_ref);
-  $stmt->bindParam(16, $_POST['sponsor']);
+  $stmt->bindParam(16, json_encode($_POST['sponsor']));
   $stmt->bindParam(17, $no_time);
   $stmt->execute();
   $success = 'Your event was successfully uploaded and will be reviewed';

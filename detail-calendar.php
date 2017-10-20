@@ -57,7 +57,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsor_id, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -82,7 +82,7 @@ foreach ($raw_results as $result) {
   }
 }
 $sponsors = array();
-foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsor_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
+foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
   $sponsors[$row['id']] = $row['sponsor'];
 }
 ?>
@@ -112,7 +112,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <p style="position: relative;left: 5px"><a href="index">Go back</a></p>
+          <p style="position: relative;left: 5px"><a href="index">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">

@@ -57,7 +57,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsor_id, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -93,8 +93,17 @@ foreach ($raw_results as $result) {
 // print_r(array_column($raw_results, 'event'));
 // echo "-->\n";
 $sponsors = array();
-foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsor_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
+// SELECT id, sponsor FROM calendar_sponsors WHERE CONCAT('\"', id, '\"') LIKE (SELECT GROUP_CONCAT(sponsors) FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)
+foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors") as $row) {
   $sponsors[$row['id']] = $row['sponsor'];
+}
+$current_sponsors = array();
+foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1") as $row) {
+  foreach (json_decode($row['sponsors']) as $s) {
+    if (!in_array($s, $current_sponsors)) {
+      $current_sponsors[] = $s;
+    }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -186,9 +195,9 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
             ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
           style="margin-bottom: 10px" data-date="<?php echo $result['start']; ?>"
-          data-loc="<?php echo $locname; ?>" data-sponsor="<?php echo $sponsors[$result['sponsor_id']]; ?>"
+          data-loc="<?php echo $locname; ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
-          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $sponsors[$result['sponsor_id']]; ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'>
+          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $result['sponsors']; ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'>
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-3">
@@ -206,7 +215,17 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
                       echo " to ".date('g\:i A', $result['end']);
                     } else {
                       echo " to ".date('F jS\, g\:i A', $result['end']);
-                    } ?> &middot; <?php echo $locname ?> &middot; <?php echo $sponsors[$result['sponsor_id']] ?></h6>
+                    } ?> &middot; <?php echo $locname ?> &middot; <?php
+                    $array = json_decode($result['sponsors'], true);
+                    $count = count($array);
+                    for ($i = 0; $i < $count; $i++) { 
+                      echo $sponsors[$array[$i]];
+                      if ($i+1 !== $count) {
+                        echo ", ";
+                      }
+                    }
+                    ?>
+                  </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
                   <a href="<?php echo "detail.php?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
@@ -239,7 +258,10 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
           <h5>Event sponsor/organizer</h5>
           <div class="list-group">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
-            <?php foreach ($sponsors as $sponsor) {
+            <?php foreach ($sponsors as $id => $sponsor) {
+              if (!in_array($id, $current_sponsors)) {
+                continue;
+              }
               echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
             } ?>
           </div>
