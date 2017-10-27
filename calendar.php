@@ -51,7 +51,7 @@ while ($day_num <= $days_in_month) {
       echo date('F j', $today);
       echo "' data-content=\"";
       for ($i=0; $i < count($popover_titles); $i++) { 
-        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p>";
       }
       echo "\"><span class='day-num'>{$day_num}</span></a></td>";
     } else {
@@ -59,7 +59,7 @@ while ($day_num <= $days_in_month) {
       echo date('F j', $today);
       echo "' data-content=\"";
       for ($i=0; $i < count($popover_titles); $i++) { 
-        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p><p><a href='detail.php?id={$popover_ids[$i]}'>Read more</a></p>";
+        echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p>";
       }
       echo "\"><span class='day-num $day_color'>{$day_num}</span><div style='clear:both;height:20px;'></div>";
       for ($i=0; $i < count($popover_titles); $i++) { 

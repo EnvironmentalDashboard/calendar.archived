@@ -15,6 +15,7 @@ date_default_timezone_set("America/New_York");
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <link rel="stylesheet" href="js/jquery-ui.min.css">
+    <link rel="stylesheet" href="js/jquery.timepicker.min.css">
   </head>
   <body style="padding-top:50px">
     <div class="container">
@@ -111,7 +112,7 @@ date_default_timezone_set("America/New_York");
                 <span class="custom-file-control"></span>
               </label>
               <p><small class="text-success" id="filename"></small></p>
-              <p><small class="text-danger" id="img-help">Optionally upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small></p>
+              <p><small class="text-danger" id="img-help">We encourage you to upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small></p>
             </div>
             <!-- <div class="form-group">
               <label for="repeat_every">Repeat</label>
@@ -242,12 +243,15 @@ date_default_timezone_set("America/New_York");
         </div>
       </div>
     </div>
-    <div style="height: 100px;clear: both;"></div>
+    <div style="height: 130px;clear: both;"></div>
+    <?php include 'includes/footer.php'; ?>
   </body>
   <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  <script src="js/jquery.timepicker.min.js"></script>
+  <script></script>
   <script src="js/jquery-ui.min.js"></script>
   <script>
     $('#other-checkbox').on('change', function() {
@@ -334,7 +338,11 @@ date_default_timezone_set("America/New_York");
     };
     })(jQuery);
     $( function() {
-      $( "#date" ).datepicker();
+      $( "#date" ).datepicker({
+        onSelect: function(dateText) {
+          $('#date2').val(this.value);
+        }
+      });
       $( "#date2" ).datepicker();
       $( "#end_date" ).datepicker();
     } );
@@ -357,8 +365,7 @@ date_default_timezone_set("America/New_York");
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date');
       } else {
-        var submit_btn = $('#new-event');
-        submit_btn.val('Loading');
+        $('#new-event').val('Loading');
         $('#alert-success').css('display', 'block');
         $('#alert-success-text').text('Loading');
         var data = $(this).serializefiles();
@@ -371,11 +378,14 @@ date_default_timezone_set("America/New_York");
           contentType: false,
           type: 'POST',
           success: function(resp) {
-            if (resp == '0') {
+            if (resp == 'Your event was successfully uploaded and will be reviewed') {
               $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 10 seconds.');
-              submit_btn.val('Success!');
-              setTimeout(function(){ window.location.href = "index"; }, 3000);
+              $('#new-event').val('Success!');
+              setTimeout(function(){ document.location.href = "index"; }, 3000);
               console.log(resp);
+            } else {
+              $('#alert-success-text').text(resp);
+              $('#new-event').val('Submit event for review');
             }
           }
         });
@@ -388,5 +398,14 @@ date_default_timezone_set("America/New_York");
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);
     });
+    $('#date').on('input', function() {
+      var date1 = $(this);
+      var date2 = $('#date2');
+      if (date2.val().length == 0) {
+        date2.val(date1.val());
+      }
+    });
+    $('#time').timepicker();
+    $('#time2').timepicker();
   </script>
 </html>

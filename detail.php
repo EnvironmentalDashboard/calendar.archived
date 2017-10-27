@@ -28,7 +28,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
   </head>
-  <body style="padding-bottom: 100px">
+  <body>
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
@@ -39,14 +39,14 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
       </div>
       <div class="row">
         <div class="col-md-8 col-sm-12">
-          <h2><?php echo $event['event']; ?></h2>
+          <h1><?php echo $event['event']; ?></h1>
           <hr>
           <p><?php echo $event['description']; ?></p>
           <p><?php echo date('D\. F j \| g:ia\-', $event['start']) . date('g:ia', $event['end']) . ' | ' . $locname; ?></p>
           <p>
-          For more information, contact<br>
+          <?php if ($event['email'] != '' && $event['phone'] != '' && $event['phone'] != 0 && $event['website'] != '') { ?>For more information, contact<br><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
-          <?php echo ($event['phone'] == '') ? '' : "{$event['phone']}<br>"; ?>
+          <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : "{$event['phone']}<br>"; ?>
           <?php echo ($event['website'] == '') ? '' : "{$event['website']}<br>"; ?>
           </p>
           <p>
@@ -72,6 +72,38 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
           ?>
         </div>
       </div>
+      <div style="clear: both;height: 110px"></div>
+      <?php
+      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? ORDER BY start ASC LIMIT 4');
+      $stmt->execute(array($event['event_type_id']));
+      $related_events = $stmt->fetchAll();
+      if (count($related_events) > 0) { ?>
+      <h3>Related events</h3>
+      <hr>
+      <div class="row">
+        <div class="col-sm-3">
+          <?php foreach ($related_events as $row) { ?>
+          <div class="card" style="max-width: 100%;">
+            <img class="card-img-top" src="<?php echo ($row['img'] == null) ? 'images/default.svg' : 'data:image/jpeg;base64,'.base64_encode($row['img']); ?>" alt="<?php echo $row['event'] ?>">
+            <div class="card-body">
+              <h6 class="card-title"><?php echo $row['event'] ?></h6>
+              <?php if ($row['no_end_time'] === '0' && $row['no_start_time'] === '1') {
+                echo "<p class='card-text'>Ends ".date('F j g:ia', $row['end'])."</p>";
+              } elseif ($row['no_end_time'] === '1' && $row['no_start_time'] === '0') {
+                echo "<p class='card-text'>Starts ".date('F j g:ia', $row['start'])."</p>";
+              } elseif ($row['no_end_time'] === '0' && $row['no_start_time'] === '0') {
+                echo "<p class='card-text'>".date('F j g:ia', $row['start'])." - ".date('F j g:ia', $row['start'])."</p>";
+              }
+              ?>
+              <a href="detail?id=<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
+            </div>
+          </div>
+          <?php } ?>
+        </div>
+      </div>
+      <?php } ?>
+      <div style="clear: both;height: 80px"></div>
+      <?php include 'includes/footer.php'; ?>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>

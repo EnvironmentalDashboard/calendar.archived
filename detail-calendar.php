@@ -57,7 +57,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, LEFT(description, 2) AS description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -102,7 +102,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
       .day-num { position: relative; right: 30px; margin-bottom: 10px; border-radius: 100%; padding: 12px; }
     </style>
   </head>
-  <body style="padding-bottom: 100px">
+  <body>
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
@@ -120,23 +120,26 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
           <?php define('SMALL', false); require 'calendar.php'; ?>
         </div>
         <div class="col-sm-4">
+          <h1 class="text-center">Upcoming Events</h1>
           <div class="list-group">
             <?php
             foreach ($db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on FROM calendar WHERE approved = 1 AND start >= UNIX_TIMESTAMP() ORDER BY start ASC LIMIT 5") as $row) {
               // TODO: This query wont get recurring events that are happening past the first occurance
             ?>
-            <a href="<?php echo "detail.php?id={$row['id']}"; ?>" class="list-group-item list-group-item-action flex-column align-items-start">
+            <a href="<?php echo "detail?id={$row['id']}"; ?>" class="list-group-item list-group-item-action flex-column align-items-start">
               <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1"><?php echo $row['event']; ?></h5>
-                <small><?php echo $db->query('SELECT location FROM calendar_locs WHERE id = '.intval($row['loc_id']))->fetchColumn(); ?></small>
+                <small><?php echo date("F jS\, g\:i A", $row['start']); ?></small>
               </div>
               <p class="mb-1"><?php echo $row['description'] ?></p>
-              <small><?php echo date("F jS\, g\:i A", $row['start']); ?></small>
+              <small><?php echo $db->query('SELECT location FROM calendar_locs WHERE id = '.intval($row['loc_id']))->fetchColumn(); ?></small>
             </a>
             <?php } ?>
           </div>
         </div>
       </div>
+      <div style="clear: both;height: 100px"></div>
+      <?php include 'includes/footer.php'; ?>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>

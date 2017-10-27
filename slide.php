@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img, no_time FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img, no_start_time, no_end_time FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 $result = $stmt->fetch();
 $stmt = $db->prepare('SELECT `location`, img FROM calendar_locs WHERE id = ? LIMIT 1');
@@ -143,7 +143,12 @@ if ($bg == "") {
         <p class="p animated slideInDown" style="font-size: 3.5vw;color: #badbf2;">
           <?php
           echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
-          if ($result['no_time'] == '0') {
+          if ($result['no_start_time'] != '0') {
+            # code...
+          } elseif ($result['no_end_time'] != '0') {
+            # code...
+          }
+          else {
             echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
           }
           echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
@@ -158,7 +163,7 @@ if ($bg == "") {
     <img src="images/findmoreAT.png" alt="Community Calendar" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
     <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
     <?php if ($result['volunteer']) { ?>
-    <img src="images/calendarvolunteeropportunity2.png" style="width: 23vw;position: fixed;bottom: 30px;left: -15px;height: auto;">
+    <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
     <?php } ?>
   </body>
 </html>
