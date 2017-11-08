@@ -57,7 +57,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id, no_start_time, no_end_time FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -109,6 +109,7 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
     }
   }
 }
+$number_of_slides = 5;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,6 +122,9 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <style>
+      @media (max-width: 950px) {
+        .hidden-sm-down {display: none;}
+      }
       .bg-primary, .bg-dark {color:#fff;}
     </style>
   </head>
@@ -140,10 +144,8 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
             </div>
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
-              <?php if ($row_count > 1) {
-                echo '<li data-target="#carousel-indicators" data-slide-to="1"></li>';
-              } if ($row_count > 2) {
-                echo '<li data-target="#carousel-indicators" data-slide-to="2"></li>';
+              <?php for ($s = 1; $s < $number_of_slides; $s++) { 
+                echo "<li data-target=\"#carousel-indicators\" data-slide-to=\"{$s}\"></li>";
               } ?>
             </ol>
             <div class="carousel-inner" role="listbox">
@@ -152,7 +154,7 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
               foreach ($raw_results as $result) { ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
-                  <div class="col-sm-6">
+                  <div class="col-sm-6 hidden-sm-down">
                     <a href="https://oberlindashboard.org/oberlin/calendar/detail?id=<?php echo $result['id'] ?>">
                       <?php if ($result['img'] === null) {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
@@ -173,7 +175,7 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
               </div>
               <?php
               $counter++;
-              if ($counter > 2) {
+              if ($counter >= $number_of_slides) {
                 break;
               }
               } ?>
@@ -205,7 +207,7 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
           style="margin-bottom: 10px" data-date="<?php echo $result['start']; ?>"
           data-loc="<?php echo $locname; ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
-          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo $result['sponsors']; ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'>
+          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo ($result['sponsors'] == '') ? '' : implode('$SEP$', json_decode($result['sponsors'], true)); ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'>
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-3">
@@ -218,11 +220,11 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
-                    <?php echo date("F jS\, g\:i A", $result['start']);
-                    if (date('F j', $result['start']) === date('F j', $result['end'])) {
+                    <?php echo ($result['no_start_time'] === '1') ? date("F jS", $result['start']) : date("F jS\, g\:i A", $result['start']);
+                    if (date('F j', $result['start']) === date('F j', $result['end']) && $result['no_end_time'] === '0') {
                       echo " to ".date('g\:i A', $result['end']);
                     } else {
-                      echo " to ".date('F jS\, g\:i A', $result['end']);
+                      echo ($result['no_end_time'] === '1') ? " to ".date('F jS', $result['end']) : " to ".date('F jS\, g\:i A', $result['end']);
                     } ?> &middot; <?php echo $locname ?> &middot; <?php
                     $array = json_decode($result['sponsors'], true);
                     if (is_array($array)) {
@@ -318,6 +320,7 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
           });
         }
       });
+      var sponsors = <?php echo json_encode($sponsors) . ";\n"; ?>
       $('.event-sponsor-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-sponsor-toggle').removeClass('active');
@@ -327,10 +330,19 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
           $('.iterable-event').each(function() { $(this).css('display', ''); });  
         } else {
           $('.iterable-event').each(function() {
-            if ($(this).data('eventsponsor') != sponsor) {
-              $(this).css('display', 'none');
-            } else {
+            var shown = false;
+            $.each($(this).data('eventsponsor').toString().split('$SEP$'), function( index, value ) {
+              if (value != '') {
+                var this_sponsor = sponsors[value];
+                if (this_sponsor == sponsor) {
+                  shown = true;
+                }
+              }
+            });
+            if (shown) {
               $(this).css('display', '');
+            } else {
+              $(this).css('display', 'none');
             }
           });
         }

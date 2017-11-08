@@ -81,8 +81,8 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
       <h3>Related events</h3>
       <hr>
       <div class="row">
+        <?php foreach ($related_events as $row) { ?>
         <div class="col-sm-3">
-          <?php foreach ($related_events as $row) { ?>
           <div class="card" style="max-width: 100%;">
             <img class="card-img-top" src="<?php echo ($row['img'] == null) ? 'images/default.svg' : 'data:image/jpeg;base64,'.base64_encode($row['img']); ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
@@ -92,14 +92,14 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
               } elseif ($row['no_end_time'] === '1' && $row['no_start_time'] === '0') {
                 echo "<p class='card-text'>Starts ".date('F j g:ia', $row['start'])."</p>";
               } elseif ($row['no_end_time'] === '0' && $row['no_start_time'] === '0') {
-                echo "<p class='card-text'>".date('F j g:ia', $row['start'])." - ".date('F j g:ia', $row['start'])."</p>";
+                echo (date('F j', $row['start']) === date('F j', $row['end'])) ? "<p class='card-text'>".date('F j g:ia', $row['start'])." to ".date('g:ia', $row['start'])."</p>" : "<p class='card-text'>".date('F j g:ia', $row['start'])." to ".date('F j g:ia', $row['start'])."</p>";
               }
               ?>
               <a href="detail?id=<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
-          <?php } ?>
         </div>
+        <?php } ?>
       </div>
       <?php } ?>
       <div style="clear: both;height: 80px"></div>

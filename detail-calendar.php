@@ -57,7 +57,7 @@ else {
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
 $end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, LEFT(description, 2) AS description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -99,7 +99,9 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <style>
       .bg-primary, .bg-dark {color:#fff;}
       .day { height: 200px; overflow: scroll; width: 14.2857%;height: 100%;padding: .75rem;}
-      .day-num { position: relative; right: 30px; margin-bottom: 10px; border-radius: 100%; padding: 12px; }
+      .day-num { position: relative; right: 30px; margin-bottom: 10px; border-radius: 100%; padding: 5px 8px; }
+      .day a { color: #333; text-decoration: underline; margin-bottom: 20px; }
+      table { max-width: 100%; table-layout:fixed; }
     </style>
   </head>
   <body>
@@ -116,22 +118,21 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-8">
+        <div class="col-lg-8 col-md-12">
           <?php define('SMALL', false); require 'calendar.php'; ?>
         </div>
-        <div class="col-sm-4">
+        <div class="col-lg-4 col-md-12">
           <h1 class="text-center">Upcoming Events</h1>
           <div class="list-group">
             <?php
-            foreach ($db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on FROM calendar WHERE approved = 1 AND start >= UNIX_TIMESTAMP() ORDER BY start ASC LIMIT 5") as $row) {
+            foreach ($db->query("SELECT id, loc_id, event, start, `end`, repeat_end, repeat_on FROM calendar WHERE approved = 1 AND start >= UNIX_TIMESTAMP() ORDER BY start ASC LIMIT 7") as $row) {
               // TODO: This query wont get recurring events that are happening past the first occurance
             ?>
             <a href="<?php echo "detail?id={$row['id']}"; ?>" class="list-group-item list-group-item-action flex-column align-items-start">
               <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1"><?php echo $row['event']; ?></h5>
-                <small><?php echo date("F jS\, g\:i A", $row['start']); ?></small>
               </div>
-              <p class="mb-1"><?php echo $row['description'] ?></p>
+              <p class="mb-1"><?php echo date("F jS\, g\:i A", $row['start']); ?></p>
               <small><?php echo $db->query('SELECT location FROM calendar_locs WHERE id = '.intval($row['loc_id']))->fetchColumn(); ?></small>
             </a>
             <?php } ?>
@@ -146,7 +147,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script>
       $(function () {
-        $('[data-toggle="popover"]').popover();
+        $('[data-toggle="popover"]').popover({ trigger: "hover" });
       });
     </script>
   </body>

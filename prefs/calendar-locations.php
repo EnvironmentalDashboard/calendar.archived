@@ -1,4 +1,6 @@
 <?php
+error_reporting(-1);
+ini_set('display_errors', 'On');
 require '../../includes/db.php';
 require 'includes/check-signed-in.php';
 if (!empty($_POST['loc']) &&
@@ -24,7 +26,7 @@ if (!empty($_POST['edit-name'])) {
     $stmt->execute();
   } else {
     $stmt = $db->prepare('UPDATE calendar_locs SET location = ?, address = ? WHERE id = ? ');
-    $stmt->execute(array($_POST['edit-name'], $_POST['address'], $_POST['id']));
+    $stmt->execute(array($_POST['edit-name'], $_POST['edit-address'], $_POST['id']));
   }
 }
 ?>

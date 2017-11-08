@@ -14,7 +14,7 @@ if ($handle) {
       $subject = $explode[1];
       $message = $explode[2];
       if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        mail($email, $subject, "<html><head></head><body>{$message}</body></html>", "MIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\nFrom: Environmental Dashboard <no-reply@environmentaldashboard.org>\r\n");
+        mail($email, $subject, "<html><head></head><body>{$message}</body></html>", "MIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\nFrom: Environmental Dashboard <no-reply@oberlindashboard.org>\r\n");
       }
     }
     fclose($handle);

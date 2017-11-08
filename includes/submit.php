@@ -58,7 +58,7 @@ if (in_array($detectedType, $allowedTypes)) {
   $stmt->bindParam(14, $repeat_end);
   $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
   $stmt->bindParam(15, $cant_pass_by_ref);
-  $cant_pass_by_ref2 = json_encode($_POST['sponsor']);
+  $cant_pass_by_ref2 = isset($_POST['sponsor']) ? json_encode($_POST['sponsor']) : null;
   $stmt->bindParam(16, $cant_pass_by_ref2);
   $stmt->bindParam(17, $no_start_time);
   $stmt->bindParam(18, $no_end_time);

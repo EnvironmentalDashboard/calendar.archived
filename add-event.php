@@ -355,6 +355,9 @@ date_default_timezone_set("America/New_York");
       if (description_len < 50 || description_len > 350) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 50 and 760 charachters.');
+      } else if ($('#event').val().length > 80) {
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Event title must be less than 80 charachters');
       } else if ($('#event').val().length == 0) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title is empty');
