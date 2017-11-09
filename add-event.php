@@ -97,8 +97,8 @@ date_default_timezone_set("America/New_York");
             </div>
             <div class="form-group">
               <label for="description">Event description</label>
-              <textarea name="description" id="description" maxlength="350" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">350 character maximum, 50 character minimum<span id="chars-left"></span></small>
+              <textarea name="description" id="description" maxlength="300" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
+              <small class="text-muted">300 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
               <label for="ex_description">Extended description</label>
@@ -352,9 +352,9 @@ date_default_timezone_set("America/New_York");
     $('#add-event').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
-      if (description_len < 50 || description_len > 350) {
+      if (description_len < 10 || description_len > 300) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event description must be between 50 and 760 charachters.');
+        $('#alert-warning-text').text('Event description must be between 10 and 300 charachters.');
       } else if ($('#event').val().length > 80) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title must be less than 80 charachters');
@@ -396,7 +396,7 @@ date_default_timezone_set("America/New_York");
     });
     $('#description').on('input', function() {
       var left = $(this).val().length;
-      $('#chars-left').text(', ' + (350-left) + ' charachters left');
+      $('#chars-left').text(', ' + (300-left) + ' charachters left');
     });
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);

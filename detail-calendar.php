@@ -98,10 +98,12 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
-      .day { height: 200px; overflow: scroll; width: 14.2857%;height: 100%;padding: .75rem;}
-      .day-num { position: relative; right: 30px; margin-bottom: 10px; border-radius: 100%; padding: 5px 8px; }
+      tr:nth-child(1n+3) { height: 140px; }
+      .day-num { margin-bottom: 10px; border-radius: 100%; display: block; height: 30px; width: 30px; padding: 2px 5px }
       .day a { color: #333; text-decoration: underline; margin-bottom: 20px; }
-      table { max-width: 100%; table-layout:fixed; }
+      table { max-width: 100%; table-layout: fixed; border-collapse: collapse;}
+      .table-bordered {border:4px solid #bdc3c7;}
+      /*table-layout:fixed;*/
     </style>
   </head>
   <body>
@@ -118,25 +120,8 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-sm-12">
           <?php define('SMALL', false); require 'calendar.php'; ?>
-        </div>
-        <div class="col-lg-4 col-md-12">
-          <h1 class="text-center">Upcoming Events</h1>
-          <div class="list-group">
-            <?php
-            foreach ($db->query("SELECT id, loc_id, event, start, `end`, repeat_end, repeat_on FROM calendar WHERE approved = 1 AND start >= UNIX_TIMESTAMP() ORDER BY start ASC LIMIT 7") as $row) {
-              // TODO: This query wont get recurring events that are happening past the first occurance
-            ?>
-            <a href="<?php echo "detail?id={$row['id']}"; ?>" class="list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1"><?php echo $row['event']; ?></h5>
-              </div>
-              <p class="mb-1"><?php echo date("F jS\, g\:i A", $row['start']); ?></p>
-              <small><?php echo $db->query('SELECT location FROM calendar_locs WHERE id = '.intval($row['loc_id']))->fetchColumn(); ?></small>
-            </a>
-            <?php } ?>
-          </div>
         </div>
       </div>
       <div style="clear: both;height: 100px"></div>
@@ -145,10 +130,10 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-    <script>
+    <!-- <script>
       $(function () {
         $('[data-toggle="popover"]').popover({ trigger: "hover" });
       });
-    </script>
+    </script> -->
   </body>
 </html>

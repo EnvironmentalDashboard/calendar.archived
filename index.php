@@ -207,7 +207,8 @@ $number_of_slides = 5;
           style="margin-bottom: 10px" data-date="<?php echo $result['start']; ?>"
           data-loc="<?php echo $locname; ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
-          data-eventloc='<?php echo $result['loc_id'] ?>' data-eventsponsor='<?php echo ($result['sponsors'] == '') ? '' : implode('$SEP$', json_decode($result['sponsors'], true)); ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'>
+          data-eventloc='<?php echo $result['loc_id'] ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'
+          data-eventsponsor='<?php $tmp = json_decode($result['sponsors'], true); echo (is_array($tmp)) ? implode('$SEP$', $tmp) : ''; ?>'>
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-3">

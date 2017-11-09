@@ -3,7 +3,7 @@ require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
 $id = (isset($_GET['id'])) ? $_GET['id'] : 25;
-$stmt = $db->prepare('SELECT loc_id, event, description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
@@ -74,8 +74,8 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
       </div>
       <div style="clear: both;height: 110px"></div>
       <?php
-      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? ORDER BY start ASC LIMIT 4');
-      $stmt->execute(array($event['event_type_id']));
+      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? ORDER BY start ASC LIMIT 4');
+      $stmt->execute(array($event['event_type_id'], $event['id']));
       $related_events = $stmt->fetchAll();
       if (count($related_events) > 0) { ?>
       <h3>Related events</h3>

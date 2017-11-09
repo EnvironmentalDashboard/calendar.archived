@@ -136,11 +136,11 @@ if ($bg == "") {
   </head>
   <body>
     <div class="overlay"></div>
-    <?php if ($extra_img !== null) {  ?><img style="top:20%" src="<?php echo $extra_img; ?>" alt="" class="animated slideInDown"><?php } ?>
+    <?php if ($extra_img !== null) {  ?><img style="top:20%" src="<?php echo $extra_img; ?>" alt="" class="animated fadeIn"><?php } ?>
     <div class="content">
-      <h1 class="title animated slideInDown"><?php echo $result['event']; ?></h1>
+      <h1 class="title animated fadeIn"><?php echo $result['event']; ?></h1>
       <div style="max-width: <?php echo ($extra_img !== null) ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
-        <p class="p animated slideInDown" style="font-size: 3.5vw;color: #badbf2;">
+        <p class="p animated fadeIn" style="font-size: 3.5vw;color: #badbf2;">
           <?php
           echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
           if ($result['no_start_time'] != '0') {
@@ -153,7 +153,7 @@ if ($bg == "") {
           }
           echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
         </p>
-        <p class="p description animated slideInDown">
+        <p class="p description animated fadeIn">
           <?php echo $result['description']; ?>
         </p>
         <!-- <div style="clear:both;height:7vh"></div> -->

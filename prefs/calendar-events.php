@@ -145,7 +145,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 }
                 echo "</select></td>";
                 echo "<td><select name='loc_id' class='custom-select'>";
-                foreach ($event_types as $id => $loc) {
+                foreach ($event_locs as $id => $loc) {
                   if ($id == $event['loc_id']) {
                     echo "<option selected value='{$id}'>{$loc}</option>";
                   } else {
