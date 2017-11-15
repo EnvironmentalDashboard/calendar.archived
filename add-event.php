@@ -33,7 +33,10 @@ date_default_timezone_set("America/New_York");
           <h4 class="text-muted">Add Event</h4>
           <!-- <img src="http://104.131.103.232/oberlin/prefs/images/env_logo.png" class="img-fluid" style="margin-bottom:20px"> -->
           <h3 style="margin-top: 20px">Upload information</h3>
-          <p><a href="index">&larr; Go Back</a></p>
+          <div class="d-flex w-100 justify-content-between">
+            <p><a href="index">&larr; Go Back</a></p>
+            <p><a href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Users guide</a></p>
+          </div>
           <hr>
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">
