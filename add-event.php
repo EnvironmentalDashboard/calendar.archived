@@ -35,7 +35,7 @@ date_default_timezone_set("America/New_York");
           <h3 style="margin-top: 20px">Upload information</h3>
           <div class="d-flex w-100 justify-content-between">
             <p><a href="index">&larr; Go Back</a></p>
-            <p><a href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Users guide</a></p>
+            <p><a class="btn btn-outline-primary" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           </div>
           <hr>
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">

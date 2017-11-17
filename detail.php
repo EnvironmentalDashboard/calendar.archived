@@ -59,7 +59,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
           <?php if ($extra_img !== null) {
             echo "<img src='{$extra_img}' class='img-fluid'>";
           } else {
-            echo "<p>No picture for this event</p>";
+            echo "<img src='images/default.svg' class='img-fluid'>";
           }
           if ($locaddr != '') {
             echo '<iframe
@@ -74,7 +74,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
       </div>
       <div style="clear: both;height: 110px"></div>
       <?php
-      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? ORDER BY start ASC LIMIT 4');
+      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? AND approved = 1 ORDER BY start ASC LIMIT 4');
       $stmt->execute(array($event['event_type_id'], $event['id']));
       $related_events = $stmt->fetchAll();
       if (count($related_events) > 0) { ?>
