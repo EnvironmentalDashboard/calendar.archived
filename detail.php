@@ -3,7 +3,7 @@ require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
 $id = (isset($_GET['id'])) ? $_GET['id'] : 25;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
@@ -42,6 +42,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
           <h1><?php echo $event['event']; ?></h1>
           <hr>
           <p><?php echo $event['description']; ?></p>
+          <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
           <p><?php echo date('D\. F j \| g:ia\-', $event['start']) . date('g:ia', $event['end']) . ' | ' . $locname; ?></p>
           <p>
           <?php if ($event['email'] != '' && $event['phone'] != '' && $event['phone'] != 0 && $event['website'] != '') { ?>For more information, contact<br><?php } ?>
