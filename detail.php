@@ -58,9 +58,9 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
           <p><?php echo formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
           <p>
-          <?php if ($event['email'] != '' && $event['phone'] != '' && $event['phone'] != 0 && $event['website'] != '') { ?>For more information, contact<br><?php } ?>
+          <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?>For more information, contact<br><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
-          <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : "{$event['phone']}<br>"; ?>
+          <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : '('.substr($event['phone'], 0, 3).') '.substr($event['phone'], 3, 3).'-'.substr($event['phone'],6) . "<br>"; ?>
           <?php echo ($event['website'] == '') ? '' : "{$event['website']}<br>"; ?>
           </p>
           <p>
