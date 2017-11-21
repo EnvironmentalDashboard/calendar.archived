@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT event, volunteer, start, `end`, description, loc_id, img, no_start_time, no_end_time FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT event, start, `end`, description, loc_id, img, no_start_time, no_end_time, event_type_id FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 $result = $stmt->fetch();
 $stmt = $db->prepare('SELECT `location`, img FROM calendar_locs WHERE id = ? LIMIT 1');
@@ -162,7 +162,7 @@ if ($bg == "") {
     <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
     <img src="images/findmoreAT.png" alt="Community Calendar" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
     <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
-    <?php if ($result['volunteer']) { ?>
+    <?php if ($result['event_type_id'] === '1') { ?>
     <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
     <?php } ?>
   </body>

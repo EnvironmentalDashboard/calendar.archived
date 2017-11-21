@@ -17,7 +17,7 @@ if (!empty($_POST['submit'])) {
   }
   if (isset($_FILES['edit-img']) && file_exists($_FILES['edit-img']['tmp_name']) && is_uploaded_file($_FILES['edit-img']['tmp_name'])) {
     $fp = fopen($_FILES['edit-img']['tmp_name'], 'rb'); // read binary
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ?, img = ? WHERE id = ?');
+    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ?, img = ? WHERE id = ?');
     $stmt->bindParam(1, $_POST['event']);
     $stmt->bindParam(2, strtotime($_POST['start']));
     $stmt->bindParam(3, strtotime($_POST['end']));
@@ -26,23 +26,22 @@ if (!empty($_POST['submit'])) {
     $stmt->bindParam(6, $_POST['event_type_id']);
     $stmt->bindParam(7, $_POST['loc_id']);
     $stmt->bindParam(8, implode(',', $_POST['screen_ids']));
-    $stmt->bindParam(9, (strtolower($_POST['volunteer']) === 'yes') ? 1 : 0);
-    $stmt->bindParam(10, $approved);
-    $stmt->bindParam(11, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0);
-    $stmt->bindParam(12, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0);
-    $stmt->bindParam(13, $_POST['contact_email']);
-    $stmt->bindParam(14, $_POST['email']);
-    $stmt->bindParam(15, $_POST['phone']);
-    $stmt->bindParam(16, $_POST['website']);
-    $stmt->bindParam(17, strtotime($_POST['repeat_end']));
-    $stmt->bindParam(18, (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']));
-    $stmt->bindParam(19, $_POST['sponsors']);
-    $stmt->bindParam(20, $fp, PDO::PARAM_LOB);
-    $stmt->bindParam(21, $_POST['id']);
+    $stmt->bindParam(9, $approved);
+    $stmt->bindParam(10, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0);
+    $stmt->bindParam(11, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0);
+    $stmt->bindParam(12, $_POST['contact_email']);
+    $stmt->bindParam(13, $_POST['email']);
+    $stmt->bindParam(14, $_POST['phone']);
+    $stmt->bindParam(15, $_POST['website']);
+    $stmt->bindParam(16, strtotime($_POST['repeat_end']));
+    $stmt->bindParam(17, (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']));
+    $stmt->bindParam(18, $_POST['sponsors']);
+    $stmt->bindParam(19, $fp, PDO::PARAM_LOB);
+    $stmt->bindParam(20, $_POST['id']);
     $stmt->execute();
   } else {
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, volunteer = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ? WHERE id = ?');
-    $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), (strtolower($_POST['volunteer']) === 'yes') ? 1 : 0, $approved, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsors'], $_POST['id']));
+    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ? WHERE id = ?');
+    $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $approved, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsors'], $_POST['id']));
   }
 }
 
@@ -111,7 +110,6 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 <th>Event location</th>
                 <th>Screens shown on</th>
                 <th>Image</th>
-                <th>Volunteer</th>
                 <th>Approved</th>
                 <th>Indefinite start time</th>
                 <th>Indefinite end time</th>
@@ -176,7 +174,6 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                   echo "<td style='max-width:200px'><img class='img-fluid' src='data:image/jpeg;base64,".base64_encode($event['img'])."' />";
                 }
                 echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
-                echo ($event['volunteer'] === '0') ? "<td><input type='text' name='volunteer' value='No' class='form-control'></td>" : "<td><input type='text' name='volunteer' value='Yes' class='form-control'></td>";
                 if ($event['approved'] === null) {
                   echo "<td><input type='text' name='approved' value='null' class='form-control'></td>";
                 } elseif ($event['approved'] === '1') {
