@@ -28,6 +28,19 @@ if ($bg == "") {
   echo "There was an error when uploading the image for this event\n";
   exit();
 }
+
+function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
+  $same_day = date('jny', $start_time) === date('jny', $end_time);
+  if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
+    return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
+  } elseif (!$no_start_time && !$no_end_time) {
+    return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
+  } elseif ($no_start_time) {
+    return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
+  } else {
+    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -142,16 +155,8 @@ if ($bg == "") {
       <div style="max-width: <?php echo ($extra_img !== null) ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
         <p class="p animated fadeIn" style="font-size: 3.5vw;color: #badbf2;">
           <?php
-          echo '<span style="white-space: nowrap;">' . date('D\. F j \|', $result['start']) . '</span> ';
-          if ($result['no_start_time'] != '0') {
-            # code...
-          } elseif ($result['no_end_time'] != '0') {
-            # code...
-          }
-          else {
-            echo '<span style="white-space: nowrap;">' . date('g:ia\-', $result['start']).date('g:ia \|', $result['end']) . '</span> ';
-          }
-          echo '<span style="white-space: nowrap;">'.$loc.'</span>'; ?>
+          echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span> ';
+          echo '<span style="white-space: nowrap;">| '.$loc.'</span>'; ?>
         </p>
         <p class="p description animated fadeIn">
           <?php echo $result['description']; ?>

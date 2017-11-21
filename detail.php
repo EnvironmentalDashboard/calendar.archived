@@ -3,7 +3,7 @@ require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
 $id = (isset($_GET['id'])) ? $_GET['id'] : 25;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
@@ -16,6 +16,19 @@ $locname = $loc['location'];
 $locaddr = $loc['address'];
 $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
 $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+
+function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
+  $same_day = date('jny', $start_time) === date('jny', $end_time);
+  if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
+    return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
+  } elseif (!$no_start_time && !$no_end_time) {
+    return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
+  } elseif ($no_start_time) {
+    return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
+  } else {
+    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +56,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
           <hr>
           <p><?php echo $event['description']; ?></p>
           <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
-          <p><?php echo date('D\. F j \| g:ia\-', $event['start']) . date('g:ia', $event['end']) . ' | ' . $locname; ?></p>
+          <p><?php echo formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
           <p>
           <?php if ($event['email'] != '' && $event['phone'] != '' && $event['phone'] != 0 && $event['website'] != '') { ?>For more information, contact<br><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
@@ -88,14 +101,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
             <img class="card-img-top" src="<?php echo ($row['img'] == null) ? 'images/default.svg' : 'data:image/jpeg;base64,'.base64_encode($row['img']); ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
-              <?php if ($row['no_end_time'] === '0' && $row['no_start_time'] === '1') {
-                echo "<p class='card-text'>Ends ".date('F j g:ia', $row['end'])."</p>";
-              } elseif ($row['no_end_time'] === '1' && $row['no_start_time'] === '0') {
-                echo "<p class='card-text'>Starts ".date('F j g:ia', $row['start'])."</p>";
-              } elseif ($row['no_end_time'] === '0' && $row['no_start_time'] === '0') {
-                echo (date('F j', $row['start']) === date('F j', $row['end'])) ? "<p class='card-text'>".date('F j g:ia', $row['start'])." to ".date('g:ia', $row['start'])."</p>" : "<p class='card-text'>".date('F j g:ia', $row['start'])." to ".date('F j g:ia', $row['start'])."</p>";
-              }
-              ?>
+              <?php echo "<p class='card-text'>" . formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
               <a href="detail?id=<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
             </div>
           </div>

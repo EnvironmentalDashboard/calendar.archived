@@ -110,6 +110,19 @@ foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time
   }
 }
 $number_of_slides = 5;
+
+function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
+  $same_day = date('jny', $start_time) === date('jny', $end_time);
+  if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
+    return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
+  } elseif (!$no_start_time && !$no_end_time) {
+    return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
+  } elseif ($no_start_time) {
+    return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
+  } else {
+    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -221,12 +234,7 @@ $number_of_slides = 5;
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
-                    <?php echo ($result['no_start_time'] === '1') ? date("F jS", $result['start']) : date("F jS\, g\:i A", $result['start']);
-                    if (date('F j', $result['start']) === date('F j', $result['end']) && $result['no_end_time'] === '0') {
-                      echo " to ".date('g\:i A', $result['end']);
-                    } else {
-                      echo ($result['no_end_time'] === '1') ? " to ".date('F jS', $result['end']) : " to ".date('F jS\, g\:i A', $result['end']);
-                    } ?> &middot; <?php echo $locname ?> &middot; <?php
+                    <?php echo formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']); ?> &middot; <?php echo $locname ?> &middot; <?php
                     $array = json_decode($result['sponsors'], true);
                     if (is_array($array)) {
                       $count = count($array);
