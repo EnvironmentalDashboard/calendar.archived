@@ -32,9 +32,9 @@ date_default_timezone_set("America/New_York");
           <h1>Community Events Calendar</h1>
           <h4 class="text-muted">Add Event</h4>
           <!-- <img src="http://104.131.103.232/oberlin/prefs/images/env_logo.png" class="img-fluid" style="margin-bottom:20px"> -->
-          <h3 style="margin-top: 20px">Upload information</h3>
+          <!-- <h3 style="margin-top: 20px">Upload information</h3> -->
           <div class="d-flex w-100 justify-content-between">
-            <p><a href="index">&larr; Go Back</a></p>
+            <p><a href="index" class="btn btn-outline-primary">&larr; Go Back</a></p>
             <p><a class="btn btn-outline-primary" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           </div>
           <hr>
@@ -290,9 +290,14 @@ date_default_timezone_set("America/New_York");
       if (location != null) {
         $.get("includes/add-event-location.php", {location: location}, function(resp) {
           if (resp) {
-            $('#loc').append('<option value='+resp+'>'+location+'</option>');
-            console.log(resp);
-            $('#loc').val(resp);
+            var arr = resp.split(':');
+            if (arr[0] == 'false') {
+              $('#loc').val(arr[1]);
+              alert('That event location already exists');
+            } else {
+              $('#loc').append('<option value='+arr[1]+'>'+location+'</option>');
+              $('#loc').val(arr[1]);
+            }
           } else {
             alert('Failed to create event location.');
           }   
