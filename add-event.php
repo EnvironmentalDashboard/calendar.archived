@@ -389,15 +389,18 @@ date_default_timezone_set("America/New_York");
           contentType: false,
           type: 'POST',
           success: function(resp) {
+            console.log(resp);
             if (resp == 'Your event was successfully uploaded and will be reviewed') {
               $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 10 seconds.');
               $('#new-event').val('Success!');
-              setTimeout(function(){ document.location.href = "index"; }, 3000);
-              console.log(resp);
+              setTimeout(function(){ document.location.href = "index"; }, 10000);
             } else {
               $('#alert-success-text').text(resp);
               $('#new-event').val('Submit event for review');
             }
+          },
+          failure: function(resp) {
+            console.log(resp);
           }
         });
       }

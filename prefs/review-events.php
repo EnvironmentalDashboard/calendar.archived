@@ -5,7 +5,6 @@ require '../../includes/db.php';
 require 'includes/check-signed-in.php';
 date_default_timezone_set("America/New_York");
 if (isset($_POST['review-events'])) {
-  $handle = fopen('/var/www/html/oberlin/calendar/email_buffer.txt', 'a');
   foreach ($_POST as $key => $value) {
     $approved = ($value === 'approve') ? 1 : 0;
     $stmt = $db->prepare('UPDATE calendar SET approved = ? WHERE id = ? LIMIT 1');
@@ -15,18 +14,16 @@ if (isset($_POST['review-events'])) {
     $contact_email = $stmt->fetchColumn();
     if ($contact_email != '') {
       if ($approved) {
-        $message = "Your event was approved, and can be viewed <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}'>here</a>.";
+        $html_message = "<p>Your event was approved, and can be viewed <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}'>here</a>.</p>";
+        $txt_message = "Your event was approved.";
       } else {
-        $message = "Your event was rejected.";
+        $html_message = "<p>Your event was rejected.</p>";
+        $txt_message = "Your event was rejected.";
       }
-      if ($handle) {
-        fwrite($handle, "{$contact_email}\$SEP\$Environmental Dashboard Calendar Submission\$SEP\${$message}\n");
-      } else {
-        die('Error opening email_buffer.txt');
-      }
+      $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
+      $stmt->execute(array($contact_email, 'Environmental Dashboard Calendar Submission', $txt_message, $html_message));
     }
   }
-  fclose($handle);
 }
 if (isset($_POST['edit-event'])) {
   $date = strtotime($_POST['date']);
