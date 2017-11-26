@@ -20,7 +20,7 @@ date_default_timezone_set("America/New_York");
   <body style="padding-top:50px">
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-sm-6">
+        <div class="col-sm-7">
           <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
@@ -29,20 +29,16 @@ date_default_timezone_set("America/New_York");
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
           </div>
-          <h1>Community Events Calendar</h1>
-          <h4 class="text-muted">Add Event</h4>
-          <!-- <img src="http://104.131.103.232/oberlin/prefs/images/env_logo.png" class="img-fluid" style="margin-bottom:20px"> -->
-          <!-- <h3 style="margin-top: 20px">Upload information</h3> -->
-          <div class="d-flex w-100 justify-content-between">
-            <p><a href="index" class="btn btn-outline-primary">&larr; Go Back</a></p>
-            <p><a class="btn btn-outline-primary" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
-          </div>
+          <h1>Add Event to Oberlin Community Calendar</h1>
+          <p><a href="index" class="btn btn-outline-primary btn-sm">&larr; Go Back</a></p>
+          <p>Complete this simple form to add an event or volunteer opportunity to the community calendar.  Once approved it will appear on the online calendar and on selected screens in town.</p>
+          <p><a class="btn btn-outline-primary btn-sm" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           <hr>
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">
               <label for="contact_email">Your email</label>
               <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : ''; ?>">
-              <p><small class="text-muted">Optionally enter an email to be notified when the event is approved or rejected.</small></p>
+              <p><small class="text-muted">Enter your email to be notified when the event is approved or rejected.</small></p>
             </div>
             <div class="form-group">
               <label for="event">Event title</label>
@@ -55,7 +51,8 @@ date_default_timezone_set("America/New_York");
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['sponsor']; ?></option>
                 <?php } ?>
               </select>
-              <a href="#" id="add-event-sponsor">Add a new sponsor</a>
+              <p><small class="text-muted">Please select a location from this list. Do not add a new sponsor unless the organization is not already in this (look for alternative names such as acronyms).</small></p>
+              <p><a href="#" id="add-event-sponsor">Add a new sponsor</a></p>
             </div>
             <div class="form-group">
               <label for="event_type">Event type</label>
@@ -65,6 +62,7 @@ date_default_timezone_set("America/New_York");
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['event_type']; ?></option>
                 <?php } ?>
               </select>
+              <p><small class="text-muted">Select the type that most closely matches. Events and volunteer opportunities MUST be consistent with policies outlined in Guide &amp; Use Policy to be considered for posting.</small></p>
               <!-- <a href="#" id="add-event-type">Add a new event type</a> -->
             </div>
             <div class="form-group row">
@@ -90,16 +88,17 @@ date_default_timezone_set("America/New_York");
               </div>
             </div>
             <div class="form-group">
-              <label for="loc">Event location</label>
+              <label for="loc">Building or public space in which event will occur</label>
               <select class="form-control" id="loc" name="loc">
                 <?php foreach ($db->query('SELECT id, location FROM calendar_locs ORDER BY location ASC') as $row) { ?>
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['location']; ?></option>
                 <?php } ?>
               </select>
-              <a href="#" id="add-event-location">Add a new event location</a>
+              <p><small class="text-muted">Please select a location from this list. Do not add a new building or public space unless the venue is not listed (look for alternative names such as acronyms). Do not add rooms and numbers (see next box).</small></p>
+              <p><a href="#" id="add-event-location">Add a new event location</a></p>
             </div>
             <div class="form-group">
-              <label for="description">Event description</label>
+              <label for="description">Short event description</label>
               <textarea name="description" id="description" maxlength="300" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
               <small class="text-muted">300 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
@@ -115,7 +114,7 @@ date_default_timezone_set("America/New_York");
                 <span class="custom-file-control"></span>
               </label>
               <p><small class="text-success" id="filename"></small></p>
-              <p><small class="text-danger" id="img-help">We encourage you to upload an image to be shown with the poster art. Please include minimum text on your art and don't include posters.</small></p>
+              <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. Please do NOT upload an image of a poster that contains text information describing the event -- it will be too small to read and will be redundant to the event description.</small></p>
             </div>
             <!-- <div class="form-group">
               <label for="repeat_every">Repeat</label>
@@ -188,6 +187,7 @@ date_default_timezone_set("America/New_York");
             </div>
             <div class="custom-controls-stacked">
               <p class="m-b-0">Select the screens the poster will be shown on</p>
+              <p><small class='text-muted'>As described in the <a target='_blank' href='https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit'>Guide &amp; Use Policy</a>, events that are only of interest to visitors to a particular screen should be posted only on that screen.  Events of broad interest to the community should be posted on multiple screens.</small></p>
               <?php
               echo "<p style='height:15px'><span style='font-weight:bold'>Public locations</span>
               <label class=\"custom-control custom-checkbox\">
@@ -214,8 +214,6 @@ date_default_timezone_set("America/New_York");
                 <span class=\"custom-control-description\">Check all</span>
                 </label>
                 </p>
-                <p class='text-danger' style='position:relative;bottom:10px;margin-bottom:0px'>Please don't select schools unless with permission</p>
-
                 <div id='school-locs'>";
                 foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name LIKE \'%School%\' ORDER BY name ASC') as $row) {
                   echo "<label class=\"custom-control custom-checkbox\" style='display:block'>
@@ -224,20 +222,21 @@ date_default_timezone_set("America/New_York");
                         <span class=\"custom-control-description\">{$row['name']}</span>
                         </label>\n";
                 }
-                echo "</div>";
+                echo "</div><p class='text-muted'>Please do not select schools unless you have with permission from school administrators.</p>";
                 ?>
             </div>
             <p class="form-group">Provide contact details to be associated with event:</p>
             <div class="form-group">
-              <label for="email" class="sr-only">Your email</label>
+              <label for="email" class="sr-only">Email of contact person for the event</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="Your email" <?php echo (!empty($_POST['email'])) ? $_POST['email'] : ''; ?>>
+              <p><small class="text-muted">This is the email of the person who interested residents should contact for additional information about the event. It may or may not be the same as the email of the person completing this form.</small></p>
             </div>
             <div class="form-group">
-              <label for="phone" class="sr-only">Your phone number</label>
+              <label for="phone" class="sr-only">Phone number of contact person for the event</label>
               <input type="text" class="form-control" id="phone" name="phone" placeholder="Your phone number" <?php echo (!empty($_POST['phone'])) ? $_POST['phone'] : ''; ?>>
             </div>
             <div class="form-group">
-              <label for="website" class="sr-only">Your website</label>
+              <label for="website" class="sr-only">Website of organization sponsoring event</label>
               <input type="text" class="form-control" id="website" name="website" placeholder="Your website URL" <?php echo (!empty($_POST['website'])) ? $_POST['website'] : ''; ?>>
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
@@ -245,9 +244,9 @@ date_default_timezone_set("America/New_York");
           </form>
         </div>
       </div>
+      <div style="height: 130px;clear: both;"></div>
+      <?php include 'includes/footer.php'; ?>
     </div>
-    <div style="height: 130px;clear: both;"></div>
-    <?php include 'includes/footer.php'; ?>
   </body>
   <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>

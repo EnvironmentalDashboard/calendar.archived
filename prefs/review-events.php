@@ -14,8 +14,8 @@ if (isset($_POST['review-events'])) {
     $contact_email = $stmt->fetchColumn();
     if ($contact_email != '') {
       if ($approved) {
-        $html_message = "<p>Your event was approved, and can be viewed <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}'>here</a>.</p>";
-        $txt_message = "Your event was approved.";
+        $html_message = "<h1>Your event is live</h1><p>Your event was approved, and can be viewed <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>here</a>.</p>";
+        $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}";
       } else {
         $html_message = "<p>Your event was rejected.</p>";
         $txt_message = "Your event was rejected.";
