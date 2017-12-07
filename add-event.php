@@ -37,12 +37,12 @@ date_default_timezone_set("America/New_York");
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">
               <label for="contact_email">Your email</label>
-              <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : ''; ?>">
+              <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : ''; ?>" maxlength="255">
               <p><small class="text-muted">Enter your email to be notified when the event is approved or rejected.</small></p>
             </div>
             <div class="form-group">
               <label for="event">Event title</label>
-              <input type="text" class="form-control" id="event" name="event" value="<?php echo (!empty($_POST['event'])) ? $_POST['event'] : ''; ?>">
+              <input type="text" class="form-control" id="event" name="event" value="<?php echo (!empty($_POST['event'])) ? $_POST['event'] : ''; ?>" maxlength="255">
             </div>
             <div class="form-group">
               <label for="sponsor">Who is organizing/sponsoring this event?</label>
@@ -98,9 +98,19 @@ date_default_timezone_set("America/New_York");
               <p><a href="#" id="add-event-location">Add a new event location</a></p>
             </div>
             <div class="form-group">
+              <label for="room_num">Room or room number</label>
+              <input type="text" class="form-control" id="room_num" name="room_num" value="<?php echo (!empty($_POST['room_num'])) ? $_POST['room_num'] : ''; ?>">
+              <p><small class="text-muted">Leave this box blank unless a room and number are necessary. Do not repeat the building name.  For example, if an event is in the meeting room in the Oberlin Public Library, then simply enter “Meeting Room” here. If it is in King hall 306, write &ldquo;306&rdquo; here.</small></p>
+            </div>
+            <div class="form-group">
+              <label for="street_addr">Street address</label>
+              <input type="text" class="form-control" id="street_addr" name="street_addr" value="<?php echo (!empty($_POST['street_addr'])) ? $_POST['street_addr'] : ''; ?>">
+              <p><small class="text-muted">Leave this box blank for all locations that are already listed under &ldquo;Building and Location&lrquo; &mdash; these addresses are already recorded. Include only for new locations added. Street addresses will only appear in online version of calendar.</small></p>
+            </div>
+            <div class="form-group">
               <label for="description">Short event description</label>
-              <textarea name="description" id="description" maxlength="300" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
-              <small class="text-muted">300 character maximum, 10 character minimum<span id="chars-left"></span></small>
+              <textarea name="description" id="description" maxlength="200" class="form-control"><?php echo (!empty($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
+              <small class="text-muted">200 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
               <label for="ex_description">Extended description</label>
@@ -359,9 +369,9 @@ date_default_timezone_set("America/New_York");
     $('#add-event').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
-      if (description_len < 10 || description_len > 300) {
+      if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event description must be between 10 and 300 charachters.');
+        $('#alert-warning-text').text('Event description must be between 10 and 200 charachters.');
       } else if ($('#event').val().length > 80) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title must be less than 80 charachters');
@@ -390,9 +400,9 @@ date_default_timezone_set("America/New_York");
           success: function(resp) {
             console.log(resp);
             if (resp == 'Your event was successfully uploaded and will be reviewed') {
-              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 10 seconds.');
+              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 3 seconds.');
               $('#new-event').val('Success!');
-              setTimeout(function(){ document.location.href = "index"; }, 10000);
+              setTimeout(function(){ document.location.href = "index"; }, 3000);
             } else {
               $('#alert-success-text').text(resp);
               $('#new-event').val('Submit event for review');
@@ -406,7 +416,7 @@ date_default_timezone_set("America/New_York");
     });
     $('#description').on('input', function() {
       var left = $(this).val().length;
-      $('#chars-left').text(', ' + (300-left) + ' charachters left');
+      $('#chars-left').text(', ' + (200-left) + ' charachters left');
     });
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);

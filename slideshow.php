@@ -32,23 +32,41 @@ $stmt->execute(array($time, $next30days));
         left: 0;
         border: 0;
       }
+      .hidden { display: none }
     </style>
   </head>
   <body>
-    <iframe id="iframe"></iframe>
+    <iframe id="iframe1" onload="hide2(this)"></iframe>
+    <iframe id="iframe2" class="hidden" onload="hide1(this)"></iframe>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>
       var event_ids = <?php echo json_encode(array_column($stmt->fetchAll(), 'id')); ?>;
       var len = event_ids.length;
-      var iframe = $('#iframe');
+      var iframe1 = $('#iframe1');
+      var iframe2 = $('#iframe2');
+      var current_iframe = 1;
       var i = 0;
-      iframe.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+      iframe1.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
       setInterval(function() {
         if (len === i) {
           i = 0;
         }
-        iframe.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+        if (current_iframe === 1) {
+          current_iframe = 2;
+          iframe2.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+        } else {
+          current_iframe = 1;
+          iframe1.attr('src', 'https://oberlindashboard.org/oberlin/calendar/slide.php?id=' + event_ids[i++]);
+        }
       }, <?php echo isset($_GET['t']) ? $_GET['t'] : 15 ?> * 1000);
+      function hide1() {
+        iframe1.attr('class', 'hidden');
+        iframe2.attr('class', '');
+      }
+      function hide2() {
+        iframe2.attr('class', 'hidden');
+        iframe1.attr('class', '');
+      }
     </script>
   </body>
 </html>
