@@ -56,7 +56,7 @@ else {
 // $start_of_month = strtotime($month . "/01/" . $year);
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
-$end_time = $start_time + 2592000;
+$end_time = $start_time + 15770000;
 $stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
@@ -110,8 +110,8 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
-          <!-- <h1>Community Events Calendar</h1> -->
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
+          <h1>Oberlin Community Calendar</h1>
+          <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
         </div>
       </div>
       <div class="row">

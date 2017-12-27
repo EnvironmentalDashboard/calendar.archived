@@ -1,6 +1,6 @@
 <?php
 /** To be included by ~/calendar/index.php */
-echo "<table class=\"calendar table table-bordered text-center\">";
+echo "<table class=\"calendar table text-center\">";
 echo "<tr>
         <th colspan='7' class='text-center'><a style='color:#333;text-decoration:none;float:left;' href=\"?month=".$prev_month."&year=".$prev_year."\">&#9664;</a>".$title." ".$year."<a href=\"?month=".$next_month."&year=".$next_year."\" style='color:#333;text-decoration:none;float:right'>&#9654;</a></th>
       </tr>";

@@ -45,8 +45,8 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
-          <!-- <h1>Community Events Calendar</h1> -->
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
+          <h1>Oberlin Community Calendar</h1>
+          <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
           <p><a href='#' onclick="window.history.back()">&larr; Go Back</a></p>
         </div>
       </div>

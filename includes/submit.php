@@ -50,8 +50,10 @@ else {
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
     // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
+    shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
     $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-    $stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $fp2 = fopen('tmp.jpeg', 'rb'); 
+    $stmt = $db->prepare('INSERT INTO calendar (event, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, thumbnail, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->bindParam(1, $_POST['event']);
     $stmt->bindParam(2, $date);
     $stmt->bindParam(3, $date2);
@@ -62,19 +64,20 @@ else {
     $implode = implode(',', $_POST['screen_loc']);
     $stmt->bindParam(8, $implode);
     $stmt->bindParam(9, $fp, PDO::PARAM_LOB);
-    $stmt->bindParam(10, $_POST['contact_email']);
-    $stmt->bindParam(11, $_POST['email']);
+    $stmt->bindParam(10, $fp2, PDO::PARAM_LOB);
+    $stmt->bindParam(11, $_POST['contact_email']);
+    $stmt->bindParam(12, $_POST['email']);
     $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
-    $stmt->bindParam(12, $phone);
-    $stmt->bindParam(13, $_POST['website']);
-    $stmt->bindParam(14, $repeat_end);
+    $stmt->bindParam(13, $phone);
+    $stmt->bindParam(14, $_POST['website']);
+    $stmt->bindParam(15, $repeat_end);
     $cant_pass_by_ref = (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null;
-    $stmt->bindParam(15, $cant_pass_by_ref);
+    $stmt->bindParam(16, $cant_pass_by_ref);
     $cant_pass_by_ref2 = isset($_POST['sponsor']) ? json_encode($_POST['sponsor']) : null;
-    $stmt->bindParam(16, $cant_pass_by_ref2);
-    $stmt->bindParam(17, $no_start_time);
-    $stmt->bindParam(18, $no_end_time);
-    $stmt->bindParam(19, $_POST['room_num']);
+    $stmt->bindParam(17, $cant_pass_by_ref2);
+    $stmt->bindParam(18, $no_start_time);
+    $stmt->bindParam(19, $no_end_time);
+    $stmt->bindParam(20, $_POST['room_num']);
     $stmt->execute();
     $success = 'Your event was successfully uploaded and will be reviewed';
     save_emails($db, $_POST['event'], $db->lastInsertId());

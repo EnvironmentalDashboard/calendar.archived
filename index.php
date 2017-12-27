@@ -56,8 +56,9 @@ else {
 // $start_of_month = strtotime($month . "/01/" . $year);
 // $end_of_month = strtotime($next_month . "/01/" . $next_year);
 $start_time = time();
-$end_time = $start_time + 2592000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id, no_start_time, no_end_time FROM calendar
+// $end_time = $start_time + 2592000;
+$end_time = $start_time + 15770000;
+$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time FROM calendar
   WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
   AND approved = 1 ORDER BY `start` ASC');
 $stmt->execute(array($start_time, $end_time, $start_time, $end_time));
@@ -132,21 +133,23 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.css?<?php echo time(); ?>">
     <style>
       @media (max-width: 950px) {
         .hidden-sm-down {display: none;}
       }
       .bg-primary, .bg-dark {color:#fff;}
+      td.day {border: 1px solid #eee}
     </style>
   </head>
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
-          <!-- <h1>Community Events Calendar</h1> -->
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
+        <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
+          <h1>Oberlin Community Calendar</h1>
+          <h6><?php echo date('l, F j, Y') ?></h6>
+          <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
         </div>
       </div>
       <div class="row">
@@ -169,10 +172,10 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="https://oberlindashboard.org/oberlin/calendar/detail?id=<?php echo $result['id'] ?>">
-                      <?php if ($result['img'] === null) {
+                      <?php if ($result['thumbnail'] === null) {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else { ?>
-                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
+                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
                       <?php } ?>
                     </a>
                   </div>
@@ -217,7 +220,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
             $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
             ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
-          style="margin-bottom: 10px" data-date="<?php echo $result['start']; ?>"
+          style="margin-bottom: 20px" data-date="<?php echo $result['start']; ?>"
           data-loc="<?php echo $locname; ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
           data-eventloc='<?php echo $result['loc_id'] ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'
@@ -225,10 +228,10 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-3">
-                  <?php if ($result['img'] === null) {
+                  <?php if ($result['thumbnail'] === null) {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { ?>
-                    <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['img']) ?>">
+                    <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
                     <?php } ?>
                 </div>
                 <div class="col-sm-9">
@@ -256,7 +259,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <?php } ?>
         </div>
         <div class="col-sm-4">
-          <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
+          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
           <?php define('SMALL', true); require 'calendar.php'; ?>
           <p><a class="btn btn-sm btn-outline-primary" href="detail-calendar">View full calendar</a></p>
