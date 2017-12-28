@@ -9,13 +9,46 @@ if (isset($_POST['review-events'])) {
     $approved = ($value === 'approve') ? 1 : 0;
     $stmt = $db->prepare('UPDATE calendar SET approved = ? WHERE id = ? LIMIT 1');
     $stmt->execute(array($approved, $key));
-    $stmt = $db->prepare('SELECT contact_email FROM calendar WHERE id = ?');
+    $stmt = $db->prepare('SELECT contact_email, token, event, description, extended_description, event_type_id, screen_ids FROM calendar WHERE id = ?');
     $stmt->execute(array($key));
-    $contact_email = $stmt->fetchColumn();
+    $row = $stmt->fetch();
+    $screens = explode(',', $row['screen_ids']);
+    $count = count($screens);
+    $contact_email = $row['contact_email'];
     if ($contact_email != '') {
       if ($approved) {
-        $html_message = "<h1>Your event is live</h1><p>Your event was approved, and can be viewed <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>here</a>.</p>";
-        $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}";
+        if ($count > 0) {
+          if ($count === 1) {
+            $s = '';
+          } else {
+            $s = 's';
+          }
+          $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
+          foreach ($screens as $screen_id) {
+            $stmt = $db->prepare('SELECT name FROM calendar_screens WHERE id = ?');
+            $stmt->execute([$screen_id]);
+            $screen = $stmt->fetchColumn();
+            $html_message .= "<li>{$screen}</li>";
+          }
+          $html_message .= "</ul>";
+        } else {
+          $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
+        }
+        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}&token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event. Alternatively, you can edit your event by submitting the form below which is prepopulated with the values present when the event was approved.</p>";
+        $html_message .= "<form action='' method='POST'>";
+        $html_message .= "<label for='event'>Event title</label><input type='text' name='event' id='event' value='{$row['event']}' style='width:100%;height:30px;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' ><br>";
+        $html_message .= "<label for='description'>Event description</label><textarea name='description' id='description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['description']}</textarea><br>";
+        $html_message .= "<label for='extended_description'>Extended event description</label><textarea name='extended_description' id='extended_description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['extended_description']}</textarea><br><p>Select an event type</p><select name='event_type'>";
+        foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $et) {
+          $html_message .= "<option value='{$et['id']}'>{$et['event_type']}</option>";
+        }
+        $html_message .= '</select><br><p>Select screens to show event</p>';
+        foreach ($db->query('SELECT id, name FROM calendar_screens') as $s) {
+          $html_message .= "<label><input name='screens[]' value='{$s['id']}' type='checkbox'> {$s['name']}</label><br>";
+        }
+        $html_message .= "</select><br><p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
+
+        $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {
         $html_message = "<p>Your event was rejected.</p>";
         $txt_message = "Your event was rejected.";

@@ -13,7 +13,8 @@ date_default_timezone_set("America/New_York");
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Add event</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.css?<?php echo time(); ?>">
     <link rel="stylesheet" href="js/jquery-ui.min.css">
     <link rel="stylesheet" href="js/jquery.timepicker.min.css">
   </head>
@@ -30,9 +31,9 @@ date_default_timezone_set("America/New_York");
             <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
           </div>
           <h1>Add Event to Oberlin Community Calendar</h1>
-          <p><a href="index" class="btn btn-outline-primary btn-sm">&larr; Go Back</a></p>
+          <p><a href="index" class="btn btn-primary btn-sm">&larr; Go Back</a></p>
           <p>Complete this simple form to add an event or volunteer opportunity to the community calendar.  Once approved it will appear on the online calendar and on selected screens in town.</p>
-          <p><a class="btn btn-outline-primary btn-sm" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
+          <p><a class="btn btn-primary btn-sm" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           <hr>
           <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
             <div class="form-group">

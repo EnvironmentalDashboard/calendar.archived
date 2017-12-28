@@ -259,7 +259,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <?php } ?>
         </div>
         <div class="col-sm-4">
-          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
+          <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
           <?php define('SMALL', true); require 'calendar.php'; ?>
           <p><a class="btn btn-sm btn-outline-primary" href="detail-calendar">View full calendar</a></p>
