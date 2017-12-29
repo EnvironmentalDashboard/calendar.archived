@@ -94,12 +94,12 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.css">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
       tr:nth-child(1n+3) { height: 140px; }
-      .day-num { margin-bottom: 10px; border-radius: 100%; display: block; height: 30px; width: 30px; padding: 2px 5px }
+      .day-num { margin-bottom: 10px; border-radius: 100%; display: block; height: 30px; width: 30px;padding: 4px }
       .day a { color: #333; text-decoration: underline; margin-bottom: 20px; }
       table { max-width: 100%; table-layout: fixed; border-collapse: collapse;}
       .table-bordered {border:4px solid #bdc3c7;}
@@ -116,7 +116,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <p style="position: relative;left: 5px"><a href="index">&larr; Go Back</a></p>
+          <p style="position: relative;left: 5px"><a href="index" class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">

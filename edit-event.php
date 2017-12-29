@@ -1,4 +1,4 @@
 <?php
-$edit = false;
+$edit = true;
 require 'event-form.php';
 ?>

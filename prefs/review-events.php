@@ -9,7 +9,7 @@ if (isset($_POST['review-events'])) {
     $approved = ($value === 'approve') ? 1 : 0;
     $stmt = $db->prepare('UPDATE calendar SET approved = ? WHERE id = ? LIMIT 1');
     $stmt->execute(array($approved, $key));
-    $stmt = $db->prepare('SELECT contact_email, token, event, description, extended_description, event_type_id, screen_ids FROM calendar WHERE id = ?');
+    $stmt = $db->prepare('SELECT contact_email, token, event, description, extended_description, event_type_id, screen_ids, sponsors FROM calendar WHERE id = ?');
     $stmt->execute(array($key));
     $row = $stmt->fetch();
     $screens = explode(',', $row['screen_ids']);
@@ -46,7 +46,11 @@ if (isset($_POST['review-events'])) {
         foreach ($db->query('SELECT id, name FROM calendar_screens') as $s) {
           $html_message .= "<label><input name='screens[]' value='{$s['id']}' type='checkbox'> {$s['name']}</label><br>";
         }
-        $html_message .= "</select><br><p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
+        $html_message .= "</select><br><p>Event sponsor</p><select multiple name='sponsor[]'>";
+        foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $s) {
+          echo "<option value='{$row['id']}'>{$row['sponsor']}</option>";
+        }
+        $html_message .= "</select><p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
 
         $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {

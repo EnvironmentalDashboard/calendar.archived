@@ -38,8 +38,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.css">
   </head>
   <body>
     <div class="container">
@@ -61,7 +60,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?>For more information, contact<br><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
           <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : '('.substr($event['phone'], 0, 3).') '.substr($event['phone'], 3, 3).'-'.substr($event['phone'],6) . "<br>"; ?>
-          <?php echo ($event['website'] == '') ? '' : "{$event['website']}<br>"; ?>
+          <?php echo ($event['website'] == '') ? '' : "<a href='{$event['website']}'>{$event['website']}</a><br>"; ?>
           </p>
           <p>
             <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="images/calendar-icon.png" alt="Google Calendar" width="50"></a>

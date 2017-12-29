@@ -14,6 +14,30 @@ $_POST['email'] = (isset($_POST['email'])) ? $_POST['email'] : '';
 $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_email'] : '';
 $_POST['event_type'] = (isset($_POST['event_type'])) ? $_POST['event_type'] : '';
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
+if (!is_numeric($_POST['loc'])) { // with the <select> in the html we'll get a location id otherwise we'll get a string
+  $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
+  $stmt->execute([$_POST['loc']]);
+  if ($stmt->rowCount() > 0) {
+    $_POST['loc'] = $stmt->fetchColumn();
+  } else {
+    $stmt = $db->prepare('INSERT INTO calendar_locs (location) VALUES (?)');
+    $stmt->execute([$_POST['loc']]);
+    $_POST['loc'] = $stmt->lastInsertId();
+  }
+}
+for ($i=0; $i < count($_POST['sponsor']); $i++) { 
+  if (!is_numeric($_POST['sponsor'][$i])) {
+    $stmt = $db->prepare('SELECT id FROM calendar_sponsors WHERE sponsor = ? LIMIT 1');
+    $stmt->execute([$_POST['sponsor'][$i]]);
+    if ($stmt->rowCount() > 0) {
+      $_POST['sponsor'][$i] = $stmt->fetchColumn();
+    } else {
+      $stmt = $db->prepare('INSERT INTO calendar_sponsors (location) VALUES (?)');
+      $stmt->execute([$_POST['loc'][$i]]);
+      $_POST['loc'][$i] = $stmt->lastInsertId();
+    }
+  }
+}
 $no_start_time = 0;
 $no_end_time = 0;
 if ($_POST['time'] === '') {

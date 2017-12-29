@@ -48,14 +48,16 @@
   // Place the border on the list items and negative margin up for better styling
   margin-bottom: -$list-group-border-width;
   background-color: $list-group-bg;
-  // border: $list-group-border-width solid $list-group-border-color;
+  border: $list-group-border-width solid $list-group-border-color;
+  border-right: none;
+  border-left: none;
 
-  &:first-child {
-    @include border-top-radius($list-group-border-radius);
-  }
+  // &:first-child {
+  //   @include border-top-radius($list-group-border-radius);
+  // }
 
   &:last-child {
-    margin-bottom: 0;
+  //   margin-bottom: 0;
     @include border-bottom-radius($list-group-border-radius);
   }
 

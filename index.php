@@ -148,16 +148,45 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
-          <h6><?php echo date('l, F j, Y') ?></h6>
+          <h6 class="hidden-sm-down"><?php echo date('l, F j, Y') ?></h6>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
         </div>
       </div>
       <div class="row">
+        <div class="col-sm-4 order-sm-12">
+          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
+          <!-- Add clickable table cells -->
+          <?php define('SMALL', true); require 'calendar.php'; ?>
+          <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
+          <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
+          <h5>Event types</h5>
+          <div class="list-group" style="margin-bottom: 15px">
+            <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
+            <!-- <a href="#" class="list-group-item active"> -->
+            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY event_type ASC") as $event) {
+              echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
+            } ?>
+          </div>
+          <h5>Event locations</h5>
+          <div class="list-group" style="margin-bottom: 15px">
+            <a href='#' data-value='All' class='list-group-item list-group-item-action event-loc-toggle active'>All</a>
+            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY location ASC") as $loc) {
+              echo "<a href='#' data-value='{$loc['id']}' class='list-group-item list-group-item-action event-loc-toggle'>{$loc['location']}</a>";
+            } ?>
+          </div>
+          <h5>Event sponsor/organizer</h5>
+          <div class="list-group" style="margin-bottom: 20px">
+            <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
+            <?php foreach ($sponsors as $id => $sponsor) {
+              if (!in_array($id, $current_sponsors)) {
+                continue;
+              }
+              echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
+            } ?>
+          </div>
+        </div>
         <div class="col-sm-8">
-          <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 370px;background: #ccc">
-            <div class="card-header">
-              Featured Events
-            </div>
+          <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 300px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
               <?php for ($s = 1; $s < $number_of_slides; $s++) { 
@@ -205,10 +234,13 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
               <span class="sr-only">Next</span>
             </a>
           </div>
+          <div class="card-footer bg-primary">
+            Featured Events
+          </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline">
               <span class="navbar-text">
-                <a href="#" id="sort-date" class="btn btn-sm btn-outline-primary">Date</a>
+                <a href="#" id="sort-date" class="btn btn-sm btn-primary">Date</a>
               </span>
               <span style="position: absolute;right: 10px;">
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search">
@@ -257,38 +289,6 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
             </div>
           </div>
           <?php } ?>
-        </div>
-        <div class="col-sm-4">
-          <p><a href="add-event" class="btn btn-lg btn-outline-primary btn-block">Submit an event</a></p>
-          <!-- Add clickable table cells -->
-          <?php define('SMALL', true); require 'calendar.php'; ?>
-          <p><a class="btn btn-sm btn-outline-primary" href="detail-calendar">View full calendar</a></p>
-          <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
-          <h5>Event types</h5>
-          <div class="list-group" style="margin-bottom: 15px">
-            <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
-            <!-- <a href="#" class="list-group-item active"> -->
-            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY event_type ASC") as $event) {
-              echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
-            } ?>
-          </div>
-          <h5>Event locations</h5>
-          <div class="list-group" style="margin-bottom: 15px">
-            <a href='#' data-value='All' class='list-group-item list-group-item-action event-loc-toggle active'>All</a>
-            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY location ASC") as $loc) {
-              echo "<a href='#' data-value='{$loc['id']}' class='list-group-item list-group-item-action event-loc-toggle'>{$loc['location']}</a>";
-            } ?>
-          </div>
-          <h5>Event sponsor/organizer</h5>
-          <div class="list-group">
-            <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
-            <?php foreach ($sponsors as $id => $sponsor) {
-              if (!in_array($id, $current_sponsors)) {
-                continue;
-              }
-              echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
-            } ?>
-          </div>
         </div>
       </div>
       <div style="clear: both;height: 150px"></div>
