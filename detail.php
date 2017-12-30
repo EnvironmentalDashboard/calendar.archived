@@ -46,7 +46,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='#' onclick="window.history.back()">&larr; Go Back</a></p>
+          <p><a href='#' onclick="window.history.back()" class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">
@@ -58,7 +58,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <p><?php echo formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
           <p>
           <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?>For more information, contact<br><?php } ?>
-          <?php echo ($event['email'] == '') ? '' : "{$event['email']}<br>"; ?>
+          <?php echo ($event['email'] == '') ? '' : "<a href='mailto:{$event['email']}'>{$event['email']}</a><br>"; ?>
           <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : '('.substr($event['phone'], 0, 3).') '.substr($event['phone'], 3, 3).'-'.substr($event['phone'],6) . "<br>"; ?>
           <?php echo ($event['website'] == '') ? '' : "<a href='{$event['website']}'>{$event['website']}</a><br>"; ?>
           </p>

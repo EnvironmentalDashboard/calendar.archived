@@ -354,6 +354,7 @@ if (!isset($edit)) {
               echo ($edit && empty($_POST['website'])) ? $event['website'] : ''; ?>>
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
+            <?php if ($edit) { echo '<a href="#" class="btn btn-secondary" id="preview">View event</a>'; } ?>
             <input type="submit" name="submit-btn" id="submit-btn" value="<?php echo ($edit) ? 'Update event' : 'Submit event for review' ?>" class="btn btn-primary">
           </form>
         </div>
@@ -369,6 +370,12 @@ if (!isset($edit)) {
   <script src="js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
   <script src="js/jquery.timepicker.min.js"></script>
   <script>
+    <?php if ($edit) { ?>
+    $('#preview').on('click', function(e) {
+      e.preventDefault();
+      window.open('slide?id=<?php echo $event['id'] ?>', '_blank');
+    });
+    <?php } ?>
     $('#other-checkbox').on('change', function() {
       if (this.checked) {
         $('#reg-locs').find('input').prop('checked', true);

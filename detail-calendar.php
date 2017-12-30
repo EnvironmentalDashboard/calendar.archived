@@ -1,90 +1,14 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../includes/db.php';
 date_default_timezone_set('America/New_York');
-$date = time();
-$day = date('d', $date);
-// Expected query string example: "month=10&year=2015"
-if (empty($_GET['month'])) {
-  $month = date('m', $date);
-}
-else {
-  $month = $_GET['month'];
-}
-if (empty($_GET['year'])) {
-  $year = date('Y', $date);
-}
-else {
-  $year = $_GET['year'];
-}
-// if (isset($_GET['date'])) {
-//   $month = substr($_GET['date'], 5, 2);
-//   $year = substr($_GET['date'], 0, 4);
-// }
-$first_day = mktime(0, 0, 0, $month, 1, $year);
-$title = date('F', $first_day);
-$day_of_week = date('D', $first_day);
-switch($day_of_week) {
-  case "Sun": $blank = 0; break;
-  case "Mon": $blank = 1; break;
-  case "Tue": $blank = 2; break;
-  case "Wed": $blank = 3; break;
-  case "Thu": $blank = 4; break;
-  case "Fri": $blank = 5; break;
-  case "Sat": $blank = 6; break;
-}
-$days_in_month = cal_days_in_month(0, $month, $year);
-if ($month == "12") {
-  $next_month = "1";
-  $next_year = $year + 1;
-  $prev_month = $month - 1;
-  $prev_year = $year;
-}
-elseif ($month == "01") {
-  $next_month = "02";
-  $next_year = $year;
-  $prev_month = "12";
-  $prev_year = $year - 1;
-}
-else {
-  $next_month = $month + 1;
-  $next_year = $year;
-  $prev_month = $month - 1;
-  $prev_year = $year;
-}
-// $start_of_month = strtotime($month . "/01/" . $year);
-// $end_of_month = strtotime($next_month . "/01/" . $next_year);
-$start_time = time();
-$end_time = $start_time + 15770000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, img, sponsors, event_type_id FROM calendar
-  WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
-  AND approved = 1 ORDER BY `start` ASC');
-$stmt->execute(array($start_time, $end_time, $start_time, $end_time));
-// $stmt = $db->prepare('SELECT id, event, start FROM calendar WHERE start > ? AND start < ?');
-// $stmt->execute(array($start_of_month, $end_of_month));
-$raw_results = $stmt->fetchAll();
-$row_count = $stmt->rowCount();
-$results = array(); // Array where events that recur will be expanded
-foreach ($raw_results as $result) {
-  if ($result['repeat_on'] != null) { // Event recurs
-    $moving_start = $result['start'];
-    $repeat_on = json_decode($result['repeat_on'], true); 
-    while ($moving_start <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
-      if (in_array(date('w', $moving_start), $repeat_on)) {
-        array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start));
-      }
-      $moving_start += 86400; // add one day
-    }
-  }
-  else { // Event doesnt recur
-    array_push($results, array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $result['start']));
-  }
-}
-$sponsors = array();
-foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)") as $row) {
-  $sponsors[$row['id']] = $row['sponsor'];
-}
+require '../includes/db.php';
+require 'includes/class.Calendar.php';
+$start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
+$end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
+$cal = new Calendar($db, $start_time, $end_time);
+$cal->fetch_events();
+$cal->fetch_sponsors();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,7 +45,7 @@ foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors WHERE id IN (SELE
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <?php define('SMALL', false); require 'calendar.php'; ?>
+          <?php $cal->print(false); ?>
         </div>
       </div>
       <div style="clear: both;height: 100px"></div>

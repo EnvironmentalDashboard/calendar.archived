@@ -1,129 +1,28 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../includes/db.php';
 date_default_timezone_set('America/New_York');
-$date = time();
-$day = date('d', $date);
-// Expected query string example: "month=10&year=2015"
-if (empty($_GET['month'])) {
-  $month = date('m', $date);
+require '../includes/db.php';
+require 'includes/class.Calendar.php';
+define('NUM_SLIDES', 5);
+$time = time();
+if (isset($_GET['start_date'])) {
+  $_GET['start'] = strtotime($_GET['start_date']);
 }
-else {
-  $month = $_GET['month'];
+if (isset($_GET['end_date'])) {
+  $_GET['end'] = strtotime($_GET['end_date']);
 }
-if (empty($_GET['year'])) {
-  $year = date('Y', $date);
-}
-else {
-  $year = $_GET['year'];
-}
-// if (isset($_GET['date'])) {
-//   $month = substr($_GET['date'], 5, 2);
-//   $year = substr($_GET['date'], 0, 4);
-// }
-$first_day = mktime(0, 0, 0, $month, 1, $year);
-$title = date('F', $first_day);
-$day_of_week = date('D', $first_day);
-switch($day_of_week) {
-  case "Sun": $blank = 0; break;
-  case "Mon": $blank = 1; break;
-  case "Tue": $blank = 2; break;
-  case "Wed": $blank = 3; break;
-  case "Thu": $blank = 4; break;
-  case "Fri": $blank = 5; break;
-  case "Sat": $blank = 6; break;
-}
-$days_in_month = cal_days_in_month(0, $month, $year);
-if ($month == "12") {
-  $next_month = "1";
-  $next_year = $year + 1;
-  $prev_month = $month - 1;
-  $prev_year = $year;
-}
-elseif ($month == "01") {
-  $next_month = "02";
-  $next_year = $year;
-  $prev_month = "12";
-  $prev_year = $year - 1;
-}
-else {
-  $next_month = $month + 1;
-  $next_year = $year;
-  $prev_month = $month - 1;
-  $prev_year = $year;
-}
-// $start_of_month = strtotime($month . "/01/" . $year);
-// $end_of_month = strtotime($next_month . "/01/" . $next_year);
-$start_time = time();
-// $end_time = $start_time + 2592000;
-$end_time = $start_time + 15770000;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time FROM calendar
-  WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?))
-  AND approved = 1 ORDER BY `start` ASC');
-$stmt->execute(array($start_time, $end_time, $start_time, $end_time));
-// $stmt = $db->prepare('SELECT id, event, start FROM calendar WHERE start > ? AND start < ?');
-// $stmt->execute(array($start_of_month, $end_of_month));
-$raw_results = $stmt->fetchAll();
-$row_count = $stmt->rowCount();
-$results = array(); // Array where events that recur will be expanded
-// echo "<!--\n";
-foreach ($raw_results as $result) {
-  if ($result['repeat_on'] != null) { // Event recurs
-    $moving_start = $result['start'];
-    $repeat_on = json_decode($result['repeat_on'], true); 
-    // echo "{$result['event']} to be added, recurs on {$result['repeat_on']}, until ".date('F jS\, g\:i A', $result['repeat_end'])."\n";
-    // echo "test: ms is ".date('F jS\, g\:i A', $moving_start)."\n";
-    while ($moving_start <= $result['repeat_end']) { // repeat_end is the unix timestamp to stop recurring after
-      // echo "test: ms is ".date('F jS\, g\:i A', $moving_start)."\n";
-      if (in_array(date('w', $moving_start), $repeat_on)) {
-        $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start);
-      }
-      $moving_start += 86400; // add one day
-    }
-    if ($moving_start == $result['start']) { // this event was improperly configured. the repeat_end is set to before the start date of the event, so pretend the event does not recur
-      $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $moving_start);
-    }
-  }
-  else { // Event doesnt recur
-    $results[] = array('id' => $result['id'], 'event' => $result['event'], 'description' => $result['description'], 'start' => $result['start']);
-    // echo "{$result['event']} added (doesnt recur)\n";
-  }
-}
-// print_r($results);
-// print_r(array_column($raw_results, 'event'));
-// echo "-->\n";
-$sponsors = array();
-// SELECT id, sponsor FROM calendar_sponsors WHERE CONCAT('\"', id, '\"') LIKE (SELECT GROUP_CONCAT(sponsors) FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1)
-foreach ($db->query("SELECT id, sponsor FROM calendar_sponsors") as $row) {
-  $sponsors[$row['id']] = $row['sponsor'];
-}
-$current_sponsors = array();
-foreach ($db->query("SELECT sponsors FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1") as $row) {
-  $sponsor_json = json_decode($row['sponsors']);
-  if (!is_array($sponsor_json)) {
-    continue;
-  }
-  foreach ($sponsor_json as $s) {
-    if (!in_array($s, $current_sponsors)) {
-      $current_sponsors[] = $s;
-    }
-  }
-}
-$number_of_slides = 5;
-
-function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
-  $same_day = date('jny', $start_time) === date('jny', $end_time);
-  if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
-    return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
-  } elseif (!$no_start_time && !$no_end_time) {
-    return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
-  } elseif ($no_start_time) {
-    return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
-  } else {
-    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
-  }
-}
+// $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
+// $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
+$start_time = (isset($_GET['start']) && is_numeric($_GET['start'])) ? $_GET['start'] : $time;
+$end_time = (isset($_GET['end']) && is_numeric($_GET['end'])) ? $_GET['end'] : ($start_time + 2592000); // 30 days in the future
+$cal = new Calendar($db, $start_time, $end_time);
+$cal->fetch_events();
+$cal->fetch_sponsors();
+$next_start = $end_time;
+$next_end = $end_time + 2592000;
+$prev_end = $start_time;
+$prev_start = $prev_end - 2592000;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -156,7 +55,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         <div class="col-sm-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
-          <?php define('SMALL', true); require 'calendar.php'; ?>
+          <?php $cal->print(); //define('SMALL', true); require 'calendar.php'; ?>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
@@ -177,10 +76,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <h5>Event sponsor/organizer</h5>
           <div class="list-group" style="margin-bottom: 20px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
-            <?php foreach ($sponsors as $id => $sponsor) {
-              if (!in_array($id, $current_sponsors)) {
-                continue;
-              }
+            <?php foreach ($cal->sponsors as $sponsor) {
               echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
             } ?>
           </div>
@@ -189,14 +85,14 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 300px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
-              <?php for ($s = 1; $s < $number_of_slides; $s++) { 
+              <?php for ($s = 1; $s < NUM_SLIDES; $s++) { 
                 echo "<li data-target=\"#carousel-indicators\" data-slide-to=\"{$s}\"></li>";
               } ?>
             </ol>
             <div class="carousel-inner" role="listbox">
               <?php
               $counter = 0;
-              foreach ($raw_results as $result) { ?>
+              foreach ($cal->rows as $result) { ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
@@ -204,7 +100,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
                       <?php if ($result['thumbnail'] === null) {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else { ?>
-                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 300px" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
+                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 250px" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
                       <?php } ?>
                     </a>
                   </div>
@@ -220,7 +116,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
               </div>
               <?php
               $counter++;
-              if ($counter >= $number_of_slides) {
+              if ($counter >= NUM_SLIDES) {
                 break;
               }
               } ?>
@@ -235,20 +131,23 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
             </a>
           </div>
           <div class="card-footer bg-primary">
-            Featured Events
+            Featured events from <span id="start" style="text-decoration: underline;" contenteditable><?php echo ($time==$start_time) ? 'now' : date('m/d/Y'); ?></span> until <span id="end" style="text-decoration: underline;" contenteditable><?php echo date('m/d/Y', $end_time); ?></span>
+            <a href="#" id="update-timeframe" class="btn btn-light btn-sm" style="float: right;display: none">Update</a>
           </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline">
               <span class="navbar-text">
-                <a href="#" id="sort-date" class="btn btn-sm btn-primary">Date</a>
+                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary">&larr; Previous month</a>
+                <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-sm btn-primary">Next month &rarr;</a>
               </span>
               <span style="position: absolute;right: 10px;">
+                <a href="#" id="sort-date" class="btn btn-primary">Date</a>
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search">
               </span>
             </form>
           </nav>
           <div id="tail"></div>
-          <?php foreach ($raw_results as $result) {
+          <?php foreach ($cal->rows as $result) {
             $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
             ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
@@ -269,12 +168,12 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
                 <div class="col-sm-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
-                    <?php echo formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']); ?> &middot; <?php echo $locname ?> &middot; <?php
+                    <?php echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']); ?> &middot; <?php echo $locname ?> &middot; <?php
                     $array = json_decode($result['sponsors'], true);
                     if (is_array($array)) {
                       $count = count($array);
                       for ($i = 0; $i < $count; $i++) { 
-                        echo $sponsors[$array[$i]];
+                        echo $cal->sponsors[$array[$i]];
                         if ($i+1 !== $count) {
                           echo ", ";
                         }
@@ -289,6 +188,10 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
             </div>
           </div>
           <?php } ?>
+          <div style="text-align: center;padding-top: 15px">
+            <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-primary">Previous month</a>
+            <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-primary">Next month</a>
+          </div>
         </div>
       </div>
       <div style="clear: both;height: 150px"></div>
@@ -298,6 +201,17 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script>
+      var done = false;
+      $('#start, #end').on('input', function() {
+        if (!done) {
+          done = true;
+          $('#update-timeframe').css('display', 'block');
+        }
+      });
+      $('#update-timeframe').on('click', function(e) {
+        e.preventDefault();
+        location.replace("?start_date=" + encodeURIComponent($('#start').html()) + "&end_date=" + encodeURIComponent($('#end').html()));
+      });
       $('.event-type-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-type-toggle').removeClass('active');
@@ -332,7 +246,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           });
         }
       });
-      var sponsors = <?php echo json_encode($sponsors) . ";\n"; ?>
+      var sponsors = <?php echo json_encode(array_values($cal->sponsors)) . ";\n"; ?>
       $('.event-sponsor-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-sponsor-toggle').removeClass('active');
@@ -382,11 +296,12 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       });
       $('#search').on('input', function() {
         $('.iterable-event').each(function() {
-          var query = $('#search').val().toLowerCase();
-          if ($(this).data('name').toLowerCase().indexOf(query) === -1) {
-            $(this).css('display', 'none');
+          var query = $('#search').val().toLowerCase(),
+              card = $(this);
+          if (card.data('name').toLowerCase().indexOf(query) === -1) {
+            card.css('display', 'none');
           } else {
-            $(this).css('display', 'block');
+            card.css('display', 'block');
           }
         });
       });
