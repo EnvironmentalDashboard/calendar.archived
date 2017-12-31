@@ -7,10 +7,16 @@ require 'includes/class.Calendar.php';
 define('NUM_SLIDES', 5);
 $time = time();
 if (isset($_GET['start_date'])) {
-  $_GET['start'] = strtotime($_GET['start_date']);
+  $tmp = strtotime($_GET['start_date']);
+  if ($tmp !== false) {
+    $_GET['start'] = $tmp;
+  }
 }
 if (isset($_GET['end_date'])) {
-  $_GET['end'] = strtotime($_GET['end_date']);
+  $tmp = strtotime($_GET['end_date']);
+  if ($tmp !== false) {
+    $_GET['end'] = $tmp;
+  }
 }
 // $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
 // $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
@@ -82,7 +88,7 @@ $prev_start = $prev_end - 2592000;
           </div>
         </div>
         <div class="col-sm-8">
-          <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 300px;">
+          <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
               <?php for ($s = 1; $s < NUM_SLIDES; $s++) { 
@@ -105,12 +111,8 @@ $prev_start = $prev_end - 2592000;
                     </a>
                   </div>
                   <div class="col-sm-6">
-                    <?php if (strlen($result['event']) > 80) { ?>
-                    <h2><?php echo $result['event'] ?></h2>
-                    <?php } else { ?>
-                    <h2><?php echo $result['event'] ?></h2>
-                    <p style="overflow: scroll;height: 120px;"><?php echo $result['description'] ?></p>
-                    <?php } ?>
+                    <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
+                    <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                   </div>
                 </div>
               </div>
@@ -131,7 +133,7 @@ $prev_start = $prev_end - 2592000;
             </a>
           </div>
           <div class="card-footer bg-primary">
-            Featured events from <span id="start" style="text-decoration: underline;" contenteditable><?php echo ($time==$start_time) ? 'now' : date('m/d/Y'); ?></span> until <span id="end" style="text-decoration: underline;" contenteditable><?php echo date('m/d/Y', $end_time); ?></span>
+            Showing events from <span id="start" style="text-decoration: underline;" contenteditable><?php echo ($time==$start_time) ? 'now' : date('m/d/Y', $start_time); ?></span> until <span id="end" style="text-decoration: underline;" contenteditable><?php echo date('m/d/Y', $end_time); ?></span>
             <a href="#" id="update-timeframe" class="btn btn-light btn-sm" style="float: right;display: none">Update</a>
           </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">

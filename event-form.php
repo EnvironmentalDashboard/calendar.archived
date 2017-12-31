@@ -56,12 +56,12 @@ if (!isset($edit)) {
           <p>Edit the values in this form to update your event. You can bookmark this page to revisit this form and update your event in the future. <?php if ($event['approved']==1) { echo 'Since this event is already approved, editing it will take it down until it is approved again.'; } ?></p>
           <?php } else { ?>
           <h1>Add Event to Oberlin Community Calendar</h1>
-          <p><a href="index" class="btn btn-outline-primary btn-sm">&larr; Go Back</a></p>
+          <p><a href="index" class="btn btn-primary">&larr; Go Back</a></p>
           <p>Complete this simple form to add an event or volunteer opportunity to the community calendar. Once approved it will appear on the online calendar and on selected screens in town.</p>
           <p><a class="btn btn-primary btn-sm" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           <?php } ?>
           <hr>
-          <form action="index.php" method="POST" enctype="multipart/form-data" id="add-event">
+          <form method="POST" enctype="multipart/form-data" id="add-event">
             <input type="hidden" name="action" value="<?php echo ($edit) ? 'edit' : 'add' ?>">
             <?php if ($edit) {
               echo "<input type='hidden' name='edit_id' value='{$event['id']}'>";
@@ -105,7 +105,7 @@ if (!isset($edit)) {
                   $num_sponsors++;
                 }
               }
-              if ($num_sponsors === 1) {
+              if ($num_sponsors++ === 1) {
                 echo '<input type="text" class="form-control" id="sponsor1" name="sponsor[]" value="" maxlength="255">';
               } ?>
               <div id="more-sponsors"></div>
@@ -498,10 +498,8 @@ if (!isset($edit)) {
         $('#alert-success').css('display', 'block');
         $('#alert-success-text').text('Loading');
         var data = $(this).serializefiles();
-        console.log(data.edit_id);
-        return;
         $.ajax({
-          url: 'includes/submit.php',
+          url: 'includes/<?php echo ($edit) ? 'edit-event' : 'add-event' ?>.php',
           cache: false,
           method: 'POST',
           data: data,
@@ -510,10 +508,10 @@ if (!isset($edit)) {
           type: 'POST',
           success: function(resp) {
             console.log(resp);
-            if (resp == 'Your event was successfully uploaded and will be reviewed') {
-              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected in 3 seconds.');
+            if (!isNaN(resp)) { // if valid int
+              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
               $('#submit-btn').val('Success!');
-              setTimeout(function(){ document.location.href = "index"; }, 3000); // TODO: change to redirect to new edit event page
+              setTimeout(function(){ document.location.href = "slide?id="+resp; }, 5000);
             } else {
               $('#alert-success-text').text(resp);
               $('#submit-btn').val('Submit event for review');
@@ -544,7 +542,7 @@ if (!isset($edit)) {
     var sponsors = <?php echo json_encode(array_column($db->query('SELECT sponsor FROM calendar_sponsors ORDER BY sponsor ASC')->fetchAll(), 'sponsor')); ?>;
     var locations = <?php echo json_encode(array_column($db->query('SELECT location FROM calendar_locs ORDER BY location ASC')->fetchAll(), 'location')); ?>;
 
-    $(function() {
+    $(function() { // init autocomplete and datepicker
       $('#loc').autocomplete({
         source: locations
       });

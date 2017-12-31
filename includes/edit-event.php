@@ -1,4 +1,5 @@
 <?php
+die('Not yet, atm this is just the add-event.php script');
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../../includes/db.php';
@@ -66,7 +67,7 @@ elseif (!isset($_FILES['file']) || !file_exists($_FILES['file']['tmp_name']) || 
   // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
   $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsor']), $no_start_time, $no_end_time, $_POST['room_num']));
-  $success = 'Your event was successfully uploaded and will be reviewed';
+  $success = $db->lastInsertId();
   save_emails($db, $_POST['event'], $db->lastInsertId());
 }
 else {
@@ -104,7 +105,7 @@ else {
     $stmt->bindParam(20, $no_end_time);
     $stmt->bindParam(21, $_POST['room_num']);
     $stmt->execute();
-    $success = 'Your event was successfully uploaded and will be reviewed';
+    $success = $db->lastInsertId();
     save_emails($db, $_POST['event'], $db->lastInsertId());
   }
   else {
