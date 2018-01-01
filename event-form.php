@@ -480,10 +480,10 @@ if (!isset($edit)) {
       var description_len = $('#description').val().length;
       if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event description must be between 10 and 200 charachters.');
+        $('#alert-warning-text').text('Event description must be between 10 and 200 characters.');
       } else if ($('#event').val().length > 80) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event title must be less than 80 charachters');
+        $('#alert-warning-text').text('Event title must be less than 80 characters');
       } else if ($('#event').val().length == 0) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title is empty');
@@ -526,7 +526,7 @@ if (!isset($edit)) {
 
     $('#description').on('input', function() {
       var left = $(this).val().length;
-      $('#chars-left').text(', ' + (200-left) + ' charachters left');
+      $('#chars-left').text(', ' + (200-left) + ' characters left');
     });
     $('#file2').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);

@@ -23,7 +23,7 @@ if (!is_numeric($_POST['loc'])) { // with the <select> in the html we'll get a l
   } else {
     $stmt = $db->prepare('INSERT INTO calendar_locs (location) VALUES (?)');
     $stmt->execute([$_POST['loc']]);
-    $_POST['loc'] = $stmt->lastInsertId();
+    $_POST['loc'] = $db->lastInsertId();
   }
 }
 for ($i=0; $i < count($_POST['sponsor']); $i++) { 
@@ -35,7 +35,7 @@ for ($i=0; $i < count($_POST['sponsor']); $i++) {
     } else {
       $stmt = $db->prepare('INSERT INTO calendar_sponsors (location) VALUES (?)');
       $stmt->execute([$_POST['loc'][$i]]);
-      $_POST['loc'][$i] = $stmt->lastInsertId();
+      $_POST['loc'][$i] = $db->lastInsertId();
     }
   }
 }
@@ -68,7 +68,7 @@ elseif (!isset($_FILES['file']) || !file_exists($_FILES['file']['tmp_name']) || 
   $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsor']), $no_start_time, $no_end_time, $_POST['room_num']));
   $success = $db->lastInsertId();
-  save_emails($db, $_POST['event'], $db->lastInsertId());
+  save_emails($db, $_POST['event'], $success);
 }
 else {
   $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
@@ -106,7 +106,7 @@ else {
     $stmt->bindParam(21, $_POST['room_num']);
     $stmt->execute();
     $success = $db->lastInsertId();
-    save_emails($db, $_POST['event'], $db->lastInsertId());
+    save_emails($db, $_POST['event'], $success);
   }
   else {
     $error = 'Allowed file types are JPEG, PNG, and GIF, your event was not submitted.';
@@ -128,8 +128,8 @@ function save_emails($db, $event_name, $event_id) {
   } 
 }
 if (isset($error)) {
-	echo $error;
+  echo $error;
 } elseif (isset($success)) {
-	echo $success;
+  echo $success;
 }
 ?>
