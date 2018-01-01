@@ -1,6 +1,7 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
+date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
 $_POST['time'] = (isset($_POST['time'])) ? $_POST['time'] : '';
 $_POST['time2'] = (isset($_POST['time2'])) ? $_POST['time2'] : '';
@@ -32,9 +33,9 @@ for ($i=0; $i < count($_POST['sponsor']); $i++) {
     if ($stmt->rowCount() > 0) {
       $_POST['sponsor'][$i] = $stmt->fetchColumn();
     } else {
-      $stmt = $db->prepare('INSERT INTO calendar_sponsors (location) VALUES (?)');
-      $stmt->execute([$_POST['loc'][$i]]);
-      $_POST['loc'][$i] = $db->lastInsertId();
+      $stmt = $db->prepare('INSERT INTO calendar_sponsors (sponsor) VALUES (?)');
+      $stmt->execute([$_POST['sponsor'][$i]]);
+      $_POST['sponsor'][$i] = $db->lastInsertId();
     }
   }
 }

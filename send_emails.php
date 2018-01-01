@@ -36,7 +36,7 @@ $html1 = '<html>
             <tbody>
             <tr>
                 <td class="column" style="padding: 0;vertical-align: top;text-align: left;background-color: #fff;font-size: 14px">
-                    <div class="column-top" style="font-size: 24px;line-height: 24px"> </div>
+                    <div class="column-top" style="font-size: 24px;line-height: 24px"></div>
                     <table class="content" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse;border-spacing: 0;width: 100%">
                         <tbody>
                         <tr>
@@ -45,7 +45,7 @@ $html2 = '</td>
                         </tr>
                         </tbody>
                     </table>
-                    <div class="column-bottom" style="font-size: 8px;line-height: 8px"> </div>
+                    <div class="column-bottom" style="font-size: 8px;line-height: 8px"></div>
                 </td>
             </tr>
             </tbody>
