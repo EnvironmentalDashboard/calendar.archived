@@ -3,6 +3,15 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
+if (!isset($_POST['token']) || strlen($_POST['token']) !== 255) {
+  exit('Error: missing token');
+  $stmt = $db->prepare('SELECT id FROM calendar WHERE token = ? LIMIT 1');
+  $stmt->execute([$_POST['token']]);
+  $edit_id = $stmt->fetchColumn();
+  if ($edit_id == null) {
+    exit('Error: invalid token');
+  }
+}
 $cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing img, thumbnail, start, end, no_start_time, no_end_time
 $data = [null];
 $query = 'UPDATE calendar SET approved = ?';
@@ -92,6 +101,6 @@ foreach ($data as $i => $entry) {
       break;
   }
 }
-$stmt->bindParam($i + 2, $_POST['edit_id']);
+$stmt->bindParam($i + 2, $edit_id);
 $stmt->execute();
 ?>

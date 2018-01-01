@@ -41,11 +41,13 @@ $prev_start = $prev_end - 2592000;
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.css?<?php echo time(); ?>">
     <style>
-      @media (max-width: 950px) {
+      /*@media (max-width: 950px) {*/
+      @media (max-width: 768px) {
         .hidden-sm-down {display: none;}
       }
       .bg-primary, .bg-dark {color:#fff;}
       td.day {border: 1px solid #eee}
+      table {table-layout: fixed;width: 100%}
     </style>
   </head>
   <body>
@@ -58,7 +60,7 @@ $prev_start = $prev_end - 2592000;
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-4 order-sm-12">
+        <div class="col-md-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
           <?php $cal->print(); //define('SMALL', true); require 'calendar.php'; ?>
@@ -87,7 +89,7 @@ $prev_start = $prev_end - 2592000;
             } ?>
           </div>
         </div>
-        <div class="col-sm-8">
+        <div class="col-md-8 col-sm-12">
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
@@ -110,7 +112,7 @@ $prev_start = $prev_end - 2592000;
                       <?php } ?>
                     </a>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-md-6 col-sm-12">
                     <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                     <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                   </div>
@@ -138,11 +140,11 @@ $prev_start = $prev_end - 2592000;
           </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline">
-              <span class="navbar-text">
-                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary">&larr; Previous month</a>
+              <span class="navbar-text hidden-sm-down">
+                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary hidden-sm-down">&larr; Previous month</a>
                 <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-sm btn-primary">Next month &rarr;</a>
               </span>
-              <span style="position: absolute;right: 10px;">
+              <span style="position: absolute;right: 10px;" class="navbar-text">
                 <a href="#" id="sort-date" class="btn btn-primary">Date</a>
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search">
               </span>
@@ -160,21 +162,25 @@ $prev_start = $prev_end - 2592000;
           data-eventsponsor='<?php $tmp = json_decode($result['sponsors'], true); echo (is_array($tmp)) ? implode('$SEP$', $tmp) : ''; ?>'>
             <div class="card-body">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-12 col-md-3">
                   <?php if ($result['thumbnail'] === null) {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { ?>
                     <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
                     <?php } ?>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-12 col-md-9">
                   <h4 class="card-title"><?php echo $result['event'] ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
-                    <?php echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']); ?> &middot; <?php echo $locname ?> &middot; <?php
+                    <?php
+                    echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);
+                    echo ' &middot ';
+                    echo $locname;
                     $array = json_decode($result['sponsors'], true);
                     if (is_array($array)) {
                       $count = count($array);
                       for ($i = 0; $i < $count; $i++) { 
+                        echo ' &middot ';
                         echo $cal->sponsors[$array[$i]];
                         if ($i+1 !== $count) {
                           echo ", ";

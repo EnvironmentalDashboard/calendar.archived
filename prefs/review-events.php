@@ -35,19 +35,19 @@ if (isset($_POST['review-events'])) {
         } else {
           $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
         }
-        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}&token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event. Alternatively, you can edit your event by submitting the form below which is prepopulated with the values present when the event was approved.</p>";
-        $html_message .= "<form action='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}' method='POST'>";
+        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event. Alternatively, you can edit your event by submitting the form below which is prepopulated with the values present when the event was approved.</p>";
+        $html_message .= "<form action='https://oberlindashboard.org/oberlin/calendar/edit-event' method='POST'><input name='token' type='hidden' value='{$row['token']}'>";
         $html_message .= "<label for='event'>Event title</label><input type='text' name='event' id='event' value='{$row['event']}' style='width:100%;height:30px;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' ><br>";
         $html_message .= "<label for='description'>Event description</label><textarea name='description' id='description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['description']}</textarea><br>";
-        $html_message .= "<label for='extended_description'>Extended event description</label><textarea name='extended_description' id='extended_description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['extended_description']}</textarea><br><p>Select an event type</p><select name='event_type'>";
+        $html_message .= "<label for='extended_description'>Extended event description</label><textarea name='extended_description' id='extended_description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['extended_description']}</textarea><br><p>Select an event type</p><select name='event_type_id'>";
         foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $et) {
-          $html_message .= "<option value='{$et['id']}'>{$et['event_type']}</option>";
+          $html_message .= ($row['event_type_id'] === $et['id']) ? "<option value='{$et['id']}' selected>{$et['event_type']}</option>" : "<option value='{$et['id']}'>{$et['event_type']}</option>";
         }
         $html_message .= '</select><br><p>Select screens to show event</p>';
         foreach ($db->query('SELECT id, name FROM calendar_screens') as $s) {
           $html_message .= (in_array($s['id'], $screens)) ? "<label><input name='screen_loc[]' value='{$s['id']}' type='checkbox' checked> {$s['name']}</label><br>" : "<label><input name='screen_loc[]' value='{$s['id']}' type='checkbox'> {$s['name']}</label><br>";
         }
-        $html_message .= "<br><p>Event sponsor</p><select multiple name='sponsor[]'>";
+        $html_message .= "<br><p>Event sponsor</p><select multiple name='sponsors[]'>";
         foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $s) {
           $html_message .= (in_array($s['id'], $sponsors)) ? "<option value='{$s['id']}' selected>{$s['sponsor']}</option>" : "<option value='{$s['id']}'>{$s['sponsor']}</option>";
         }

@@ -82,7 +82,7 @@ if (!isset($edit)) {
             <div class="form-group">
               <label for="sponsor1">Who is organizing/sponsoring this event?</label>
               <?php if (false) { ?>
-              <select multiple class="form-control" id="sponsor" name="sponsor[]">
+              <select multiple class="form-control" id="sponsor1" name="sponsors[]">
                 <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) { ?>
                 <option value="<?php echo $row['id']; ?>"><?php echo $row['sponsor']; ?></option>
                 <?php } ?>
@@ -92,8 +92,8 @@ if (!isset($edit)) {
               <?php } else { ?>
               <?php
               $num_sponsors = 1;
-              foreach (isset($_POST['sponsor']) ? $_POST['sponsor'] : [] as $sponsor) {
-                echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsor[]' value='{$sponsor}' maxlength='255'>";
+              foreach (isset($_POST['sponsors']) ? $_POST['sponsors'] : [] as $sponsor) {
+                echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='255'>";
                 $num_sponsors++;
               }
               if ($edit) {
@@ -101,12 +101,12 @@ if (!isset($edit)) {
                   $stmt = $db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
                   $stmt->execute([$sponsor_id]);
                   $sponsor = $stmt->fetchColumn();
-                  echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsor[]' value='{$sponsor}' maxlength='255'>";
+                  echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='255'>";
                   $num_sponsors++;
                 }
               }
               if ($num_sponsors++ === 1) {
-                echo '<input type="text" class="form-control" id="sponsor1" name="sponsor[]" value="" maxlength="255">';
+                echo '<input type="text" class="form-control" id="sponsor1" name="sponsors[]" value="" maxlength="255">';
               } ?>
               <div id="more-sponsors"></div>
               <p><a href="#" id="add-another-sponsor">Add another sponsor</a></p>
@@ -114,7 +114,7 @@ if (!isset($edit)) {
             </div>
             <div class="form-group">
               <label for="event_type">Event type</label>
-              <select class="form-control" id="event_type" name="event_type">
+              <select class="form-control" id="event_type" name="event_type_id">
                 <option value="1">Volunteer opportunities</option>
                 <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $row) {
                   if ($edit && $event['event_type_id'] === $row['id']) {
@@ -189,7 +189,7 @@ if (!isset($edit)) {
               <input type="text" class="form-control" id="street_addr" name="street_addr" value="<?php
               echo (!empty($_POST['street_addr'])) ? $_POST['street_addr'] : ''; ?>">
               <!-- TODO: fix; this is a dummy field -->
-              <p><small class="text-muted">Leave this box blank for all locations that are already listed under &ldquo;Building and Location&lrquo; &mdash; these addresses are already recorded. Include only for new locations added. Street addresses will only appear in online version of calendar.</small></p>
+              <p><small class="text-muted">Leave this box blank for all locations that are already listed under &ldquo;Building and Location&ldquo; &mdash; these addresses are already recorded. Include only for new locations added. Street addresses will only appear in online version of calendar.</small></p>
             </div>
             <div class="form-group">
               <label for="description">Short event description</label>
@@ -447,7 +447,7 @@ if (!isset($edit)) {
         num_sponsors = <?php echo $num_sponsors; ?>;
     $('#add-another-sponsor').on('click', function(e) {
       e.preventDefault();
-      $('#more-sponsors').append('<input type="text" class="form-control" id="sponsor'+num_sponsors+'" name="sponsor[]" value="" maxlength="255" style="margin-top:10px">');
+      $('#more-sponsors').append('<input type="text" class="form-control" id="sponsor'+num_sponsors+'" name="sponsors[]" value="" maxlength="255" style="margin-top:10px">');
       sponsor_fields.push($('#sponsor'+num_sponsors));
       num_sponsors++;
       init_sponsor_fields();

@@ -59,8 +59,14 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
           <p>
           <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?>For more information, contact<br><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "<a href='mailto:{$event['email']}'>{$event['email']}</a><br>"; ?>
-          <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : '('.substr($event['phone'], 0, 3).') '.substr($event['phone'], 3, 3).'-'.substr($event['phone'],6) . "<br>"; ?>
-          <?php echo ($event['website'] == '') ? '' : "<a href='{$event['website']}'>{$event['website']}</a><br>"; ?>
+          <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : '('.substr($event['phone'], 0, 3).') '.substr($event['phone'], 3, 3).'-'.substr($event['phone'],6) . "<br>";
+          if ($event['website'] != '') {
+            if (substr($event['website'], 0, 8) !== 'https://' && substr($event['website'], 0, 7) !== 'http://') {
+              echo "<a href='http://{$event['website']}'>{$event['website']}</a><br>";
+            } else {
+              echo "<a href='{$event['website']}'>{$event['website']}</a><br>";
+            }
+          } ?>
           </p>
           <p>
             <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="images/calendar-icon.png" alt="Google Calendar" width="50"></a>
