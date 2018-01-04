@@ -6,9 +6,9 @@ date_default_timezone_set("America/New_York");
 if (!isset($edit)) {
   $edit = false;
 } elseif ($edit) {
-  if (isset($_GET['token'])) {
+  if (isset($_REQUEST['token'])) {
     $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num FROM calendar WHERE token = ?');
-    $stmt->execute([$_GET['token']]);
+    $stmt->execute([$_REQUEST['token']]);
     if ($stmt->rowCount() === 0) {
       $edit = false;
     } else {
@@ -61,10 +61,10 @@ if (!isset($edit)) {
           <p><a class="btn btn-primary btn-sm" target="_blank" href="https://docs.google.com/document/d/18B1-94-77_P6eNhFtCqLWuCSYz1Lk3WSdwmXtpSas2Q/edit">Please Read Guide &amp; Use Policy First</a></p>
           <?php } ?>
           <hr>
-          <form method="POST" enctype="multipart/form-data" id="add-event">
+          <form method="POST" enctype="multipart/form-data" id="event-form">
             <input type="hidden" name="action" value="<?php echo ($edit) ? 'edit' : 'add' ?>">
             <?php if ($edit) {
-              echo "<input type='hidden' name='edit_id' value='{$event['id']}'>";
+              echo "<input type='hidden' name='token' value='{$_REQUEST['token']}'>";
             } ?>
             <div class="form-group">
               <label for="contact_email">Your email</label>
@@ -475,7 +475,7 @@ if (!isset($edit)) {
     });
 
     // Send data
-    $('#add-event').on('submit', function(e) {
+    $('#event-form').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
       if (description_len < 10 || description_len > 200) {

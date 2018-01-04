@@ -47,11 +47,15 @@ if (isset($_POST['review-events'])) {
         foreach ($db->query('SELECT id, name FROM calendar_screens') as $s) {
           $html_message .= (in_array($s['id'], $screens)) ? "<label><input name='screen_loc[]' value='{$s['id']}' type='checkbox' checked> {$s['name']}</label><br>" : "<label><input name='screen_loc[]' value='{$s['id']}' type='checkbox'> {$s['name']}</label><br>";
         }
-        $html_message .= "<br><p>Event sponsor</p><select multiple name='sponsors[]'>";
-        foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $s) {
-          $html_message .= (in_array($s['id'], $sponsors)) ? "<option value='{$s['id']}' selected>{$s['sponsor']}</option>" : "<option value='{$s['id']}'>{$s['sponsor']}</option>";
+        $html_message .= "<br><p>Event sponsor</p>";
+        foreach ($sponsors as $sponor) {
+          $html_message .= "<select name='sponsors[]'>";
+          foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors') as $s) {
+            $html_message .= (in_array($s['id'], $sponsors)) ? "<option value='{$s['id']}' selected>{$s['sponsor']}</option>" : "<option value='{$s['id']}'>{$s['sponsor']}</option>";
+          }
+          $html_message .= "</select>";
         }
-        $html_message .= "</select><p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
+        $html_message .= "<p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
 
         $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {

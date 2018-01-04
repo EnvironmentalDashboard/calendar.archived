@@ -45,6 +45,9 @@ $prev_start = $prev_end - 2592000;
       @media (max-width: 768px) {
         .hidden-sm-down {display: none;}
       }
+      @media (max-width: 990px) {
+        .hidden-md-down {display: none;}
+      }
       .bg-primary, .bg-dark {color:#fff;}
       td.day {border: 1px solid #eee}
       table {table-layout: fixed;width: 100%}
@@ -139,15 +142,15 @@ $prev_start = $prev_end - 2592000;
             <a href="#" id="update-timeframe" class="btn btn-light btn-sm" style="float: right;display: none">Update</a>
           </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
-            <form class="form-inline">
-              <span class="navbar-text hidden-sm-down">
-                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary hidden-sm-down">&larr; Previous month</a>
-                <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-sm btn-primary">Next month &rarr;</a>
+            <form class="form-inline" style="width: 100%">
+              <span class="navbar-text" style="width: 100%">
+                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary hidden-md-down">&larr; Previous month</a>
+                <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-sm btn-primary hidden-md-down">Next month &rarr;</a>
+                <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
+                <a href="#" id="sort-date" class="btn btn-primary" style="float: right;">Date</a>
               </span>
-              <span style="position: absolute;right: 10px;" class="navbar-text">
-                <a href="#" id="sort-date" class="btn btn-primary">Date</a>
-                <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search">
-              </span>
+              <!-- <span style="position: absolute;right: 10px;" class="navbar-text">
+              </span> -->
             </form>
           </nav>
           <div id="tail"></div>
@@ -196,7 +199,7 @@ $prev_start = $prev_end - 2592000;
             </div>
           </div>
           <?php } ?>
-          <div style="text-align: center;padding-top: 15px">
+          <div style="text-align: center;padding-top: 15px;margin-bottom: 20px">
             <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-primary">Previous month</a>
             <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-primary">Next month</a>
           </div>

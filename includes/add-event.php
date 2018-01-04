@@ -13,7 +13,7 @@ $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] :
 $_POST['ex_description'] = (isset($_POST['ex_description'])) ? $_POST['ex_description'] : '';
 $_POST['email'] = (isset($_POST['email'])) ? $_POST['email'] : '';
 $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_email'] : '';
-$_POST['event_type'] = (isset($_POST['event_type'])) ? $_POST['event_type'] : '';
+$_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_id'] : '';
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
 if (!is_numeric($_POST['loc'])) { // with the <select> in the html we'll get a location id otherwise we'll get a string
   $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
@@ -66,7 +66,7 @@ elseif (!$date2) {
 elseif (!isset($_FILES['file']) || !file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
   // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
   $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsors']), $no_start_time, $no_end_time, $_POST['room_num']));
+  $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type_id'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsors']), $no_start_time, $no_end_time, $_POST['room_num']));
   $success = $db->lastInsertId();
   save_emails($db, $_POST['event'], $success);
 }
@@ -74,18 +74,20 @@ else {
   $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
-    // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
-    shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
     $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
+    file_put_contents('tmp.jpeg', $fp);
+    // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
+    shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg && chmod 777 tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
     $fp2 = fopen('tmp.jpeg', 'rb'); 
     $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, thumbnail, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->bindParam(1, $_POST['event']);
-    $stmt->bindParam(2, uniqid(bin2hex(random_bytes(116)), true));
+    $rand = uniqid(bin2hex(random_bytes(116)), true);
+    $stmt->bindParam(2, $rand);
     $stmt->bindParam(3, $date);
     $stmt->bindParam(4, $date2);
     $stmt->bindParam(5, $_POST['description']);
     $stmt->bindParam(6, $_POST['ex_description']);
-    $stmt->bindParam(7, $_POST['event_type']);
+    $stmt->bindParam(7, $_POST['event_type_id']);
     $stmt->bindParam(8, $_POST['loc']);
     $implode = implode(',', $_POST['screen_loc']);
     $stmt->bindParam(9, $implode);

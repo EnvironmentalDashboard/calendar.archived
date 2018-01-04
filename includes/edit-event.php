@@ -5,6 +5,7 @@ date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
 if (!isset($_POST['token']) || strlen($_POST['token']) !== 255) {
   exit('Error: missing token');
+} else {
   $stmt = $db->prepare('SELECT id FROM calendar WHERE token = ? LIMIT 1');
   $stmt->execute([$_POST['token']]);
   $edit_id = $stmt->fetchColumn();
@@ -91,16 +92,18 @@ $stmt = $db->prepare("{$query} WHERE id = ?");
 foreach ($data as $i => $entry) {
   switch ($entry) {
     case 'fp':
-      $stmt->bindParam($i + 1, $fp, PDO::PARAM_LOB);
+      $stmt->bindValue($i + 1, $fp, PDO::PARAM_LOB);
       break;
     case 'fp2':
-      $stmt->bindParam($i + 1, $fp2, PDO::PARAM_LOB);
+      $stmt->bindValue($i + 1, $fp2, PDO::PARAM_LOB);
       break;
     default:
-      $stmt->bindParam($i + 1, $entry);
+      $stmt->bindValue($i + 1, $entry);
       break;
   }
 }
-$stmt->bindParam($i + 2, $edit_id);
+$stmt->bindValue($i + 2, $edit_id);
 $stmt->execute();
+var_dump($edit_id);
+// var_dump($query);
 ?>
