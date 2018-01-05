@@ -103,7 +103,7 @@ $prev_start = $prev_end - 2592000;
             <div class="carousel-inner" role="listbox">
               <?php
               $counter = 0;
-              foreach ($cal->rows as $result) { ?>
+              foreach (array_reverse($cal->rows) as $result) { ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">

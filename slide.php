@@ -38,7 +38,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
   } elseif ($no_start_time) {
     return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
   } else {
-    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $start_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
   }
 }
 ?>
@@ -89,12 +89,13 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       }
       .title {
         font-size: 8rem;
-        font-size: 8vw;
+        font-size: 5.9vw;
         display: inline;
         font-weight: bold;
         text-transform: uppercase;
         font-family: 'Bebas Neue';
         margin-bottom: 10px;
+        width: 80%;
         /*font-family: 500;*/
         /*font-family: 'tradeGothic';*/
         /*background: rgba(0,0,0,0.8);*/

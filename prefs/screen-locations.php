@@ -25,7 +25,6 @@ if (!empty($_POST['loc'])) {
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
           <?php include 'includes/navbar.php'; ?>
         </div>
       </div>
@@ -52,8 +51,8 @@ if (!empty($_POST['loc'])) {
                 <?php foreach ($db->query('SELECT * FROM calendar_screens') as $row) { ?>
                 <tr>
                   <td><p><?php echo $row['name'] ?></p></td>
-                  <td><p>http://104.131.103.232/oberlin/cwd/kiosk.php?loc_id=<?php echo $row['id']; ?>&amp;timer=80</p></td>
-                  <td><p>http://104.131.103.232/oberlin/calendar/slideshow.php?loc_id=<?php echo $row['id']; ?></p></td>
+                  <td><p>https://oberlindashboard.org/oberlin/cwd/kiosk.php?loc_id=<?php echo $row['id']; ?>&amp;timer=80</p></td>
+                  <td><p>https://oberlindashboard.org/oberlin/calendar/slideshow.php?loc_id=<?php echo $row['id']; ?></p></td>
                   <td><a href="#" data-id="<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Delete location</a></td>
                 </tr>
                 <?php } ?>

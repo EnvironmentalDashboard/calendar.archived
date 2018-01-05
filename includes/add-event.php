@@ -10,7 +10,7 @@ $_POST['date2'] = (isset($_POST['date2'])) ? $_POST['date2'] : '';
 $_POST['end_date'] = (isset($_POST['end_date'])) ? $_POST['end_date'] : '';
 $_POST['event'] = (isset($_POST['event'])) ? $_POST['event'] : '';
 $_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : '';
-$_POST['ex_description'] = (isset($_POST['ex_description'])) ? $_POST['ex_description'] : '';
+$_POST['extended_description'] = (isset($_POST['extended_description'])) ? $_POST['extended_description'] : '';
 $_POST['email'] = (isset($_POST['email'])) ? $_POST['email'] : '';
 $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_email'] : '';
 $_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_id'] : '';
@@ -63,22 +63,10 @@ if (!$date) {
 elseif (!$date2) {
   $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event was not submitted";
 }
-elseif (!isset($_FILES['file']) || !file_exists($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-  // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
-  $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['ex_description'], $_POST['event_type_id'], $_POST['loc'], implode(',', $_POST['screen_loc']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsors']), $no_start_time, $no_end_time, $_POST['room_num']));
-  $success = $db->lastInsertId();
-  save_emails($db, $_POST['event'], $success);
-}
-else {
+elseif (isset($_FILES['file']['tmp_name']) && file_exists($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
   $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
-    $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-    file_put_contents('tmp.jpeg', $fp);
-    // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : intval($_POST['end_times']);
-    shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg && chmod 777 tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
-    $fp2 = fopen('tmp.jpeg', 'rb'); 
     $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, img, thumbnail, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->bindParam(1, $_POST['event']);
     $rand = uniqid(bin2hex(random_bytes(116)), true);
@@ -86,13 +74,15 @@ else {
     $stmt->bindParam(3, $date);
     $stmt->bindParam(4, $date2);
     $stmt->bindParam(5, $_POST['description']);
-    $stmt->bindParam(6, $_POST['ex_description']);
+    $stmt->bindParam(6, $_POST['extended_description']);
     $stmt->bindParam(7, $_POST['event_type_id']);
     $stmt->bindParam(8, $_POST['loc']);
-    $implode = implode(',', $_POST['screen_loc']);
+    $implode = implode(',', $_POST['screen_ids']);
     $stmt->bindParam(9, $implode);
-    $stmt->bindParam(10, $fp, PDO::PARAM_LOB);
-    $stmt->bindParam(11, $fp2, PDO::PARAM_LOB);
+    $img = file_get_contents($_FILES['file']['tmp_name']);
+    $stmt->bindParam(10, $img, PDO::PARAM_LOB);
+    $thumb = create_thumbnail($img);
+    $stmt->bindParam(11, $thumb, PDO::PARAM_LOB);
     $stmt->bindParam(12, $_POST['contact_email']);
     $stmt->bindParam(13, $_POST['email']);
     $phone = (int) preg_replace('/\D/', '', $_POST['phone']);
@@ -114,9 +104,20 @@ else {
     $error = 'Allowed file types are JPEG, PNG, and GIF, your event was not submitted.';
   }
 }
-// if (isset($error)) {
-// $error .= " <a href='add-event?".http_build_query($_POST)."'>Return to form</a>.";
-// }
+else {
+  // $repeat_end = ($_POST['end_type'] === 'on_date') ? strtotime($_POST['end_date']) : $_POST['end_times'];
+  $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  $stmt->execute(array($_POST['event'], uniqid(bin2hex(random_bytes(116)), true), $date, $date2, $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc'], implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($_POST['sponsors']), $no_start_time, $no_end_time, $_POST['room_num']));
+  $success = $db->lastInsertId();
+  save_emails($db, $_POST['event'], $success);
+}
+
+if (isset($error)) {
+  echo $error;
+} elseif (isset($success)) {
+  echo $success;
+}
+
 function save_emails($db, $event_name, $event_id) {
   $handle = fopen('/var/www/html/oberlin/calendar/prefs/emails.txt', 'r'); // send emails to all these addressess
   if ($handle) {
@@ -129,9 +130,9 @@ function save_emails($db, $event_name, $event_id) {
     die('Error opening emails.txt');
   } 
 }
-if (isset($error)) {
-	echo $error;
-} elseif (isset($success)) {
-	echo $success;
+function create_thumbnail($img) {
+  file_put_contents('tmp.jpeg', $img);
+  shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg && chmod 777 tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
+  return file_get_contents('tmp.jpeg');
 }
 ?>

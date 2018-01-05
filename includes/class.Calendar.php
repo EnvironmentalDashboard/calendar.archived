@@ -204,7 +204,7 @@ class Calendar {
     } elseif ($no_start_time) {
       return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
     } else {
-      return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $end_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+      return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $start_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
     }
   }
 

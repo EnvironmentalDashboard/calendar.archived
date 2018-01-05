@@ -36,6 +36,7 @@ if (isset($_POST['review-events'])) {
           $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
         }
         $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event. Alternatively, you can edit your event by submitting the form below which is prepopulated with the values present when the event was approved.</p>";
+        /*
         $html_message .= "<form action='https://oberlindashboard.org/oberlin/calendar/edit-event' method='POST'><input name='token' type='hidden' value='{$row['token']}'>";
         $html_message .= "<label for='event'>Event title</label><input type='text' name='event' id='event' value='{$row['event']}' style='width:100%;height:30px;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' ><br>";
         $html_message .= "<label for='description'>Event description</label><textarea name='description' id='description' style='width:100%;margin-bottom:10px;border-radius:3px;border:1px solid #ccc' rows='3' cols='8'>{$row['description']}</textarea><br>";
@@ -56,7 +57,7 @@ if (isset($_POST['review-events'])) {
           $html_message .= "</select>";
         }
         $html_message .= "<p style='text-align:center;''><input type='submit' value='Update event' class='btn'></p></form>";
-
+        */
         $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {
         $html_message = "<p>Your event was rejected.</p>";
@@ -239,7 +240,6 @@ function convert_to_day($d) {
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
           <?php include 'includes/navbar.php'; ?>
         </div>
       </div>
@@ -253,7 +253,7 @@ function convert_to_day($d) {
             <input type="hidden" name="review-events" value="true">
             <?php
             $i = 0;
-            foreach ($db->query('SELECT id, event, start, `end`, description, loc_id, screen_ids, repeat_on, repeat_end FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
+            foreach ($db->query('SELECT id, token, event, start, `end`, description, loc_id, screen_ids, repeat_on, repeat_end FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
               $i++;
             ?>
               <div class="form-group row">
@@ -306,6 +306,7 @@ function convert_to_day($d) {
                     data-repeat_end="<?php echo $event['repeat_end']; ?>"
                     class="edit-event">Edit event</a>
                   </p>
+                  <p><a href="../edit-event?token=<?php echo $event['token']; ?>">real edit link</a></p>
                 </div>
               </div>
             <?php } ?>

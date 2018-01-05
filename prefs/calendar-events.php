@@ -97,7 +97,6 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
           <?php include 'includes/navbar.php'; ?>
         </div>
       </div>
@@ -134,6 +133,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
             <tbody>
               <?php
               foreach ($db->query("SELECT * FROM calendar WHERE approved IS NOT NULL ORDER BY id DESC LIMIT {$offset}, {$limit}") as $event) {
+                $sponsors_arr = json_decode($event['sponsors'], true);
                 echo "<tr><form enctype='multipart/form-data' action='' method='POST'>";
                 echo "<th scope='row'><input type='hidden' name='id' value='{$event['id']}'>{$event['id']}</th>";
                 echo "<td><input type='text' name='event' value='{$event['event']}' class='form-control'></td>";
@@ -208,7 +208,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 echo "</td>";
                 echo "<td><select name='sponsors' class='custom-select'>";
                 foreach ($sponsors as $id => $sponsor) {
-                  if ($id == $event['sponsors']) {
+                  if (is_array($sponsors_arr) && in_array($id, $sponsors_arr)) {
                     echo "<option selected value='{$id}'>{$sponsor}</option>";
                   } else {
                     echo "<option value='{$id}'>{$sponsor}</option>";

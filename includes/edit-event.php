@@ -13,9 +13,9 @@ if (!isset($_POST['token']) || strlen($_POST['token']) !== 255) {
     exit('Error: invalid token');
   }
 }
-$cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing img, thumbnail, start, end, no_start_time, no_end_time
-$data = [null];
-$query = 'UPDATE calendar SET approved = ?';
+$cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are img, thumbnail, start, end, no_start_time, no_end_time
+$data = [];
+$query = 'UPDATE calendar SET approved = NULL';
 foreach ($cols as $col) {
   if (isset($_POST[$col])) {
     $skip = false;
@@ -38,7 +38,7 @@ foreach ($cols as $col) {
         $data[] = implode(',', $_POST['screen_ids']);
         break;
       case 'phone':
-        $data[] = (int) preg_replace('/\D/', '', $_POST['phone']);
+        $data[] = (preg_replace('/\D/', '', $_POST['phone']));
         break;
       case 'repeat_on':
         $data[] = json_encode($_POST['repeat_on']);
@@ -88,22 +88,42 @@ if (isset($_FILES['file']) && file_exists($_FILES['file']['tmp_name']) && is_upl
     $data[] = 'fp2';
   }
 }
+$no_start_time = 0;
+$no_end_time = 0;
+if (empty($_POST['time'])) {
+  $no_start_time = 1;
+}
+if (empty($_POST['time2'])) {
+  $no_end_time = 1;
+}
+$date = strtotime($_POST['date'] . ' ' . $_POST['time']);
+if ($no_end_time) {
+  $date2 = strtotime($_POST['date2'] . ' 23:59:59');
+} else {
+  $date2 = strtotime($_POST['date2'] . ' ' . $_POST['time2']);
+}
+$query .= ", start = ?, end = ?, no_start_time = {$no_start_time}, no_end_time = {$no_end_time}";
+$data[] = $date;
+$data[] = $date2;
+// $data[] = $no_start_time;
+// $data[] = $no_end_time;
 $stmt = $db->prepare("{$query} WHERE id = ?");
-foreach ($data as $i => $entry) {
+$i = 1;
+foreach ($data as $entry) {
   switch ($entry) {
     case 'fp':
-      $stmt->bindValue($i + 1, $fp, PDO::PARAM_LOB);
+      $stmt->bindParam($i, $fp, PDO::PARAM_LOB);
       break;
     case 'fp2':
-      $stmt->bindValue($i + 1, $fp2, PDO::PARAM_LOB);
+      $stmt->bindParam($i, $fp2, PDO::PARAM_LOB);
       break;
     default:
-      $stmt->bindValue($i + 1, $entry);
+      $stmt->bindValue($i, $entry);
       break;
   }
+  $i++;
 }
-$stmt->bindValue($i + 2, $edit_id);
+$stmt->bindValue($i, $edit_id);
 $stmt->execute();
-var_dump($edit_id);
-// var_dump($query);
+echo $edit_id;
 ?>

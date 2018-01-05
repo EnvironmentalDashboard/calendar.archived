@@ -47,10 +47,6 @@ if (!isset($edit)) {
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
           </div>
-          <div class="alert alert-success" id="alert-success" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
-            <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
-            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
-          </div>
           <?php if ($edit) { ?>
           <h1>Edit event</h1>
           <p>Edit the values in this form to update your event. You can bookmark this page to revisit this form and update your event in the future. <?php if ($event['approved']==1) { echo 'Since this event is already approved, editing it will take it down until it is approved again.'; } ?></p>
@@ -77,7 +73,7 @@ if (!isset($edit)) {
               <label for="event">Event title</label>
               <input type="text" class="form-control" id="event" name="event" value="<?php
               echo (!empty($_POST['event'])) ? $_POST['event'] : '';
-              echo ($edit && empty($_POST['event'])) ? $event['event'] : ''; ?>" maxlength="255">
+              echo ($edit && empty($_POST['event'])) ? $event['event'] : ''; ?>" maxlength="60">
             </div>
             <div class="form-group">
               <label for="sponsor1">Who is organizing/sponsoring this event?</label>
@@ -97,7 +93,8 @@ if (!isset($edit)) {
                 $num_sponsors++;
               }
               if ($edit) {
-                foreach (json_decode($event['sponsors']) as $sponsor_id) {
+                $sponsors = json_decode($event['sponsors'], true);
+                foreach (($sponsors == null || !is_array($sponsors)) ? [] : $sponsors as $sponsor_id) {
                   $stmt = $db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
                   $stmt->execute([$sponsor_id]);
                   $sponsor = $stmt->fetchColumn();
@@ -115,7 +112,6 @@ if (!isset($edit)) {
             <div class="form-group">
               <label for="event_type">Event type</label>
               <select class="form-control" id="event_type" name="event_type_id">
-                <option value="1">Volunteer opportunities</option>
                 <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $row) {
                   if ($edit && $event['event_type_id'] === $row['id']) {
                     echo "<option value='{$row['id']}' selected>{$row['event_type']}</option>";
@@ -152,7 +148,7 @@ if (!isset($edit)) {
                 <label for="time2">Time event ends</label>
                 <input type="text" class="form-control" id="time2" name="time2" value="<?php
                 echo (!empty($_POST['time2'])) ? $_POST['time2'] : '';
-                echo ($edit && empty($_POST['time']) && $event['no_end_time'] === '0') ? date('g:ia', $event['start']) : ''; ?>" placeholder="12:30pm">
+                echo ($edit && empty($_POST['time2']) && $event['no_end_time'] === '0') ? date('g:ia', $event['end']) : ''; ?>" placeholder="12:30pm">
                 <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
               </div>
             </div>
@@ -199,10 +195,10 @@ if (!isset($edit)) {
               <small class="text-muted">200 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
-              <label for="ex_description">Extended description</label>
-              <textarea name="ex_description" id="ex_description" class="form-control"><?php
-              echo (!empty($_POST['ex_description'])) ? $_POST['ex_description'] : '';
-              echo ($edit && empty($_POST['ex_description'])) ? $event['extended_description'] : ''; ?></textarea>
+              <label for="extended_description">Extended description</label>
+              <textarea name="extended_description" id="extended_description" class="form-control"><?php
+              echo (!empty($_POST['extended_description'])) ? $_POST['extended_description'] : '';
+              echo ($edit && empty($_POST['extended_description'])) ? $event['extended_description'] : ''; ?></textarea>
               <small class="text-muted">Will only be displayed on website and not digitial signage</small>
             </div>
             <div class="form-group">
@@ -304,7 +300,7 @@ if (!isset($edit)) {
                   $checked = '';
                 }
                 echo "<label class=\"custom-control custom-checkbox\" style='display:block'>
-                      <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\" {$checked}>
+                      <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_ids[]\" value=\"{$row['id']}\" {$checked}>
                       <span class=\"custom-control-indicator\"></span>
                       <span class=\"custom-control-description\">{$row['name']}</span>
                       </label>\n";
@@ -325,7 +321,7 @@ if (!isset($edit)) {
                     $checked = '';
                   }
                   echo "<label class=\"custom-control custom-checkbox\" style='display:block'>
-                        <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_loc[]\" value=\"{$row['id']}\">
+                        <input type=\"checkbox\" class=\"custom-control-input\" name=\"screen_ids[]\" value=\"{$row['id']}\">
                         <span class=\"custom-control-indicator\"></span>
                         <span class=\"custom-control-description\">{$row['name']}</span>
                         </label>\n";
@@ -336,27 +332,31 @@ if (!isset($edit)) {
             <p class="form-group">Provide contact details to be associated with event:</p>
             <div class="form-group">
               <label for="email" class="sr-only">Email of contact person for the event</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Your email" <?php
+              <input type="email" class="form-control" id="email" name="email" placeholder="Your email" value="<?php
               echo (!empty($_POST['email'])) ? $_POST['email'] : '';
-              echo ($edit && empty($_POST['email'])) ? $event['email'] : ''; ?>>
+              echo ($edit && empty($_POST['email'])) ? $event['email'] : ''; ?>">
               <p><small class="text-muted">This is the email of the person who interested residents should contact for additional information about the event. It may or may not be the same as the email of the person completing this form.</small></p>
             </div>
             <div class="form-group">
               <label for="phone" class="sr-only">Phone number of contact person for the event</label>
-              <input type="text" class="form-control" id="phone" name="phone" placeholder="Your phone number" <?php
+              <input type="text" class="form-control" id="phone" name="phone" placeholder="Your phone number" value="<?php
               echo (!empty($_POST['phone'])) ? $_POST['phone'] : '';
-              echo ($edit && empty($_POST['phone'])) ? $event['phone'] : ''; ?>>
+              echo ($edit && empty($_POST['phone'])) ? $event['phone'] : ''; ?>">
             </div>
             <div class="form-group">
               <label for="website" class="sr-only">Website of organization sponsoring event</label>
-              <input type="text" class="form-control" id="website" name="website" placeholder="Your website URL" <?php
+              <input type="text" class="form-control" id="website" name="website" placeholder="Your website URL" value="<?php
               echo (!empty($_POST['website'])) ? $_POST['website'] : '';
-              echo ($edit && empty($_POST['website'])) ? $event['website'] : ''; ?>>
+              echo ($edit && empty($_POST['website'])) ? $event['website'] : ''; ?>">
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
             <?php if ($edit) { echo '<a href="#" class="btn btn-secondary" id="preview">View event</a>'; } ?>
             <input type="submit" name="submit-btn" id="submit-btn" value="<?php echo ($edit) ? 'Update event' : 'Submit event for review' ?>" class="btn btn-primary">
           </form>
+          <div class="alert alert-success" id="alert-success" role="alert" style="<?php echo (isset($success)) ? '' : 'display:none'; ?>">
+            <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
+          </div>
         </div>
       </div>
       <div style="height: 130px;clear: both;"></div>
@@ -481,9 +481,9 @@ if (!isset($edit)) {
       if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 10 and 200 characters.');
-      } else if ($('#event').val().length > 80) {
+      } else if ($('#event').val().length > 60) {
         $('#alert-warning').css('display', 'block');
-        $('#alert-warning-text').text('Event title must be less than 80 characters');
+        $('#alert-warning-text').text('Event title must be less than 60 characters');
       } else if ($('#event').val().length == 0) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event title is empty');
@@ -509,9 +509,13 @@ if (!isset($edit)) {
           success: function(resp) {
             console.log(resp);
             if (!isNaN(resp)) { // if valid int
-              $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
-              $('#submit-btn').val('Success!');
-              setTimeout(function(){ document.location.href = "slide?id="+resp; }, 5000);
+              <?php if ($edit) { ?>
+                $('#alert-success-text').text('Your event is now updated. It will be reviewed again before it is displayed on the website and digital signs.');
+              <?php } else { ?>
+                $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
+                $('#submit-btn').val('Success!');
+                setTimeout(function(){ document.location.href = "slide?id="+resp; }, 5000);
+              <?php } ?>
             } else {
               $('#alert-success-text').text(resp);
               $('#submit-btn').val('Submit event for review');

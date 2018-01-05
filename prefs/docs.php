@@ -23,7 +23,6 @@ if (isset($_POST['emails'])) {
     <div class="container">
       <div class="row">
         <div class="col-xs-12">
-          <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px">
           <?php include 'includes/navbar.php'; ?>
         </div>
       </div>
