@@ -169,7 +169,7 @@ if (!isset($edit)) {
               <?php } else { ?>
               <input type="text" class="form-control" id="loc" name="loc" value="<?php
               echo (!empty($_POST['loc'])) ? $_POST['loc'] : '';
-              echo ($edit && empty($_POST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = {$event['loc_id']}")->fetchColumn() : ''; 
+              echo ($edit && empty($_POST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
               ?>">
               <?php } ?>
             </div>
@@ -209,75 +209,6 @@ if (!isset($edit)) {
               </label>
               <p><small class="text-success" id="filename"></small></p>
               <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. Please do NOT upload an image of a poster that contains text information describing the event -- it will be too small to read and will be redundant to the event description.</small></p>
-            </div>
-            <!-- <div class="form-group">
-              <label for="repeat_every">Repeat</label>
-              <select class="form-control" id="repeat_every" name="repeat_every">
-                <option value="0">None</option>
-                <option value="604800">Every week</option>
-                <option value="2592000">Every month</option>
-              </select>
-            </div> -->
-            <div class="form-group">
-              <p class="m-b-0">Repeat weekly on</p>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="0">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">S</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="1">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">M</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="2">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">T</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="3">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">W</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="4">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">T</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="5">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">F</span>
-              </label>
-              <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="repeat_on[]" value="6">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">S</span>
-              </label>
-            </div>
-            <div class="form-group">
-              <label for="end_date">End repeat after</label>
-              <!-- <div class="row"> -->
-                <!-- <div class="col-xs-4">
-                  <select class="form-control" id="end_type" name="end_type">
-                    <option value="after">After</option>
-                    <option value="on_date">On date</option>
-                  </select>
-                </div> -->
-                <!-- <div class="col-xs-8"> -->
-                  <!-- <div id="end-times">
-                    <select class="form-control" id="end_times" name="end_times">
-                      <?php /*for ($i = 2; $i < 1000; $i++) { 
-                        echo "<option value='{$i}'>{$i} times</option>";
-                      }*/ ?>
-                    </select>
-                  </div> -->
-                  <!-- <div id="end-date"> -->
-                    <input type="text" class="form-control" id="end_date" name="end_date" value="<?php echo (!empty($_POST['end_date'])) ? $_POST['end_date'] : ''; ?>" placeholder="mm/dd/yyyy">
-                  <!-- </div> -->
-                <!-- </div> -->
-              <!-- </div> -->
             </div>
             <div class="custom-controls-stacked">
               <p class="m-b-0">Select the screens the poster will be shown on</p>
@@ -353,9 +284,9 @@ if (!isset($edit)) {
             <?php if ($edit) { echo '<a href="#" class="btn btn-secondary" id="preview">View event</a>'; } ?>
             <input type="submit" name="submit-btn" id="submit-btn" value="<?php echo ($edit) ? 'Update event' : 'Submit event for review' ?>" class="btn btn-primary">
           </form>
-          <div class="alert alert-success" id="alert-success" role="alert" style="<?php echo (isset($success)) ? '' : 'display:none'; ?>">
+          <div class="alert alert-success" id="alert-success" role="alert" style="margin-top:20px;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
-            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?></div>
+            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?>. Click <a href="http://environmentaldashboard.org" class="alert-link">here</a> to view the calendar.</div>
           </div>
         </div>
       </div>
@@ -514,7 +445,7 @@ if (!isset($edit)) {
               <?php } else { ?>
                 $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
                 $('#submit-btn').val('Success!');
-                setTimeout(function(){ document.location.href = "slide?id="+resp; }, 5000);
+                setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
               <?php } ?>
             } else {
               $('#alert-success-text').text(resp);
