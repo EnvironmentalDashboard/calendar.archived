@@ -3,11 +3,11 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
-if (!isset($_POST['token']) || strlen($_POST['token']) !== 255) {
+if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
   exit('Error: missing token');
 } else {
   $stmt = $db->prepare('SELECT id FROM calendar WHERE token = ? LIMIT 1');
-  $stmt->execute([$_POST['token']]);
+  $stmt->execute([$_REQUEST['token']]);
   $edit_id = $stmt->fetchColumn();
   if ($edit_id == null) {
     exit('Error: invalid token');
@@ -21,16 +21,18 @@ foreach ($cols as $col) {
     $skip = false;
     switch ($col) {
       case 'loc_id':
-        if (!is_numeric($_POST['loc_id'])) { // with the <select> in the html we'll get a location id otherwise we'll get a string
-          $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
-          $stmt->execute([$_POST['loc_id']]);
-          if ($stmt->rowCount() > 0) {
-            $_POST['loc_id'] = $stmt->fetchColumn();
-          } else {
-            $stmt = $db->prepare('INSERT INTO calendar_locs (location) VALUES (?)');
-            $stmt->execute([$_POST['loc']]);
-            $_POST['loc_id'] = $db->lastInsertId();
-          }
+        if (isset($_POST['street_addr'])) {
+          $stmt = $db->prepare('UPDATE calendar_locs SET address = ? WHERE location = ? AND address = \'\'');
+          $stmt->execute([$_POST['street_addr'], $_POST['loc_id']]);
+        }
+        $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
+        $stmt->execute([$_POST['loc_id']]);
+        if ($stmt->rowCount() > 0) {
+          $_POST['loc_id'] = $stmt->fetchColumn();
+        } else {
+          $stmt = $db->prepare('INSERT INTO calendar_locs (location) VALUES (?)');
+          $stmt->execute([$_POST['loc']]);
+          $_POST['loc_id'] = $db->lastInsertId();
         }
         $data[] = $_POST['loc_id'];
         break;

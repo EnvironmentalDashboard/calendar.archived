@@ -60,26 +60,28 @@ if (!isset($edit)) {
           <form method="POST" enctype="multipart/form-data" id="event-form">
             <input type="hidden" name="action" value="<?php echo ($edit) ? 'edit' : 'add' ?>">
             <?php if ($edit) {
-              echo "<input type='hidden' name='token' value='{$_REQUEST['token']}'>";
+              echo "<input type='hidden' name='token' id='token' value='{$_REQUEST['token']}'>";
+            } else {
+              echo "<input type='hidden' name='token' id='token' value='".uniqid(bin2hex(random_bytes(116)), true)."'>";
             } ?>
             <div class="form-group">
               <label for="contact_email">Your email</label>
               <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php
-              echo (!empty($_POST['contact_email'])) ? $_POST['contact_email'] : '';
-              echo ($edit && empty($_POST['contact_email'])) ? $event['contact_email'] : ''; ?>" maxlength="255">
+              echo (!empty($_REQUEST['contact_email'])) ? $_REQUEST['contact_email'] : '';
+              echo ($edit && empty($_REQUEST['contact_email'])) ? $event['contact_email'] : ''; ?>" maxlength="255">
               <p><small class="text-muted">Enter your email to be notified when the event is approved or rejected.</small></p>
             </div>
             <div class="form-group">
               <label for="event">Event title</label>
               <input type="text" class="form-control" id="event" name="event" value="<?php
-              echo (!empty($_POST['event'])) ? $_POST['event'] : '';
-              echo ($edit && empty($_POST['event'])) ? $event['event'] : ''; ?>" maxlength="60">
+              echo (!empty($_REQUEST['event'])) ? $_REQUEST['event'] : '';
+              echo ($edit && empty($_REQUEST['event'])) ? $event['event'] : ''; ?>" maxlength="60">
             </div>
             <div class="form-group">
               <label for="sponsor1">Who is organizing/sponsoring this event?</label>
               <?php
               $num_sponsors = 1;
-              foreach (isset($_POST['sponsors']) ? $_POST['sponsors'] : [] as $sponsor) {
+              foreach (isset($_REQUEST['sponsors']) ? $_REQUEST['sponsors'] : [] as $sponsor) {
                 echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' data-sponsor='{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='80'><div id='invalid-feedback{$num_sponsors}' class='invalid-feedback'></div>";
                 if ($num_sponsors !== 1) {
                   echo "<p><a href='#' data-remove='#sponsor{$num_sponsors}' style='float:right' class='remove-sponsor'>Remove</a></p>";
@@ -123,65 +125,64 @@ if (!isset($edit)) {
               <div class="col-sm-8">
                 <label for="date">Date event begins</label>
                 <input type="text" class="form-control" id="date" name="date" value="<?php
-                echo (!empty($_POST['date'])) ? $_POST['date'] : '';
-                echo ($edit && empty($_POST['date'])) ? date('m/d/Y', $event['start']) : ''; ?>" placeholder="mm/dd/yyyy">
+                echo (!empty($_REQUEST['date'])) ? $_REQUEST['date'] : '';
+                echo ($edit && empty($_REQUEST['date'])) ? date('m/d/Y', $event['start']) : ''; ?>" placeholder="mm/dd/yyyy">
               </div>
               <div class="col-sm-4">
                 <label for="time">Time event begins</label>
                 <input type="text" class="form-control" id="time" name="time" value="<?php
-                echo (!empty($_POST['time'])) ? $_POST['time'] : '';
-                echo ($edit && empty($_POST['time'])) ? date('g:ia', $event['start']) : ''; ?>" placeholder="12:30pm">
+                echo (!empty($_REQUEST['time'])) ? $_REQUEST['time'] : '';
+                echo ($edit && empty($_REQUEST['time'])) ? date('g:ia', $event['start']) : ''; ?>" placeholder="12:30pm">
               </div>
             </div>
             <div class="form-group row">
               <div class="col-sm-8">
                 <label for="date2">Date event ends</label>
                 <input type="text" class="form-control" id="date2" name="date2" value="<?php
-                echo (!empty($_POST['date2'])) ? $_POST['date2'] : '';
-                echo ($edit && empty($_POST['date2'])) ? date('m/d/Y', $event['end']) : ''; ?>" placeholder="mm/dd/yyyy">
+                echo (!empty($_REQUEST['date2'])) ? $_REQUEST['date2'] : '';
+                echo ($edit && empty($_REQUEST['date2'])) ? date('m/d/Y', $event['end']) : ''; ?>" placeholder="mm/dd/yyyy">
               </div>
               <div class="col-sm-4">
                 <label for="time2">Time event ends</label>
                 <input type="text" class="form-control" id="time2" name="time2" value="<?php
-                echo (!empty($_POST['time2'])) ? $_POST['time2'] : '';
-                echo ($edit && empty($_POST['time2']) && $event['no_end_time'] === '0') ? date('g:ia', $event['end']) : ''; ?>" placeholder="12:30pm">
+                echo (!empty($_REQUEST['time2'])) ? $_REQUEST['time2'] : '';
+                echo ($edit && empty($_REQUEST['time2']) && $event['no_end_time'] === '0') ? date('g:ia', $event['end']) : ''; ?>" placeholder="12:30pm">
                 <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
               </div>
             </div>
             <div class="form-group">
               <label for="loc">Building or public space in which event will occur</label>
               <input type="text" class="form-control" id="loc" name="loc" value="<?php
-              echo (!empty($_POST['loc'])) ? $_POST['loc'] : '';
-              echo ($edit && empty($_POST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
+              echo (!empty($_REQUEST['loc'])) ? $_REQUEST['loc'] : '';
+              echo ($edit && empty($_REQUEST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
               ?>">
               <div id="invalid-feedback-loc" class="invalid-feedback"></div>
             </div>
             <div class="form-group">
               <label for="room_num">Room or room number</label>
               <input type="text" class="form-control" id="room_num" name="room_num" value="<?php
-              echo (!empty($_POST['room_num'])) ? $_POST['room_num'] : '';
-              echo ($edit && empty($_POST['room_num'])) ? $event['room_num'] : ''; ?>">
+              echo (!empty($_REQUEST['room_num'])) ? $_REQUEST['room_num'] : '';
+              echo ($edit && empty($_REQUEST['room_num'])) ? $event['room_num'] : ''; ?>">
               <p><small class="text-muted">Leave this box blank unless a room and number are necessary. Do not repeat the building name.  For example, if an event is in the meeting room in the Oberlin Public Library, then simply enter “Meeting Room” here. If it is in King hall 306, write &ldquo;306&rdquo; here.</small></p>
             </div>
             <div class="form-group">
               <label for="street_addr">Street address</label>
               <input type="text" class="form-control" id="street_addr" name="street_addr" value="<?php
-              echo (!empty($_POST['street_addr'])) ? $_POST['street_addr'] : ''; ?>">
-              <!-- TODO: fix; this is a dummy field -->
-              <p><small class="text-muted">Leave this box blank for all locations that are already listed under &ldquo;Building and Location&ldquo; &mdash; these addresses are already recorded. Include only for new locations added. Street addresses will only appear in online version of calendar.</small></p>
+              echo (!empty($_REQUEST['street_addr'])) ? $_REQUEST['street_addr'] : ''; ?>">
+              <p><small class="text-muted" id="street_addr_valid"></small></p>
             </div>
             <div class="form-group">
               <label for="description">Short event description</label>
               <textarea name="description" id="description" maxlength="200" class="form-control"><?php
-              echo (!empty($_POST['description'])) ? $_POST['description'] : '';
-              echo ($edit && empty($_POST['event'])) ? $event['description'] : '';?></textarea>
+              echo (!empty($_REQUEST['description'])) ? $_REQUEST['description'] : '';
+              echo ($edit && empty($_REQUEST['event'])) ? $event['description'] : '';?></textarea>
               <small class="text-muted">200 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
               <label for="extended_description">Extended description</label>
               <textarea name="extended_description" id="extended_description" class="form-control"><?php
-              echo (!empty($_POST['extended_description'])) ? $_POST['extended_description'] : '';
-              echo ($edit && empty($_POST['extended_description'])) ? $event['extended_description'] : ''; ?></textarea>
+              echo (!empty($_REQUEST['extended_description'])) ? $_REQUEST['extended_description'] : '';
+              echo ($edit && empty($_REQUEST['extended_description'])) ? $event['extended_description'] : ''; ?></textarea>
               <small class="text-muted">Will only be displayed on website and not digitial signage</small>
             </div>
             <div class="form-group">
@@ -247,21 +248,21 @@ if (!isset($edit)) {
             <div class="form-group">
               <label for="email" class="sr-only">Email of contact person for the event</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="Your email" value="<?php
-              echo (!empty($_POST['email'])) ? $_POST['email'] : '';
-              echo ($edit && empty($_POST['email'])) ? $event['email'] : ''; ?>">
+              echo (!empty($_REQUEST['email'])) ? $_REQUEST['email'] : '';
+              echo ($edit && empty($_REQUEST['email'])) ? $event['email'] : ''; ?>">
               <p><small class="text-muted">This is the email of the person who interested residents should contact for additional information about the event. It may or may not be the same as the email of the person completing this form.</small></p>
             </div>
             <div class="form-group">
               <label for="phone" class="sr-only">Phone number of contact person for the event</label>
               <input type="text" class="form-control" id="phone" name="phone" placeholder="Your phone number" value="<?php
-              echo (!empty($_POST['phone'])) ? $_POST['phone'] : '';
-              echo ($edit && empty($_POST['phone'])) ? $event['phone'] : ''; ?>">
+              echo (!empty($_REQUEST['phone'])) ? $_REQUEST['phone'] : '';
+              echo ($edit && empty($_REQUEST['phone'])) ? $event['phone'] : ''; ?>">
             </div>
             <div class="form-group">
               <label for="website" class="sr-only">Website of organization sponsoring event</label>
               <input type="text" class="form-control" id="website" name="website" placeholder="Your website URL" value="<?php
-              echo (!empty($_POST['website'])) ? $_POST['website'] : '';
-              echo ($edit && empty($_POST['website'])) ? $event['website'] : ''; ?>">
+              echo (!empty($_REQUEST['website'])) ? $_REQUEST['website'] : '';
+              echo ($edit && empty($_REQUEST['website'])) ? $event['website'] : ''; ?>">
             </div>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
             <?php if ($edit) { echo '<a href="#" class="btn btn-secondary" id="preview">View event</a>'; } ?>
@@ -269,7 +270,7 @@ if (!isset($edit)) {
           </form>
           <div class="alert alert-success" id="alert-success" role="alert" style="margin-top:20px;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
-            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?>. Click <a href="http://environmentaldashboard.org" class="alert-link">here</a> to view the calendar.</div>
+            <div id="alert-success-text"><?php echo (isset($success)) ? $success : ''; ?>. Click <a href="http://environmentaldashboard.org/calendar" class="alert-link">here</a> to view the calendar.</div>
           </div>
         </div>
       </div>
@@ -387,6 +388,7 @@ if (!isset($edit)) {
                 $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
                 $('#submit-btn').val('Success!');
                 setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
+                setCookie('event'+resp, $('#token').val(), 365);
               <?php } ?>
             } else {
               $('#alert-success-text').text(resp);
@@ -438,6 +440,18 @@ if (!isset($edit)) {
             $('#invalid-feedback-loc').text('');
             loc.removeClass('is-invalid');
           }
+        } else { // fetch the street address for this event
+          $.get("includes/fetch-street-address.php", {loc: loc.val()}, function(resp) {
+            if (resp) {
+              $('#street_addr').val(resp);
+              $('#street_addr').prop('disabled', true);
+              $('#street_addr_valid').text('Please do not edit this field as this location already has a street address.');
+            } else {
+              $('#street_addr').val('');
+              $('#street_addr').prop('disabled', false);
+              $('#street_addr_valid').text('Please enter a street address for this location.');
+            }
+          }, 'text');
         }
       });
       init_sponsor_fields();
@@ -478,6 +492,37 @@ if (!isset($edit)) {
       $('#time').timepicker();
       $('#time2').timepicker();
     }
-    
+
+    window.onbeforeunload = function() {
+      $('#event-form').serializefiles().forEach(function(a, b, formdata) {
+        for (var pair of formdata.entries()) { // https://developer.mozilla.org/en-US/docs/Web/API/FormData/entries
+          setCookie(pair[0], pair[1], 1);
+        }
+      });
+    }
+
+    // https://stackoverflow.com/a/24103596/2624391
+    function setCookie(name,value,days) {
+      var expires = "";
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+    function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    }
+    function eraseCookie(name) {   
+      document.cookie = name+'=; Max-Age=-99999999;';  
+    }
   </script>
 </html>

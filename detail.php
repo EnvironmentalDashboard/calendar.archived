@@ -2,12 +2,12 @@
 require '../includes/db.php';
 error_reporting(-1);
 ini_set('display_errors', 'On');
-$id = (isset($_GET['id'])) ? $_GET['id'] : 25;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website FROM calendar WHERE id = ?');
+$id = (isset($_GET['id'])) ? $_GET['id'] : 0;
+$stmt = $db->prepare('SELECT loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website, approved FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
-  header("location:javascript://history.go(-1)");
+  header("location:javascript://history.go(-1)"); // lol
   die();
 }
 $extra_img = (!empty($event['img'])) ? 'data:image/jpeg;base64,'.base64_encode($event['img']) : null;
@@ -51,6 +51,15 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       </div>
       <div class="row">
         <div class="col-md-8 col-sm-12">
+          <?php if ($event['approved'] === null) { ?>
+          <div class="alert alert-warning" id="alert-warning" role="alert" style="margin-top:0px 20px;">
+            <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+            <div id="alert-warning-text">This event is not yet approved.<?php if (isset($_COOKIE["event{$id}"])) {
+              $cookie = $_COOKIE["event{$id}"];
+              echo " Since you created this event using this browser, you can click <a href='edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
+            } ?></div>
+          </div>
+          <?php } ?>
           <h1><?php echo $event['event']; ?></h1>
           <hr>
           <p><?php echo $event['description']; ?></p>
@@ -94,7 +103,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       <div style="clear: both;height: 110px"></div>
       <?php
       $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? AND approved = 1 ORDER BY start ASC LIMIT 4');
-      $stmt->execute(array($event['event_type_id'], $event['id']));
+      $stmt->execute(array($event['event_type_id'], $id));
       $related_events = $stmt->fetchAll();
       if (count($related_events) > 0) { ?>
       <h3>Related events</h3>
@@ -120,5 +129,10 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script>
+      $('.alert > button').on('click', function() {
+        $('.alert').css('display', 'none');
+      });
+    </script>
   </body>
 </html>
