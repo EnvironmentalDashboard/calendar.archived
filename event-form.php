@@ -77,19 +77,13 @@ if (!isset($edit)) {
             </div>
             <div class="form-group">
               <label for="sponsor1">Who is organizing/sponsoring this event?</label>
-              <?php if (false) { ?>
-              <select multiple class="form-control" id="sponsor1" name="sponsors[]">
-                <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) { ?>
-                <option value="<?php echo $row['id']; ?>"><?php echo $row['sponsor']; ?></option>
-                <?php } ?>
-              </select>
-              <p><small class="text-muted">Please select a location from this list. Do not add a new sponsor unless the organization is not already in this (look for alternative names such as acronyms).</small></p>
-              <p><a href="#" id="add-event-sponsor">Add a new sponsor</a></p>
-              <?php } else { ?>
               <?php
               $num_sponsors = 1;
               foreach (isset($_POST['sponsors']) ? $_POST['sponsors'] : [] as $sponsor) {
-                echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='255'>";
+                echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' data-sponsor='{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='80'><div id='invalid-feedback{$num_sponsors}' class='invalid-feedback'></div>";
+                if ($num_sponsors !== 1) {
+                  echo "<p><a href='#' data-remove='#sponsor{$num_sponsors}' style='float:right' class='remove-sponsor'>Remove</a></p>";
+                }
                 $num_sponsors++;
               }
               if ($edit) {
@@ -98,16 +92,19 @@ if (!isset($edit)) {
                   $stmt = $db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
                   $stmt->execute([$sponsor_id]);
                   $sponsor = $stmt->fetchColumn();
-                  echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='255'>";
+                  echo "<input type='text' class='form-control' id='sponsor{$num_sponsors}' data-sponsor='{$num_sponsors}' name='sponsors[]' value='{$sponsor}' maxlength='80'><div id='invalid-feedback{$num_sponsors}' class='invalid-feedback'></div>";
+                  if ($num_sponsors !== 1) {
+                    echo "<p><a href='#' data-remove='#sponsor{$num_sponsors}' style='float:right' class='remove-sponsor'>Remove</a></p>";
+                  }
                   $num_sponsors++;
                 }
               }
-              if ($num_sponsors++ === 1) {
-                echo '<input type="text" class="form-control" id="sponsor1" name="sponsors[]" value="" maxlength="255">';
+              if ($num_sponsors === 1) {
+                echo '<input type="text" class="form-control" id="sponsor1" data-sponsor="1" name="sponsors[]" value="" maxlength="80"><div id="invalid-feedback1" class="invalid-feedback"></div>';
+                $num_sponsors++;
               } ?>
               <div id="more-sponsors"></div>
               <p><a href="#" id="add-another-sponsor">Add another sponsor</a></p>
-              <?php } ?>
             </div>
             <div class="form-group">
               <label for="event_type">Event type</label>
@@ -121,7 +118,6 @@ if (!isset($edit)) {
                 } ?>
               </select>
               <p><small class="text-muted">Select the type that most closely matches. Events and volunteer opportunities MUST be consistent with policies outlined in Guide &amp; Use Policy to be considered for posting.</small></p>
-              <!-- <a href="#" id="add-event-type">Add a new event type</a> -->
             </div>
             <div class="form-group row">
               <div class="col-sm-8">
@@ -154,24 +150,11 @@ if (!isset($edit)) {
             </div>
             <div class="form-group">
               <label for="loc">Building or public space in which event will occur</label>
-              <?php if (false) { ?>
-              <select class="form-control" id="loc" name="loc">
-                <?php foreach ($db->query('SELECT id, location FROM calendar_locs ORDER BY location ASC') as $row) {
-                  if ($edit && $row['id'] === $event['loc_id']) {
-                    echo "<option value='{$row['id']}' selected>{$row['location']}</option>";
-                  } else {
-                    echo "<option value='{$row['id']}'>{$row['location']}</option>";
-                  }
-                } ?>
-              </select>
-              <p><small class="text-muted">Please select a location from this list. Do not add a new building or public space unless the venue is not listed (look for alternative names such as acronyms). Do not add rooms and numbers (see next box).</small></p>
-              <p><a href="#" id="add-event-location">Add a new event location</a></p>
-              <?php } else { ?>
               <input type="text" class="form-control" id="loc" name="loc" value="<?php
               echo (!empty($_POST['loc'])) ? $_POST['loc'] : '';
               echo ($edit && empty($_POST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
               ?>">
-              <?php } ?>
+              <div id="invalid-feedback-loc" class="invalid-feedback"></div>
             </div>
             <div class="form-group">
               <label for="room_num">Room or room number</label>
@@ -321,53 +304,6 @@ if (!isset($edit)) {
         $('#school-locs').find('input').prop('checked', false);
       }
     });
-    $('#add-event-type').on('click', function() {
-      var type = prompt('Enter new event type');
-      if (type != null) {
-        $.get("includes/add-event-type.php", {type: type}, function(resp) {
-          if (resp) {
-            $('#event_type').append('<option value='+resp+'>'+type+'</option>');
-            console.log(resp);
-            $('#event_type').val(resp);
-          } else {
-            alert('Failed to create event type.');
-          }   
-        }, 'text');
-      }
-    });
-    $('#add-event-location').on('click', function() {
-      var location = prompt('Enter new event location');
-      if (location != null) {
-        $.get("includes/add-event-location.php", {location: location}, function(resp) {
-          if (resp) {
-            var arr = resp.split(':');
-            if (arr[0] == 'false') {
-              $('#loc').val(arr[1]);
-              alert('That event location already exists');
-            } else {
-              $('#loc').append('<option value='+arr[1]+'>'+location+'</option>');
-              $('#loc').val(arr[1]);
-            }
-          } else {
-            alert('Failed to create event location.');
-          }   
-        }, 'text');
-      }
-    });
-    $('#add-event-sponsor').on('click', function() {
-      var sponsor = prompt('Enter new sponsor');
-      if (sponsor != null) {
-        $.get("includes/add-event-sponsor.php", {sponsor: sponsor}, function(resp) {
-          if (resp) {
-            $('#sponsor').append('<option value='+resp+'>'+sponsor+'</option>');
-            // console.log(resp);
-            // $('#sponsor').val(resp);
-          } else {
-            alert('Failed to create event sponsor.');
-          }   
-        }, 'text');
-      }
-    });
     var sponsor_fields = [<?php for ($i=1; $i < $num_sponsors; $i++) {
       if ($i !== $num_sponsors-1) {
         echo "\$('#sponsor{$i}'), ";
@@ -378,12 +314,17 @@ if (!isset($edit)) {
         num_sponsors = <?php echo $num_sponsors; ?>;
     $('#add-another-sponsor').on('click', function(e) {
       e.preventDefault();
-      $('#more-sponsors').append('<input type="text" class="form-control" id="sponsor'+num_sponsors+'" name="sponsors[]" value="" maxlength="255" style="margin-top:10px">');
+      $('#more-sponsors').append('<input type="text" class="form-control" id="sponsor'+num_sponsors+'" data-sponsor="'+num_sponsors+'" name="sponsors[]" value="" maxlength="80" style="margin-top:10px"><div id="invalid-feedback'+num_sponsors+'" class="invalid-feedback"></div><p><a href="#" class="remove-sponsor" style="float:right" data-remove="#sponsor'+num_sponsors+'">Remove</a></p>');
       sponsor_fields.push($('#sponsor'+num_sponsors));
       num_sponsors++;
       init_sponsor_fields();
     });
-    (function($) { // from https://stackoverflow.com/a/12426630/2624391
+    $(document).on('click', "a.remove-sponsor", function(e) { // https://stackoverflow.com/a/16893057/2624391
+      e.preventDefault();
+      $($(this).data('remove')).remove();
+      $(this).remove();
+    });
+    (function($) { // https://stackoverflow.com/a/12426630/2624391
     $.fn.serializefiles = function() {
         var obj = $(this);
         /* ADD FILE TO PARAM AJAX */
@@ -478,8 +419,26 @@ if (!isset($edit)) {
     var locations = <?php echo json_encode(array_column($db->query('SELECT location FROM calendar_locs ORDER BY location ASC')->fetchAll(), 'location')); ?>;
 
     $(function() { // init autocomplete and datepicker
-      $('#loc').autocomplete({
+      var loc = $('#loc');
+      loc.autocomplete({
         source: locations
+      }).on('autocompletechange', function(event, ui) {
+        if (ui.item === null) {
+          var all_good = true;
+          for (var i = locations.length - 1; i >= 0; i--) {
+            // console.log(locations[i], loc.val(), locations[i].toLowerCase().indexOf(loc.val()));
+            if (locations[i].toLowerCase().indexOf(loc.val()) !== -1) {
+              loc.addClass('is-invalid');
+              $('#invalid-feedback-loc').text(loc.val()+' is too similiar to another location that already exists, '+locations[i]);
+              all_good = false;
+              break;
+            }
+          }
+          if (all_good) {
+            $('#invalid-feedback-loc').text('');
+            loc.removeClass('is-invalid');
+          }
+        }
       });
       init_sponsor_fields();
       init_datepicker();
@@ -488,6 +447,22 @@ if (!isset($edit)) {
       $.each(sponsor_fields, function(i, v) {
         v.autocomplete({
           source: sponsors
+        }).on('autocompletechange', function(event, ui) {
+          if (ui.item === null) { // entered sponsor not in sponsor variable
+            var all_good = true;
+            for (var i = sponsors.length - 1; i >= 0; i--) {
+              if (sponsors[i].toLowerCase().indexOf(v.val()) !== -1) {
+                v.addClass('is-invalid');
+                $('#invalid-feedback' + v.data('sponsor')).text(v.val()+' is too similiar to another sponsor that already exists, '+sponsors[i]);
+                all_good = false;
+                break;
+              }
+            }
+            if (all_good) {
+              $('#invalid-feedback' + v.data('sponsor')).text('');
+              v.removeClass('is-invalid');
+            }
+          }
         });
       });
     }
@@ -503,5 +478,6 @@ if (!isset($edit)) {
       $('#time').timepicker();
       $('#time2').timepicker();
     }
+    
   </script>
 </html>
