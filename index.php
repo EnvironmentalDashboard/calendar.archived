@@ -144,8 +144,7 @@ $prev_start = $prev_end - 2592000;
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline" style="width: 100%">
               <span class="navbar-text" style="width: 100%">
-                <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-sm btn-primary hidden-md-down">&larr; Previous month</a>
-                <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-sm btn-primary hidden-md-down">Next month &rarr;</a>
+                <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a>
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
                 <a href="#" id="sort-date" class="btn btn-primary" style="float: right;">Date</a>
               </span>
@@ -200,8 +199,8 @@ $prev_start = $prev_end - 2592000;
           </div>
           <?php } ?>
           <div style="text-align: center;padding-top: 15px;margin-bottom: 20px">
-            <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-primary">Previous month</a>
-            <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-primary">Next month</a>
+            <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-primary">&larr; Previous month</a>
+            <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-primary">Next month &rarr;</a>
           </div>
         </div>
       </div>

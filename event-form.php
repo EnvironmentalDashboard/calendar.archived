@@ -351,6 +351,14 @@ if (!isset($edit)) {
     $('#event-form').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
+      var valid_sponsors = function() {
+        sponsor_fields.forEach(function(f) {
+          if (f.hasClass('is-invalid')) {
+            return false;
+          }
+        });
+        return true;
+      }
       if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 10 and 200 characters.');
@@ -366,6 +374,12 @@ if (!isset($edit)) {
       } else if ($('#date2').val().length < 9) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date');
+      } else if ($('#loc').hasClass('is-invalid')) {
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Please select a valid location');
+      } else if (valid_sponsors()) {
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Please select a valid sponsor');
       } else {
         $('#submit-btn').val('Loading');
         $('#alert-success').css('display', 'block');
@@ -422,14 +436,28 @@ if (!isset($edit)) {
 
     $(function() { // init autocomplete and datepicker
       var loc = $('#loc');
+      var fetch_street_address = function(loc) {
+        $.get("includes/fetch-street-address.php", {loc: loc}, function(resp) {
+          if (resp) {
+            $('#street_addr').val(resp);
+            $('#street_addr').prop('disabled', true);
+            $('#street_addr_valid').text('Please do not edit this field as this location already has a street address.');
+          } else {
+            $('#street_addr').val('');
+            $('#street_addr').prop('disabled', false);
+            $('#street_addr_valid').text('Please enter a street address for this location.');
+          }
+        }, 'text');
+      };
+      fetch_street_address(loc.val());
       loc.autocomplete({
         source: locations
-      }).on('autocompletechange', function(event, ui) {
+      });
+      loc.on('autocompletechange', function(event, ui) {
         if (ui.item === null) {
           var all_good = true;
           for (var i = locations.length - 1; i >= 0; i--) {
-            // console.log(locations[i], loc.val(), locations[i].toLowerCase().indexOf(loc.val()));
-            if (locations[i].toLowerCase().indexOf(loc.val()) !== -1) {
+            if (locations[i].toLowerCase().indexOf(loc.val().toLowerCase()) !== -1) {
               loc.addClass('is-invalid');
               $('#invalid-feedback-loc').text(loc.val()+' is too similiar to another location that already exists, '+locations[i]);
               all_good = false;
@@ -440,18 +468,13 @@ if (!isset($edit)) {
             $('#invalid-feedback-loc').text('');
             loc.removeClass('is-invalid');
           }
+          $('#street_addr').val('');
+          $('#street_addr').prop('disabled', false);
+          $('#street_addr_valid').text('Please enter a street address for this location.');
         } else { // fetch the street address for this event
-          $.get("includes/fetch-street-address.php", {loc: loc.val()}, function(resp) {
-            if (resp) {
-              $('#street_addr').val(resp);
-              $('#street_addr').prop('disabled', true);
-              $('#street_addr_valid').text('Please do not edit this field as this location already has a street address.');
-            } else {
-              $('#street_addr').val('');
-              $('#street_addr').prop('disabled', false);
-              $('#street_addr_valid').text('Please enter a street address for this location.');
-            }
-          }, 'text');
+          $('#invalid-feedback-loc').text('');
+          loc.removeClass('is-invalid');
+          fetch_street_address(loc.val());
         }
       });
       init_sponsor_fields();
@@ -461,11 +484,12 @@ if (!isset($edit)) {
       $.each(sponsor_fields, function(i, v) {
         v.autocomplete({
           source: sponsors
-        }).on('autocompletechange', function(event, ui) {
-          if (ui.item === null) { // entered sponsor not in sponsor variable
+        });
+        v.on('autocompletechange', function(event, ui) {
+          if (ui.item === null) { // entered sponsor not in sponsors variable
             var all_good = true;
             for (var i = sponsors.length - 1; i >= 0; i--) {
-              if (sponsors[i].toLowerCase().indexOf(v.val()) !== -1) {
+              if (sponsors[i].toLowerCase().indexOf(v.val().toLowerCase()) !== -1) {
                 v.addClass('is-invalid');
                 $('#invalid-feedback' + v.data('sponsor')).text(v.val()+' is too similiar to another sponsor that already exists, '+sponsors[i]);
                 all_good = false;
@@ -476,6 +500,9 @@ if (!isset($edit)) {
               $('#invalid-feedback' + v.data('sponsor')).text('');
               v.removeClass('is-invalid');
             }
+          } else {
+            v.removeClass('is-invalid');
+            $('#invalid-feedback' + v.data('sponsor')).text('');
           }
         });
       });
