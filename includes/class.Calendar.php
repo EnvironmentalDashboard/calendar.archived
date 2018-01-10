@@ -18,7 +18,7 @@ class Calendar {
     $this->start = $start;
     $this->end = $end;
     $this->rows = null; // will contain all the events we're working with
-    $this->expanded_rows = null; // will contain all the events with the recurring ones duplicated the number of times they recur
+    // $this->expanded_rows = null; // will contain all the events with the recurring ones duplicated the number of times they recur
     $this->sponsors = []; // will contain the sponsors of the events within the calendar $start and $end
   }
 
@@ -30,7 +30,7 @@ class Calendar {
       WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
     $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
     $this->rows = $stmt->fetchAll();
-    $this->expanded_rows = $this->expand_recurring_events();
+    // $this->expanded_rows = $this->expand_recurring_events();
   }
 
   /**
@@ -53,7 +53,9 @@ class Calendar {
           $ids[] = $sponsor_id;
           $stmt = $this->db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
           $stmt->execute([$sponsor_id]);
-          $this->sponsors[$sponsor_id] = $stmt->fetchColumn();
+          if ($stmt->rowCount() > 0) {
+            $this->sponsors[$sponsor_id] = $stmt->fetchColumn();
+          }
         }
       }
     }
@@ -105,6 +107,7 @@ class Calendar {
       $prev_month = $month - 1;
       $prev_year = $year;
     }
+    // print table header
     echo "<table class=\"calendar table text-center\">";
     echo (!$small) ?
           "<tr>
@@ -130,7 +133,7 @@ class Calendar {
       $day_count++;
     }
     $day_num = 1;
-    while ($day_num <= $days_in_month) {
+    while ($day_num <= $days_in_month) { // for each day of the month
       $today = strtotime($month . "/" . $day_num . "/" . $year . " 0:00:00");
       $tomorrow = $today + 86400;
       $day_color = "";
@@ -140,8 +143,9 @@ class Calendar {
       $popover_descripts = array();
       $popover_titles = array();
       $popover_ids = array();
-      foreach ($this->expanded_rows as $result) {
-        if ($result['start'] >= $today && $result['start'] < $tomorrow) {
+      foreach ($this->rows as $result) { // check all the events
+        $event_date_is_today = ($result['start'] >= $today && $result['start'] < $tomorrow);
+        if ($event_date_is_today || ($small && $result['end'] > $today && $today > $result['start'])) { // small and large calendar show different events
           $day_color = "bg-primary";
           $popover_descripts[] = str_replace('"', '&quot;', $result['description']); //addslashes();
           $popover_titles[] = str_replace('"', '&quot;', $result['event']);
@@ -200,11 +204,11 @@ class Calendar {
     if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
       return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
     } elseif (!$no_start_time && !$no_end_time) {
-      return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
+      return ($same_day) ? date('F jS, g:i a', $start_time) . ' to ' . date('g:i a', $end_time) : date('M jS, g:i a', $start_time) . ' to ' . date('M jS, g:i a', $end_time);
     } elseif ($no_start_time) {
-      return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
+      return ($same_day) ? date('F jS, \e\n\d\s \a\t g:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t g:i a', $end_time);
     } else {
-      return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $start_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+      return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t g:i a', $start_time) : date('M jS \a\t g:i a', $start_time) . ' to ' . date('M jS', $end_time);
     }
   }
 

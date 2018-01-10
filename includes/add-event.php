@@ -3,17 +3,19 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
+function convertUTF8($text) { return iconv(mb_detect_encoding($text, mb_detect_order(), true), "UTF-8", $text); } // https://stackoverflow.com/a/7980354/2624391
 $_POST['time'] = (isset($_POST['time'])) ? $_POST['time'] : '';
 $_POST['time2'] = (isset($_POST['time2'])) ? $_POST['time2'] : '';
 $_POST['date'] = (isset($_POST['date'])) ? $_POST['date'] : '';
 $_POST['date2'] = (isset($_POST['date2'])) ? $_POST['date2'] : '';
 $_POST['end_date'] = (isset($_POST['end_date'])) ? $_POST['end_date'] : '';
-$_POST['event'] = (isset($_POST['event'])) ? $_POST['event'] : '';
-$_POST['description'] = (isset($_POST['description'])) ? $_POST['description'] : '';
-$_POST['extended_description'] = (isset($_POST['extended_description'])) ? $_POST['extended_description'] : '';
+$_POST['event'] = (isset($_POST['event'])) ? convertUTF8($_POST['event']) : '';
+$_POST['description'] = (isset($_POST['description'])) ? convertUTF8($_POST['description']) : '';
+$_POST['extended_description'] = (isset($_POST['extended_description'])) ? convertUTF8($_POST['extended_description']) : '';
 $_POST['email'] = (isset($_POST['email'])) ? $_POST['email'] : '';
 $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_email'] : '';
 $_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_id'] : '';
+$_POST['loc_id'] = (isset($_POST['loc_id'])) ? convertUTF8($_POST['loc_id']) : '';
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
 $rand = (isset($_POST['token'])) ? $_POST['token'] : uniqid(bin2hex(random_bytes(116)), true);
 $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
@@ -33,12 +35,12 @@ if (isset($_POST['street_addr'])) {
 for ($i=0; $i < count($_POST['sponsors']); $i++) { 
   if (!is_numeric($_POST['sponsors'][$i])) {
     $stmt = $db->prepare('SELECT id FROM calendar_sponsors WHERE sponsor = ? LIMIT 1');
-    $stmt->execute([$_POST['sponsors'][$i]]);
+    $stmt->execute([convertUTF8($_POST['sponsors'][$i])]);
     if ($stmt->rowCount() > 0) {
       $_POST['sponsors'][$i] = $stmt->fetchColumn();
     } else {
       $stmt = $db->prepare('INSERT INTO calendar_sponsors (sponsor) VALUES (?)');
-      $stmt->execute([$_POST['sponsors'][$i]]);
+      $stmt->execute([convertUTF8($_POST['sponsors'][$i])]);
       $_POST['sponsors'][$i] = $db->lastInsertId();
     }
   }

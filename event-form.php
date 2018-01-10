@@ -7,7 +7,7 @@ if (!isset($edit)) {
   $edit = false;
 } elseif ($edit) {
   if (isset($_REQUEST['token'])) {
-    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num FROM calendar WHERE token = ?');
+    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num, thumbnail FROM calendar WHERE token = ?');
     $stmt->execute([$_REQUEST['token']]);
     if ($stmt->rowCount() === 0) {
       $edit = false;
@@ -151,10 +151,10 @@ if (!isset($edit)) {
               </div>
             </div>
             <div class="form-group">
-              <label for="loc">Building or public space in which event will occur</label>
-              <input type="text" class="form-control" id="loc" name="loc" value="<?php
-              echo (!empty($_REQUEST['loc'])) ? $_REQUEST['loc'] : '';
-              echo ($edit && empty($_REQUEST['loc'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
+              <label for="loc_id">Building or public space in which event will occur</label>
+              <input type="text" class="form-control" id="loc_id" name="loc_id" value="<?php
+              echo (!empty($_REQUEST['loc_id'])) ? $_REQUEST['loc_id'] : '';
+              echo ($edit && empty($_REQUEST['loc_id'])) ? $db->query("SELECT location FROM calendar_locs WHERE id = ".intval($event['loc_id']))->fetchColumn() : ''; 
               ?>">
               <div id="invalid-feedback-loc" class="invalid-feedback"></div>
             </div>
@@ -191,8 +191,12 @@ if (!isset($edit)) {
                 <input type="file" id="file2" class="custom-file-input" id="img" name="file" value="">
                 <span class="custom-file-control"></span>
               </label>
-              <p><small class="text-success" id="filename"></small></p>
-              <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. Please do NOT upload an image of a poster that contains text information describing the event -- it will be too small to read and will be redundant to the event description.</small></p>
+              <p><small class="text-success" id="filename">
+              <?php if ($edit && $event['thumbnail'] != null) {
+                echo "<p>Only select a new picture if you wish to replace your existing image: <img width='30px' src='data:image/jpeg;base64,".base64_encode($event['thumbnail'])."'></p>";
+              } ?>
+              </small></p>
+              <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. <b>Please do NOT upload an image of a poster that contains text information describing the event</b> -- it will be too small to read and will be redundant to the event description.</small></p>
             </div>
             <div class="custom-controls-stacked">
               <p class="m-b-0">Select the screens the poster will be shown on</p>
@@ -351,14 +355,12 @@ if (!isset($edit)) {
     $('#event-form').on('submit', function(e) {
       e.preventDefault();
       var description_len = $('#description').val().length;
-      var valid_sponsors = function() {
-        sponsor_fields.forEach(function(f) {
-          if (f.hasClass('is-invalid')) {
-            return false;
-          }
-        });
-        return true;
-      }
+      var valid_sponsors = true;
+      sponsor_fields.forEach(function(f) {
+        if (f.hasClass('is-invalid')) {
+          valid_sponsors = false;
+        }
+      });
       if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 10 and 200 characters.');
@@ -374,10 +376,10 @@ if (!isset($edit)) {
       } else if ($('#date2').val().length < 9) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date');
-      } else if ($('#loc').hasClass('is-invalid')) {
+      } else if ($('#loc_id').hasClass('is-invalid')) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Please select a valid location');
-      } else if (valid_sponsors()) {
+      } else if (!valid_sponsors) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Please select a valid sponsor');
       } else {
@@ -398,10 +400,12 @@ if (!isset($edit)) {
             if (!isNaN(resp)) { // if valid int
               <?php if ($edit) { ?>
                 $('#alert-success-text').text('Your event is now updated. It will be reviewed again before it is displayed on the website and digital signs.');
+                $('#submit-btn').val('Success!');
+                setTimeout(function(){ document.location.href = "index"; }, 5000);
               <?php } else { ?>
                 $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
                 $('#submit-btn').val('Success!');
-                setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
+                setTimeout(function(){ document.location.href = "detail?id="+resp+"&redirect=5"; }, 5000);
                 setCookie('event'+resp, $('#token').val(), 365);
               <?php } ?>
             } else {
@@ -435,7 +439,7 @@ if (!isset($edit)) {
     var locations = <?php echo json_encode(array_column($db->query('SELECT location FROM calendar_locs ORDER BY location ASC')->fetchAll(), 'location')); ?>;
 
     $(function() { // init autocomplete and datepicker
-      var loc = $('#loc');
+      var loc = $('#loc_id');
       var fetch_street_address = function(loc) {
         $.get("includes/fetch-street-address.php", {loc: loc}, function(resp) {
           if (resp) {
@@ -486,7 +490,14 @@ if (!isset($edit)) {
           source: sponsors
         });
         v.on('autocompletechange', function(event, ui) {
-          if (ui.item === null) { // entered sponsor not in sponsors variable
+          var new_sponsor = true;
+          sponsors.forEach(function(sponsor) {
+            if (sponsor.toLowerCase() == v.val().toLowerCase()) {
+              new_sponsor = false;
+            }
+          })
+          if (new_sponsor) { // entered sponsor not in sponsors variable; (ui.item===null) should check this but its not working?
+            // only allow new sponsors that are not a substring of an existing sponsor in the sponsors variable
             var all_good = true;
             for (var i = sponsors.length - 1; i >= 0; i--) {
               if (sponsors[i].toLowerCase().indexOf(v.val().toLowerCase()) !== -1) {

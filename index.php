@@ -66,7 +66,7 @@ $prev_start = $prev_end - 2592000;
         <div class="col-md-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
           <!-- Add clickable table cells -->
-          <?php $cal->print(); //define('SMALL', true); require 'calendar.php'; ?>
+          <?php $cal->print(); ?>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
@@ -88,7 +88,7 @@ $prev_start = $prev_end - 2592000;
           <div class="list-group" style="margin-bottom: 20px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
             <?php foreach ($cal->sponsors as $sponsor) {
-              echo "<a href='#' data-value='{$sponsor}' class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
+              echo "<a href='#' data-value=\"{$sponsor}\" class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
             } ?>
           </div>
         </div>
@@ -176,14 +176,17 @@ $prev_start = $prev_end - 2592000;
                   <h6 class="card-subtitle mb-2 text-muted">
                     <?php
                     echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);
-                    echo ' &middot ';
-                    echo $locname;
+                    if (!empty($locname)) {
+                      echo " &middot {$locname}";
+                    }
                     $array = json_decode($result['sponsors'], true);
                     if (is_array($array)) {
                       $count = count($array);
+                      echo ' &middot ';
                       for ($i = 0; $i < $count; $i++) { 
-                        echo ' &middot ';
-                        echo $cal->sponsors[$array[$i]];
+                        if (array_key_exists($array[$i], $cal->sponsors)) {
+                          echo $cal->sponsors[$array[$i]];
+                        } // else there's an event for which no sponsor exists in the sponsors table
                         if ($i+1 !== $count) {
                           echo ", ";
                         }
@@ -211,6 +214,7 @@ $prev_start = $prev_end - 2592000;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script>
+      var sponsors = <?php echo json_encode($cal->sponsors) . ";\n"; ?>
       var done = false;
       $('#start, #end').on('input', function() {
         if (!done) {
@@ -222,66 +226,59 @@ $prev_start = $prev_end - 2592000;
         e.preventDefault();
         location.replace("?start_date=" + encodeURIComponent($('#start').html()) + "&end_date=" + encodeURIComponent($('#end').html()));
       });
+      var current_filters = {'eventtype': 'All', 'eventloc': 'All', 'eventsponsor': 'All'};
+      function sidebar_filters() {
+        // console.log(current_filters);
+        $('.iterable-event').each(function() {
+          $(this).css('display', '');
+          for (var type in current_filters) {
+            if (current_filters[type] !== 'All' && type === 'eventsponsor') { // eventsponsor is an array so have to iterate
+              var shown = false,
+                  type_val = $(this).data('eventsponsor').toString().split('$SEP$');
+              $.each(type_val, function( index, value ) {
+                if (value != '') {
+                  var this_sponsor = sponsors[value];
+                  if (this_sponsor == current_filters[type]) {
+                    shown = true;
+                  } else {
+                    console.log('+'+this_sponsor+'+', '+'+current_filters[type]+'+');
+                  }
+                }
+              });
+              if (!shown) {
+                $(this).css('display', 'none');
+                break;
+              }
+            } else {
+              var type_val = $(this).data(type);
+              if (current_filters[type] !== 'All' && current_filters[type] !== type_val) {
+                $(this).css('display', 'none');
+                break;
+              }
+            }
+          }
+        });
+      }
       $('.event-type-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-type-toggle').removeClass('active');
         $(this).addClass('active');
-        var type = $(this).data('value');
-        if (type === 'All') {
-          $('.iterable-event').each(function() { $(this).css('display', ''); });  
-        } else {
-          $('.iterable-event').each(function() {
-            if ($(this).data('eventtype') != type) {
-              $(this).css('display', 'none');
-            } else {
-              $(this).css('display', '');
-            }
-          });
-        }
+        current_filters['eventtype'] = $(this).data('value');
+        sidebar_filters();
       });
       $('.event-loc-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-loc-toggle').removeClass('active');
         $(this).addClass('active');
-        var loc = $(this).data('value');
-        if (loc === 'All') {
-          $('.iterable-event').each(function() { $(this).css('display', ''); });  
-        } else {
-          $('.iterable-event').each(function() {
-            if ($(this).data('eventloc') != loc) {
-              $(this).css('display', 'none');
-            } else {
-              $(this).css('display', '');
-            }
-          });
-        }
+        current_filters['eventloc'] = $(this).data('value');
+        sidebar_filters();
       });
-      var sponsors = <?php echo json_encode(array_values($cal->sponsors)) . ";\n"; ?>
       $('.event-sponsor-toggle').on('click', function(e) {
         e.preventDefault();
         $('.event-sponsor-toggle').removeClass('active');
         $(this).addClass('active');
-        var sponsor = $(this).data('value');
-        if (sponsor === 'All') {
-          $('.iterable-event').each(function() { $(this).css('display', ''); });  
-        } else {
-          $('.iterable-event').each(function() {
-            var shown = false;
-            $.each($(this).data('eventsponsor').toString().split('$SEP$'), function( index, value ) {
-              if (value != '') {
-                var this_sponsor = sponsors[value];
-                if (this_sponsor == sponsor) {
-                  shown = true;
-                }
-              }
-            });
-            if (shown) {
-              $(this).css('display', '');
-            } else {
-              $(this).css('display', 'none');
-            }
-          });
-        }
+        current_filters['eventsponsor'] = $(this).data('value');
+        sidebar_filters();
       });
       $('#sort-date').on('click', function(e) {
         e.preventDefault();

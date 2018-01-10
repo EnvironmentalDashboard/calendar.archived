@@ -34,11 +34,11 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
   if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
     return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
   } elseif (!$no_start_time && !$no_end_time) {
-    return ($same_day) ? date('F jS, h:i a', $start_time) . ' to ' . date('h:i a', $end_time) : date('M jS, h:i a', $start_time) . ' to ' . date('M jS, h:i a', $end_time);
+    return ($same_day) ? date('F jS, g:i a', $start_time) . ' to ' . date('g:i a', $end_time) : date('M jS, g:i a', $start_time) . ' to ' . date('M jS, g:i a', $end_time);
   } elseif ($no_start_time) {
-    return ($same_day) ? date('F jS, \e\n\d\s \a\t h:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t h:i a', $end_time);
+    return ($same_day) ? date('F jS, \e\n\d\s \a\t g:i a', $end_time) : date('M jS', $start_time) . ' to ' . date('M jS \a\t g:i a', $end_time);
   } else {
-    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t h:i a', $start_time) : date('M jS \a\t h:i a', $start_time) . ' to ' . date('M jS', $end_time);
+    return ($same_day) ? date('F jS, \s\t\a\r\t\s \a\t g:i a', $start_time) : date('M jS \a\t g:i a', $start_time) . ' to ' . date('M jS', $end_time);
   }
 }
 ?>

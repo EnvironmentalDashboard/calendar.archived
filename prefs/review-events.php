@@ -38,14 +38,14 @@ if (isset($_POST['review-events'])) {
         if ($feedback) {
           $html_message .= "<p>{$feedback}</p>";
         }
-        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event. Alternatively, you can edit your event by submitting the form below which is prepopulated with the values present when the event was approved.</p>";
+        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
         $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {
         if ($feedback) {
-          $html_message = "<p>{$feedback}</p>";
+          $html_message = "<p>{$feedback}</p><br><br>";
           $txt_message = $feedback;
         } else {
-          $html_message = "<p>Your event was rejected.</p>";
+          $html_message = "<p>Your event was rejected.</p><br><br>";
           $txt_message = "Your event was rejected.";
         }
       }
@@ -54,6 +54,10 @@ if (isset($_POST['review-events'])) {
     }
     $feedback = '';
   }
+}
+if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
+  $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
+  $stmt->execute([$_GET['delete-event']]);
 }
 ?>
 <!DOCTYPE html>
@@ -84,7 +88,8 @@ if (isset($_POST['review-events'])) {
             <input type="hidden" name="review-events" value="true">
             <?php
             $i = 0;
-            foreach ($db->query('SELECT id, token, event, start, `end`, description, loc_id, screen_ids, contact_email, email FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
+            foreach ($db->query('SELECT id, token, event, start, `end`, extended_description, loc_id, screen_ids, contact_email, email, phone FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
+              $screens = explode(',', $event['screen_ids']);
               $i++;
             ?>
               <div class="form-group row">
@@ -108,6 +113,8 @@ if (isset($_POST['review-events'])) {
                       <span class="custom-control-description">Reject event</span>
                     </label>
                   </div>
+                  <p>or</p>
+                  <p><a href="?delete-event=<?php echo $event['id'] ?>" class='btn btn-danger'>Delete event</a></p>
                   <p>Starts at <?php echo date("F j, Y, g:i a", $event['start']) ?>, ends at <?php echo date("F j, Y, g:i a", $event['end']) ?></p>
                   <p>
                     Event location: 
@@ -120,8 +127,18 @@ if (isset($_POST['review-events'])) {
                   </p>
                   <p>Contact email: <a href='mailto:<?php echo $event['contact_email'] ?>'><?php echo $event['contact_email'] ?></a></p>
                   <p>Display email: <a href='mailto:<?php echo $event['email'] ?>'><?php echo $event['email'] ?></a></p>
-                  <p>Description: <?php echo $event['description']; ?></p>
-                  <p><a href="../edit-event?token=<?php echo $event['token']; ?>">Edit event</a></p>
+                  <p>Extended description: <?php echo $event['extended_description']; ?></p>
+                  <p>Screens: <?php if (is_array($screens)) {
+                    foreach ($screens as $screen_id) {
+                      echo $db->query('SELECT name FROM calendar_screens WHERE id = ' . intval($screen_id))->fetchColumn() . '<br>';
+                    }
+                  } else {
+                    var_dump($event['screen_ids']);
+                  }?></p>
+                  <p>Phone: <?php echo preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']); ?></p>
+                  <p>
+                    <a class="btn btn-primary" href="../edit-event?token=<?php echo $event['token']; ?>">Edit event</a>
+                  </p>
                 </div>
               </div>
             <?php } ?>
