@@ -17,6 +17,7 @@ $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_ema
 $_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_id'] : '';
 $_POST['loc_id'] = (isset($_POST['loc_id'])) ? convertUTF8($_POST['loc_id']) : '';
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
+$_POST['subscribe'] = (isset($_POST['subscribe'])) ? true : false;
 $rand = (isset($_POST['token'])) ? $_POST['token'] : uniqid(bin2hex(random_bytes(116)), true);
 $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
 $stmt->execute([$_POST['loc_id']]);
@@ -116,7 +117,14 @@ else {
   $success = $db->lastInsertId();
   save_emails($db, $_POST['event'], $success);
 }
-
+if ($_POST['subscribe']) {
+  $stmt = $db->prepare('SELECT COUNT(*) FROM newsletter_recipients WHERE email = ?');
+  $stmt->execute([$_POST['contact_email']]);
+  if ($stmt->fetchColumn() == '0') {
+    $stmt = $db->prepare('INSERT INTO newsletter_recipients VALUES (?)');
+    $stmt->execute([$_POST['contact_email']]);
+  }
+}
 if (isset($error)) {
   echo $error;
 } elseif (isset($success)) {

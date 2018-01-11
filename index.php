@@ -172,7 +172,7 @@ $prev_start = $prev_end - 2592000;
                     <?php } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
-                  <h4 class="card-title"><?php echo $result['event'] ?></h4>
+                  <h4 class="card-title"><?php echo $result['event']; echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span>" : ""; ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
                     <?php
                     echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);

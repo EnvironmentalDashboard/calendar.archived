@@ -14,6 +14,9 @@
     <a class="nav-link <?php echo ($fn === 'screen-locations') ? 'active' : ''; ?>" href="screen-locations.php">Screen locations</a>
   </li>
   <li class="nav-item">
+    <a class="nav-link <?php echo ($fn === 'version-control') ? 'active' : ''; ?>" href="version-control.php">Version control</a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link" href="../" target="_blank">View calendar</a>
   </li>
 </ul>

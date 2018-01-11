@@ -5,7 +5,7 @@ date_default_timezone_set('America/New_York');
 require '../includes/db.php';
 require 'includes/class.Calendar.php';
 $id = (isset($_GET['id'])) ? $_GET['id'] : 0;
-$stmt = $db->prepare('SELECT loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website, approved FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
@@ -28,7 +28,7 @@ $cal = new Calendar($db, -1, -1);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css?v=4">
   </head>
   <body>
     <div class="container">
@@ -36,7 +36,7 @@ $cal = new Calendar($db, -1, -1);
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='index' class="btn btn-primary">&larr; Go Back</a></p>
+          <p><a href='#' onclick="window.history.go(-1); return false;" class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">
@@ -53,13 +53,12 @@ $cal = new Calendar($db, -1, -1);
             } ?></div>
           </div>
           <?php } ?>
-          <h1><?php echo $event['event']; ?></h1>
+          <h1><?php echo $event['event']; ?> <?php echo ($event['event_type_id'] == '1') ? "<br><div class='badge badge-primary' style='font-size:1.3rem;font-weight:500'>Volunteer Opportunity</div>" : '' ?></h1>
           <hr>
           <p><?php echo $event['description']; ?></p>
           <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
           <p><?php echo $cal->formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
-          <p>
-          <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?>For more information, contact<br><?php } ?>
+          <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?><h5>Contact</h5><p><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "<a href='mailto:{$event['email']}'>{$event['email']}</a><br>"; ?>
           <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']) . "<br>"; // https://stackoverflow.com/a/10741461/2624391
           if ($event['website'] != '') {
@@ -70,6 +69,21 @@ $cal = new Calendar($db, -1, -1);
             }
           } ?>
           </p>
+          <?php
+          $json = json_decode($event['sponsors'], true);
+          $count = count($json);
+          if (is_array($json) && $count > 0) {
+            echo "<h5>Sponsored by</h5><p>";
+            for ($i=0; $i < $count; $i++) { 
+              if ($i !== $count-1) {
+                echo $db->query("SELECT sponsor FROM calendar_sponsors WHERE id = ".intval($json[$i]))->fetchColumn() . '<br>';
+              } else {
+                echo $db->query("SELECT sponsor FROM calendar_sponsors WHERE id = ".intval($json[$i]))->fetchColumn();
+              }
+            }
+            echo "</p>";
+          }
+          ?>
           <p>
             <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="images/calendar-icon.png" alt="Google Calendar" width="50"></a>
             <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $thisurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="images/fb-art.png" alt="Facebook logo" width="50"></a>
@@ -126,16 +140,6 @@ $cal = new Calendar($db, -1, -1);
       $('.alert > button').on('click', function() {
         $('.alert').css('display', 'none');
       });
-      <?php //if (isset($_GET['redirect']) && is_numeric($_GET['redirect'])) { ?>
-        // var seconds = <?php echo $_GET['redirect'] ?>;
-        // setInterval(function() {
-        //   seconds--;
-        //   $('#time-remaining').text(seconds);
-        //   if (seconds === 0) {
-        //     document.location.href = 'index';
-        //   }
-        // }, 1000);
-      <?php //} ?>
     </script>
   </body>
 </html>

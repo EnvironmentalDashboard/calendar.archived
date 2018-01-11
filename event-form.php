@@ -69,7 +69,14 @@ if (!isset($edit)) {
               <input type="email" class="form-control" id="contact_email" name="contact_email" value="<?php
               echo (!empty($_REQUEST['contact_email'])) ? $_REQUEST['contact_email'] : '';
               echo ($edit && empty($_REQUEST['contact_email'])) ? $event['contact_email'] : ''; ?>" maxlength="255">
-              <p><small class="text-muted">Enter your email to be notified when the event is approved or rejected.</small></p>
+              <p style="margin-bottom: 0px"><small class="text-muted">Enter your email to be notified when the event is approved or rejected.</small></p>
+              <?php if (!$edit) { ?>
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" checked='true' id='subscribe' name='subscribe'>
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">I want to recieve a weekly event newsletter</span>
+              </label>
+              <?php } ?>
             </div>
             <div class="form-group">
               <label for="event">Event title</label>
@@ -183,7 +190,7 @@ if (!isset($edit)) {
               <textarea name="extended_description" id="extended_description" class="form-control"><?php
               echo (!empty($_REQUEST['extended_description'])) ? $_REQUEST['extended_description'] : '';
               echo ($edit && empty($_REQUEST['extended_description'])) ? $event['extended_description'] : ''; ?></textarea>
-              <small class="text-muted">Will only be displayed on website and not digitial signage</small>
+              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links.</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
