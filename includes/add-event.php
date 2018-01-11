@@ -118,12 +118,8 @@ else {
   save_emails($db, $_POST['event'], $success);
 }
 if ($_POST['subscribe']) {
-  $stmt = $db->prepare('SELECT COUNT(*) FROM newsletter_recipients WHERE email = ?');
+  $stmt = $db->prepare('REPLACE INTO newsletter_recipients (email) VALUES (?)');
   $stmt->execute([$_POST['contact_email']]);
-  if ($stmt->fetchColumn() == '0') {
-    $stmt = $db->prepare('INSERT INTO newsletter_recipients VALUES (?)');
-    $stmt->execute([$_POST['contact_email']]);
-  }
 }
 if (isset($error)) {
   echo $error;

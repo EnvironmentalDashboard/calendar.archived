@@ -7,7 +7,12 @@ $end = $start + 604800;
 require '../includes/db.php';
 $html_message = "<h1>Oberlin Community Calendar Event Newsletter</h1>";
 $html_message .= "<p>This newsletter details events happening from ".date('j/n/y', $start)." to ".date('j/n/y', $end)."</p>";
-foreach ($db->query("SELECT id, event, start, end, description FROM calendar WHERE start > {$start} AND start < {$end}") as $row) {
+foreach ($db->query("SELECT id, event, start, end, description, thumbnail FROM calendar WHERE start > {$start} AND start < {$end}") as $row) {
+  if ($row['thumbnail'] == null) {
+    $img = 'https://oberlindashboard.org/oberlin/calendar/images/default.svg';
+  } else {
+    $img = "https://oberlindashboard.org/oberlin/calendar/thumbnail.php?id={$row['id']}";
+  }
   $html_message .= "<div class='padded'>
                       <div>
                         <img src='{$img}' alt='{$row['event']}' width='20%' style='display:inline; vertical-align:middle'>

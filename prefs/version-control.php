@@ -4,7 +4,7 @@ ini_set('display_errors', 'On');
 require '../../includes/db.php';
 require 'includes/check-signed-in.php';
 if (isset($_POST['mv'])) {
-  shell_exec('mv /var/www/html/oberlin/calendar2 /var/www/html/oberlin/calendar');
+  shell_exec('rm -rf /var/www/html/oberlin/calendar && cp -al /var/www/html/oberlin/calendar2 /var/www/html/oberlin/calendar');
 }
 ?>
 <!DOCTYPE html>
