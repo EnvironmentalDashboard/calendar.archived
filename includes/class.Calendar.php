@@ -7,28 +7,35 @@
 class Calendar {
 
   /**
-   * if you're using this class to print() the calendar $start and $end should be the start and end of the month
-   * otherwise, arbitrary $start and $end times might make sense 
    * @param $db pdo object
-   * @param $start unix timestamp of date calendar should start
-   * @param $end same as $start but end time
    */
-  public function __construct($db, $start, $end) {
+  public function __construct($db) {
     $this->db = $db;
-    $this->start = $start;
-    $this->end = $end;
-    $this->rows = null; // will contain all the events we're working with
-    // $this->expanded_rows = null; // will contain all the events with the recurring ones duplicated the number of times they recur
+    $this->start = 0;
+    $this->end = 0;
+    $this->limit = 0;
+    $this->offset = 0;
+    $this->rows = []; // will contain all the events we're working with
+    // $this->expanded_rows = []; // will contain all the events with the recurring ones duplicated the number of times they recur
     $this->sponsors = []; // will contain the sponsors of the events within the calendar $start and $end
   }
 
+  public function set_start($start) { $this->start = (int) $start; }
+  public function set_end($end) { $this->end = (int) $end; }
+  public function set_limit($limit) { $this->limit = (int) $limit; }
+  public function set_offset($offset) { $this->offset = (int) $offset; }
+
   /**
-   * grabs events that happen between $start and $end
+   * grabs events that happen between $start and $end if they're set or the $limit most recent events given the $offset
    */
   public function fetch_events() {
-    $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time FROM calendar
-      WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
-    $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
+    if ($this->start > 0 && $this->end > 0) {
+      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
+      $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
+    } elseif ($this->limit > 0) {
+      $time = time();
+      $stmt = $this->db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE approved = 1 AND start > {$time} ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
+    }
     $this->rows = $stmt->fetchAll();
     // $this->expanded_rows = $this->expand_recurring_events();
   }
@@ -36,25 +43,19 @@ class Calendar {
   /**
    * sets $this->sponsors
    */
-  public function fetch_sponsors() {
-    if (!empty($this->sponsors)) {
-      throw new Exception("already called sponsors()");
-    }
+  public function generate_sponsors() {
     $ids = [];
-    $stmt = $this->db->prepare("SELECT sponsors FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1");
-    $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
-    foreach ($stmt->fetchAll() as $row) {
-      $sponsor_json = json_decode($row['sponsors']);
-      if (!is_array($sponsor_json)) {
-        continue;
-      }
-      foreach ($sponsor_json as $sponsor_id) {
-        if (!in_array($sponsor_id, $ids)) {
-          $ids[] = $sponsor_id;
-          $stmt = $this->db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
-          $stmt->execute([$sponsor_id]);
-          if ($stmt->rowCount() > 0) {
-            $this->sponsors[$sponsor_id] = $stmt->fetchColumn();
+    foreach ($this->rows as $row) {
+      $json = json_decode($row['sponsors'], true);
+      if (is_array($json)) {
+        foreach ($json as $sponsor_id) {
+          if (!in_array($sponsor_id, $ids)) {
+            $ids[] = $sponsor_id;
+            $stmt = $this->db->prepare('SELECT sponsor FROM calendar_sponsors WHERE id = ?');
+            $stmt->execute([$sponsor_id]);
+            if ($stmt->rowCount() > 0) {
+              $this->sponsors[$sponsor_id] = $stmt->fetchColumn();
+            }
           }
         }
       }
@@ -67,7 +68,7 @@ class Calendar {
    * events that populate the calendar are expected to have been retrieved by fetch_events()
    * @param $small the small calendar as is on the home page or the larger calendar as is on detail-calendar.php
    */
-  public function print($small = true) {
+  public function print_cal($small = true) {
     $next_start = $this->end;
     $next_end = $this->end + 2592000;
     $prev_end = $this->start;
@@ -114,7 +115,7 @@ class Calendar {
             <th colspan='7' class='text-center'><a style='color:#333;text-decoration:none;float:left;' href=\"?month={$prev_month}&year={$prev_year}\">&#9664;</a>{$title} {$year}<a href=\"?month={$next_month}&year={$next_year}\" style='color:#333;text-decoration:none;float:right'>&#9654;</a></th>
           </tr>" :
           "<tr>
-            <th colspan='7' class='text-center'><a style='color:#333;text-decoration:none;float:left;' href=\"?start={$prev_start}&end={$prev_end}\">&#9664;</a>{$title} {$year}<a href=\"?start={$next_start}&end={$next_end}\" style='color:#333;text-decoration:none;float:right'>&#9654;</a></th>
+            <th colspan='7' class='text-center'><a id='prev-month-btn' style='color:#333;text-decoration:none;float:left;' href=\"#\">&#9664;</a>{$title} {$year}<a href=\"#\" id='next-month-btn' style='color:#333;text-decoration:none;float:right'>&#9654;</a></th>
           </tr>";
     echo "<tr>
             <td>S</td>
@@ -199,7 +200,56 @@ class Calendar {
     echo "</tr></table>";
   }
 
-  public function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
+  public function print_event_cards() {
+    foreach ($this->rows as $result) {
+      $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
+      echo "<div class='card iterable-event' id='{$result['id']}'
+          style='margin-bottom: 20px' data-date='{$result['start']}'
+          data-loc='{$locname}'
+          data-name='{$result['event']}' data-eventtype='{$result['event_type_id']}'
+          data-eventloc='{$result['loc_id']}' data-mdy='".date('mdy', $result['start'])."'
+          data-eventsponsor='";
+      $tmp = json_decode($result['sponsors'], true);
+      echo (is_array($tmp)) ? implode('$SEP$', $tmp) . '\'>' : '\'>';
+      echo "<div class='card-body'>
+              <div class='row'>
+                <div class='col-sm-12 col-md-3'>";
+                if ($result['thumbnail'] === null) {
+                  echo '<img src="images/default.svg" class="thumbnail img-fluid">';
+                } else {
+                  echo '<img class="thumbnail img-fluid" src="data:image/jpeg;base64,'.base64_encode($result['thumbnail']).'">';
+                }
+                echo "</div>
+                <div class='col-sm-12 col-md-9'>
+                  <h4 class='card-title'>{$result['event']}";
+                echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span></h4>" : "</h4>";
+                echo "<h6 class='card-subtitle mb-2 text-muted'>";
+                echo $this->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);
+                if (!empty($locname)) {
+                  echo " &middot {$locname}";
+                }
+                $array = json_decode($result['sponsors'], true);
+                if (is_array($array)) {
+                  $count = count($array);
+                  echo ' &middot ';
+                  for ($i = 0; $i < $count; $i++) { 
+                    if (array_key_exists($array[$i], $this->sponsors)) {
+                      echo $this->sponsors[$array[$i]];
+                    } // else there's an event for which no sponsor exists in the sponsors table
+                    if ($i+1 !== $count) {
+                      echo ", ";
+                    }
+                  }
+                }
+                echo "</h6><p class='card-text'>{$result['description']}</p><a href='detail?id={$result['id']}' class='btn btn-primary'>View event</a>
+                </div>
+              </div>
+            </div>
+          </div>";
+    }
+  }
+
+  public static function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_time) {
     $same_day = date('jny', $start_time) === date('jny', $end_time);
     if ($no_start_time && $no_end_time) { // this event doesnt start or end at a particular time
       return ($same_day) ? date('F jS', $start_time) : date('M jS', $start_time) . ' to ' . date('M jS', $end_time);
@@ -215,6 +265,7 @@ class Calendar {
   /**
    * @return array where the events in $this->rows are duplicated if they recur
    */
+  /*
   private function expand_recurring_events() {
     $results = [];
     foreach ($this->rows as $row) {
@@ -242,6 +293,7 @@ class Calendar {
     }
     return $results;
   }
+  */
 
 }
 ?>

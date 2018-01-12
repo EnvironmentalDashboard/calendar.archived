@@ -4,31 +4,13 @@ ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
 require 'includes/class.Calendar.php';
-define('NUM_SLIDES', 5);
+define('CAROUSEL_SLIDES', 5);
 $time = time();
-if (isset($_GET['start_date'])) {
-  $tmp = strtotime($_GET['start_date']);
-  if ($tmp !== false) {
-    $_GET['start'] = $tmp;
-  }
-}
-if (isset($_GET['end_date'])) {
-  $tmp = strtotime($_GET['end_date']);
-  if ($tmp !== false) {
-    $_GET['end'] = $tmp;
-  }
-}
-// $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
-// $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
-$start_time = (isset($_GET['start']) && is_numeric($_GET['start'])) ? $_GET['start'] : $time;
-$end_time = (isset($_GET['end']) && is_numeric($_GET['end'])) ? $_GET['end'] : ($start_time + 2592000); // 30 days in the future
-$cal = new Calendar($db, $start_time, $end_time);
+$cal = new Calendar($db);
+$cal->set_limit(5);
+$cal->set_offset(0);
 $cal->fetch_events();
-$cal->fetch_sponsors();
-$next_start = $end_time;
-$next_end = $end_time + 2592000;
-$prev_end = $start_time;
-$prev_start = $prev_end - 2592000;
+$cal->generate_sponsors();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,38 +47,51 @@ $prev_start = $prev_end - 2592000;
       <div class="row">
         <div class="col-md-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
-          <!-- Add clickable table cells -->
-          <?php $cal->print(); ?>
+          <div id="small-cal">
+            <?php
+            $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
+            $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
+            $small_cal = new Calendar($db);
+            $small_cal->set_start($start_time);
+            $small_cal->set_end($end_time);
+            $small_cal->fetch_events();
+            $small_cal->print_cal();
+            ?>
+          </div>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
             <!-- <a href="#" class="list-group-item active"> -->
-            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id IN (SELECT event_type_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY event_type ASC") as $event) {
+            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC") as $event) {
               echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
             } ?>
           </div>
           <h5>Event locations</h5>
-          <div class="list-group" style="margin-bottom: 15px">
-            <a href='#' data-value='All' class='list-group-item list-group-item-action event-loc-toggle active'>All</a>
-            <?php foreach ($db->query("SELECT id, location FROM calendar_locs WHERE id IN (SELECT loc_id FROM calendar WHERE ((`end` >= {$start_time} AND `end` <= {$end_time}) OR (repeat_end >= {$start_time} AND repeat_end <= {$end_time})) AND approved = 1) ORDER BY location ASC") as $loc) {
-              echo "<a href='#' data-value='{$loc['id']}' class='list-group-item list-group-item-action event-loc-toggle'>{$loc['location']}</a>";
-            } ?>
-          </div>
-          <h5>Event sponsor/organizer</h5>
-          <div class="list-group" style="margin-bottom: 20px">
-            <a href='#' data-value='All' class='list-group-item list-group-item-action event-sponsor-toggle active'>All</a>
-            <?php foreach ($cal->sponsors as $sponsor) {
-              echo "<a href='#' data-value=\"{$sponsor}\" class='list-group-item list-group-item-action event-sponsor-toggle'>{$sponsor}</a>";
-            } ?>
-          </div>
+          <form action="" method="GET">
+            <select class="form-control" name="event-loc-toggle" id="event-loc-toggle">
+              <option value='All'>All</option>
+              <?php foreach ($db->query('SELECT id, location FROM calendar_locs ORDER BY location ASC') as $row) {
+                echo "<option value='{$row['id']}'>{$row['location']}</option>";
+              } ?>
+            </select>
+          </form>
+          <h5>Event sponsors</h5>
+          <form action="" method="GET">
+            <select class="form-control" name="event-sponsor-toggle" id="event-sponsor-toggle">
+              <option value='All'>All</option>
+              <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) {
+                echo "<option value='{$row['id']}'>{$row['sponsor']}</option>";
+              } ?>
+            </select>
+          </form>
         </div>
         <div class="col-md-8 col-sm-12">
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
-              <?php for ($s = 1; $s < NUM_SLIDES; $s++) { 
+              <?php for ($s = 1; $s < CAROUSEL_SLIDES; $s++) { 
                 echo "<li data-target=\"#carousel-indicators\" data-slide-to=\"{$s}\"></li>";
               } ?>
             </ol>
@@ -123,7 +118,7 @@ $prev_start = $prev_end - 2592000;
               </div>
               <?php
               $counter++;
-              if ($counter >= NUM_SLIDES) {
+              if ($counter >= CAROUSEL_SLIDES) {
                 break;
               }
               } ?>
@@ -138,13 +133,12 @@ $prev_start = $prev_end - 2592000;
             </a>
           </div>
           <div class="card-footer bg-primary">
-            Showing events from <span id="start" style="text-decoration: underline;" contenteditable><?php echo ($time==$start_time) ? 'now' : date('m/d/Y', $start_time); ?></span> until <span id="end" style="text-decoration: underline;" contenteditable><?php echo date('m/d/Y', $end_time); ?></span>
-            <a href="#" id="update-timeframe" class="btn btn-light btn-sm" style="float: right;display: none">Update</a>
+            Upcoming events
           </div>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline" style="width: 100%">
               <span class="navbar-text" style="width: 100%">
-                <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a>
+                <!-- <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a> -->
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
                 <a href="#" id="sort-date" class="btn btn-primary" style="float: right;">Date</a>
               </span>
@@ -152,10 +146,10 @@ $prev_start = $prev_end - 2592000;
               </span> -->
             </form>
           </nav>
-          <div id="tail"></div>
+          <div id="top-of-events"></div>
           <?php foreach ($cal->rows as $result) {
-            $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
-            ?>
+          $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
+          ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
           style="margin-bottom: 20px" data-date="<?php echo $result['start']; ?>"
           data-loc="<?php echo $locname; ?>"
@@ -201,34 +195,121 @@ $prev_start = $prev_end - 2592000;
             </div>
           </div>
           <?php } ?>
-          <div style="text-align: center;padding-top: 15px;margin-bottom: 20px">
-            <a href="?<?php echo "start={$prev_start}&end={$prev_end}" ?>" class="btn btn-primary">&larr; Previous month</a>
-            <a href="?<?php echo "start={$next_start}&end={$next_end}" ?>" class="btn btn-primary">Next month &rarr;</a>
-          </div>
+          <div id="bottom-of-events"></div>
+          <!-- svg from http://goo.gl/7AJzbL -->
+          <svg width="120" height="30" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" fill="#3F51B5" style="padding-top: 15px;margin: 0 auto;margin-bottom: 20px;display: block;" id="loader">
+              <circle cx="15" cy="15" r="15">
+                  <animate attributeName="r" from="15" to="15"
+                           begin="0s" dur="0.8s"
+                           values="15;9;15" calcMode="linear"
+                           repeatCount="indefinite" />
+                  <animate attributeName="fill-opacity" from="1" to="1"
+                           begin="0s" dur="0.8s"
+                           values="1;.5;1" calcMode="linear"
+                           repeatCount="indefinite" />
+              </circle>
+              <circle cx="60" cy="15" r="9" fill-opacity="0.3">
+                  <animate attributeName="r" from="9" to="9"
+                           begin="0s" dur="0.8s"
+                           values="9;15;9" calcMode="linear"
+                           repeatCount="indefinite" />
+                  <animate attributeName="fill-opacity" from="0.5" to="0.5"
+                           begin="0s" dur="0.8s"
+                           values=".5;1;.5" calcMode="linear"
+                           repeatCount="indefinite" />
+              </circle>
+              <circle cx="105" cy="15" r="15">
+                  <animate attributeName="r" from="15" to="15"
+                           begin="0s" dur="0.8s"
+                           values="15;9;15" calcMode="linear"
+                           repeatCount="indefinite" />
+                  <animate attributeName="fill-opacity" from="1" to="1"
+                           begin="0s" dur="0.8s"
+                           values="1;.5;1" calcMode="linear"
+                           repeatCount="indefinite" />
+              </circle>
+          </svg>
         </div>
       </div>
       <div style="clear: both;height: 150px"></div>
       <?php include 'includes/footer.php'; ?>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script>
-      var sponsors = <?php echo json_encode($cal->sponsors) . ";\n"; ?>
-      var done = false;
-      $('#start, #end').on('input', function() {
-        if (!done) {
-          done = true;
-          $('#update-timeframe').css('display', 'block');
+      var limit = 5, offset = 5, scroll_done = false;
+      $(window).scroll(function() { // https://stackoverflow.com/a/21561584/2624391
+        var hT = $('#bottom-of-events').offset().top,
+            hH = $('#bottom-of-events').outerHeight(),
+            wH = $(window).height(),
+            wS = $(this).scrollTop();
+        if (!scroll_done && wS > (hT+hH-wH)) {
+          scroll_done = true;
+          load_events();
         }
       });
-      $('#update-timeframe').on('click', function(e) {
+      function load_events() {
+        console.log('Loading more events');
+        $.get("includes/load_events.php", {limit:limit, offset:offset}, function(data) {
+          if (data == '0') {
+            scroll_done = true;
+            $('#bottom-of-events').html('<p>You have reached the end of the feed.</p>');
+            $('#loader').remove();
+          } else {
+            scroll_done = false;
+            $('#bottom-of-events').before(data);
+            offset += limit;
+            sidebar_filters();
+          }
+        });
+      }
+
+      var month = <?php echo date('n') ?>, year = <?php echo date('Y') ?>;
+      function next_month() {
+        if (month === 12) {
+          month = 1;
+          year = year + 1;
+        } else {
+          month = month + 1;
+          year = year;
+        }
+      }
+      function prev_month() {
+        if (month === 1) {
+          month = 12;
+          year = year - 1;
+        } else {
+          month = month - 1;
+          year = year;
+        }
+      }
+      $(document).on('click', '#next-month-btn', function(e) {
         e.preventDefault();
-        location.replace("?start_date=" + encodeURIComponent($('#start').html()) + "&end_date=" + encodeURIComponent($('#end').html()));
+        console.log(month, year);
+        next_month();
+        console.log(month, year);
+        load_small_cal();
       });
+      $(document).on('click', '#prev-month-btn', function(e) {
+        e.preventDefault();
+        console.log(month, year);
+        prev_month();
+        console.log(month, year);
+        load_small_cal();
+      });
+      function load_small_cal() {
+        $('[data-toggle="popover"]').popover('dispose');
+        $.get("includes/load_calendar.php", {month:month, year:year}, function(data) {
+          $('#small-cal').html(data);
+          $('[data-toggle="popover"]').popover({ trigger: "hover" });
+        });
+      }
+      var sponsors = <?php echo json_encode($cal->sponsors) . ";\n"; ?>
       var current_filters = {'eventtype': 'All', 'eventloc': 'All', 'eventsponsor': 'All'};
       function sidebar_filters() {
-        // console.log(current_filters);
+        var tmp = scroll_done;
+        scroll_done = true;
         $('.iterable-event').each(function() {
           $(this).css('display', '');
           for (var type in current_filters) {
@@ -237,11 +318,10 @@ $prev_start = $prev_end - 2592000;
                   type_val = $(this).data('eventsponsor').toString().split('$SEP$');
               $.each(type_val, function( index, value ) {
                 if (value != '') {
-                  var this_sponsor = sponsors[value];
-                  if (this_sponsor == current_filters[type]) {
+                  // var this_sponsor = sponsors[value];
+                  // console.log('eventsponsor', this_sponsor, current_filters[type], value);
+                  if (value == current_filters[type]) {
                     shown = true;
-                  } else {
-                    console.log('+'+this_sponsor+'+', '+'+current_filters[type]+'+');
                   }
                 }
               });
@@ -251,13 +331,15 @@ $prev_start = $prev_end - 2592000;
               }
             } else {
               var type_val = $(this).data(type);
-              if (current_filters[type] !== 'All' && current_filters[type] !== type_val) {
+              if (current_filters[type] !== 'All' && current_filters[type] != type_val) {
+                // console.log(type_val, current_filters[type]);
                 $(this).css('display', 'none');
                 break;
               }
             }
           }
         });
+        scroll_done = tmp;
       }
       $('.event-type-toggle').on('click', function(e) {
         e.preventDefault();
@@ -266,18 +348,14 @@ $prev_start = $prev_end - 2592000;
         current_filters['eventtype'] = $(this).data('value');
         sidebar_filters();
       });
-      $('.event-loc-toggle').on('click', function(e) {
+      $('#event-loc-toggle').on('change', function(e) {
         e.preventDefault();
-        $('.event-loc-toggle').removeClass('active');
-        $(this).addClass('active');
-        current_filters['eventloc'] = $(this).data('value');
+        current_filters['eventloc'] = this.value;
         sidebar_filters();
       });
-      $('.event-sponsor-toggle').on('click', function(e) {
+      $('#event-sponsor-toggle').on('change', function(e) {
         e.preventDefault();
-        $('.event-sponsor-toggle').removeClass('active');
-        $(this).addClass('active');
-        current_filters['eventsponsor'] = $(this).data('value');
+        current_filters['eventsponsor'] = this.value;
         sidebar_filters();
       });
       $('#sort-date').on('click', function(e) {
@@ -294,7 +372,7 @@ $prev_start = $prev_end - 2592000;
           sort.push(div.data('date') + ',' + div.attr('id'));
         });
         sort.reverse();
-        var prev_id = 'tail';
+        var prev_id = 'top-of-events';
         for (var i = 0; i < sort.length; i++) {
           var id = sort[i].split(',')[1];
           $('#' + id).insertAfter('#' + prev_id);
@@ -316,16 +394,16 @@ $prev_start = $prev_end - 2592000;
       $(function () {
         $('[data-toggle="popover"]').popover({ trigger: "hover" });
       });
-      $('.day').on('click', function() {
-        var date = $(this).data('mdy');
-        $('.iterable-event').each(function() {
-          if ($(this).data('mdy') != date) {
-            $(this).css('display', 'none');
-          } else {
-            $(this).css('display', '');
-          }
-        });
-      });
+      // $('.day').on('click', function() {
+      //   var date = $(this).data('mdy');
+      //   $('.iterable-event').each(function() {
+      //     if ($(this).data('mdy') != date) {
+      //       $(this).css('display', 'none');
+      //     } else {
+      //       $(this).css('display', '');
+      //     }
+      //   });
+      // });
     </script>
   </body>
 </html>

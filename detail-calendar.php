@@ -11,9 +11,11 @@ if (isset($_GET['month']) && isset($_GET['year'])) {
   $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
   $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
 }
-$cal = new Calendar($db, $start_time, $end_time);
+$cal = new Calendar($db);
+$cal->set_start($start);
+$cal->set_end($end);
 $cal->fetch_events();
-$cal->fetch_sponsors();
+$cal->generate_sponsors();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +53,7 @@ $cal->fetch_sponsors();
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <?php $cal->print(false); ?>
+          <?php $cal->print_cal(false); ?>
         </div>
       </div>
       <div style="clear: both;height: 100px"></div>

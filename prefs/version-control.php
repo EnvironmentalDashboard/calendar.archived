@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../../includes/db.php';
 require 'includes/check-signed-in.php';
-if (isset($_POST['mv'])) {
+if (isset($_POST['deploy'])) {
   shell_exec('rm -rf /var/www/html/oberlin/calendar && cp -al /var/www/html/oberlin/calendar2 /var/www/html/oberlin/calendar');
 }
 ?>
@@ -37,7 +37,7 @@ if (isset($_POST['mv'])) {
               <li>i created this page</li>
             </ul>
             <form action="" method="POST">
-              <input type="submit" name="mv" value="Push changes to live site" class="btn btn-warning">
+              <input type="submit" name="deploy" value="Push changes to live site" class="btn btn-warning">
             </form>
           </div>
         </div>
