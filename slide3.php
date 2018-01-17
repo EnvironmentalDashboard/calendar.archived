@@ -1,4 +1,4 @@
-<?php
+<?php // large pic slide
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
@@ -62,11 +62,8 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         font-weight: normal;
       }
       html {
-        background: url(<?php echo $bg; ?>) no-repeat center center fixed;
-        -webkit-background-size: <?php echo $image_mode; ?>;
-        -moz-background-size: <?php echo $image_mode; ?>;
-        background-size: <?php echo $image_mode; ?>;
         letter-spacing: 2px;
+        height: 100%;
       }
       body {
         color: #fff;
@@ -77,18 +74,9 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         background: #000;
         height: 100%;
         width: 100%;
-        /*text-shadow: 2px 4px 3px rgba(0,0,0,0.3);*/
-        /*text-shadow: 6px 6px 0px rgba(0,0,0,0.2);*/
-        text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
-             0px 8px 13px rgba(0,0,0,0.1),
-             0px 18px 23px rgba(0,0,0,0.1);
       }
       .content {
-        padding: 20px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
+        padding-left: 1vw;
       }
       .title {
         font-size: 8rem;
@@ -98,11 +86,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         text-transform: uppercase;
         font-family: 'Bebas Neue';
         margin-bottom: 10px;
-        width: 80%;
-        /*font-family: 500;*/
-        /*font-family: 'tradeGothic';*/
-        /*background: rgba(0,0,0,0.8);*/
-        /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
+        width: 90%;
       }
       .p {
         font-weight: 700;
@@ -111,8 +95,6 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         font-weight: normal;
         margin-top: 20px;
         margin-bottom: 15px;
-        /*background: rgba(0,0,0,0.8);*/
-        /*box-shadow: 10px 0 0 rgba(0,0,0,0.8), -10px 0 0 rgba(0,0,0,0.8);*/
       }
       .description {
         text-transform: initial;
@@ -129,13 +111,6 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         text-transform: uppercase;
         font-family: 'Bebas Neue'
       }
-      img {
-        width: 33.333%;
-        position: absolute;
-        right: 0px;
-        margin: 10px;
-        margin-right:20px;
-      }
       .animated {
         animation-duration: 2s;
       }
@@ -149,30 +124,37 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         right: 0;
         left: 0;
       }
+      .img-overlay {
+        background: url(<?php echo $bg; ?>) no-repeat center center fixed;
+        -webkit-background-size: <?php echo $image_mode; ?>;
+        -moz-background-size: <?php echo $image_mode; ?>;
+        background-size: <?php echo $image_mode; ?>;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
     </style>
   </head>
   <body>
+    <div class="img-overlay"></div>
     <div class="overlay"></div>
-    <?php if ($result['has_img'] == '1') {  ?><img style="top:20%" src="images/uploads/<?php echo $result['id']; ?>" alt="" class="animated fadeIn"><?php } ?>
-    <div class="content">
-      <h1 class="title animated fadeIn"><?php echo $result['event']; ?></h1>
-      <div style="max-width: <?php echo ($result['has_img'] == '1') ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
+    <div style="display: flex;align-items: center;height: 100%">
+      <?php if ($result['has_img'] == '1') {  ?><div style="width: 100%"><img style="float: left;height: 100%;width: 100%" src="images/uploads/event<?php echo $result['id']; ?>" alt="" class="animated fadeIn"></div><?php } ?>
+      <div class="content">
+        <h1 class="title animated fadeIn"><?php echo $result['event']; ?></h1>
         <p class="p animated fadeIn" style="font-size: 3.5vw;color: #badbf2;">
-          <?php
-          echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span> ';
-          echo '<span style="white-space: nowrap;">| '.$loc.'</span>'; ?>
-        </p>
-        <p class="p description animated fadeIn">
-          <?php echo $result['description']; ?>
-        </p>
-        <!-- <div style="clear:both;height:7vh"></div> -->
+            <?php
+            echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span> ';
+            echo '<span style="white-space: nowrap;">| '.$loc.'</span>'; ?>
+          </p>
+          <p class="p description animated fadeIn">
+            <?php echo $result['description']; ?>
+          </p>
       </div>
     </div>
-    <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->
-    <img src="images/findmoreAT.png" alt="Community Calendar" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
-    <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
-    <?php if ($result['event_type_id'] === '1') { ?>
-    <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
-    <?php } ?>
   </body>
 </html>

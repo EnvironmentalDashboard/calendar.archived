@@ -12,8 +12,8 @@ if (isset($_GET['month']) && isset($_GET['year'])) {
   $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
 }
 $cal = new Calendar($db);
-$cal->set_start($start);
-$cal->set_end($end);
+$cal->set_start($start_time);
+$cal->set_end($end_time);
 $cal->fetch_events();
 $cal->generate_sponsors();
 ?>

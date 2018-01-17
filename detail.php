@@ -5,20 +5,19 @@ date_default_timezone_set('America/New_York');
 require '../includes/db.php';
 require 'includes/class.Calendar.php';
 $id = (isset($_GET['id'])) ? $_GET['id'] : 0;
-$stmt = $db->prepare('SELECT loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
+$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, has_img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
   header("location:javascript://history.go(-1)"); // lol
   die();
 }
-$extra_img = (!empty($event['img'])) ? 'data:image/jpeg;base64,'.base64_encode($event['img']) : null;
 $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
 $locname = $loc['location'];
 $locaddr = $loc['address'];
 $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
 $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-$cal = new Calendar($db, -1, -1);
+// $cal = new Calendar($db);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +56,7 @@ $cal = new Calendar($db, -1, -1);
           <hr>
           <p><?php echo $event['description']; ?></p>
           <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
-          <p><?php echo $cal->formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
+          <p><?php echo Calendar::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
           <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?><h5>Contact</h5><p><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "<a href='mailto:{$event['email']}'>{$event['email']}</a><br>"; ?>
           <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']) . "<br>"; // https://stackoverflow.com/a/10741461/2624391
@@ -91,10 +90,10 @@ $cal = new Calendar($db, -1, -1);
           </p>
         </div>
         <div class="col-md-4 col-sm-12">
-          <?php if ($extra_img !== null) {
-            echo "<img src='{$extra_img}' class='img-fluid'>";
-          } else {
+          <?php if ($event['has_img'] == '0') {
             echo "<img src='images/default.svg' class='img-fluid'>";
+          } else {
+            echo "<img src='https://oberlindashboard.org/oberlin/calendar/images/uploads/event{$event['id']}' class='img-fluid'>";
           }
           if ($locaddr != '') {
             echo '<iframe
@@ -109,7 +108,7 @@ $cal = new Calendar($db, -1, -1);
       </div>
       <div style="clear: both;height: 110px"></div>
       <?php
-      $stmt = $db->prepare('SELECT id, event, img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? AND approved = 1 ORDER BY start ASC LIMIT 4');
+      $stmt = $db->prepare('SELECT id, event, has_img, start, `end`, no_end_time, no_start_time FROM calendar WHERE start > UNIX_TIMESTAMP(NOW()) AND event_type_id = ? AND id != ? AND approved = 1 ORDER BY start ASC LIMIT 4');
       $stmt->execute(array($event['event_type_id'], $id));
       $related_events = $stmt->fetchAll();
       if (count($related_events) > 0) { ?>
@@ -119,10 +118,10 @@ $cal = new Calendar($db, -1, -1);
         <?php foreach ($related_events as $row) { ?>
         <div class="col-sm-3">
           <div class="card" style="max-width: 100%;">
-            <img class="card-img-top" src="<?php echo ($row['img'] == null) ? 'images/default.svg' : 'data:image/jpeg;base64,'.base64_encode($row['img']); ?>" alt="<?php echo $row['event'] ?>">
+            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "images/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
-              <?php echo "<p class='card-text'>" . $cal->formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
+              <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
               <a href="detail?id=<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
             </div>
           </div>

@@ -103,11 +103,11 @@ $cal->generate_sponsors();
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="https://oberlindashboard.org/oberlin/calendar/detail?id=<?php echo $result['id'] ?>">
-                      <?php if ($result['thumbnail'] === null) {
+                      <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
-                      } else { ?>
-                      <img class="d-block img-fluid" style="overflow:hidden;max-height: 250px" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
-                      <?php } ?>
+                      } else {
+                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://oberlindashboard.org/oberlin/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      } ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
@@ -159,11 +159,11 @@ $cal->generate_sponsors();
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-12 col-md-3">
-                  <?php if ($result['thumbnail'] === null) {
+                  <?php if ($result['has_img'] == '0') {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
-                    } else { ?>
-                    <img class="thumbnail img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($result['thumbnail']) ?>">
-                    <?php } ?>
+                    } else { 
+                      echo "<img class=\"thumbnail img-fluid\" src=\"https://oberlindashboard.org/oberlin/calendar/images/uploads/thumbnail{$result['id']}\">";
+                    } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
                   <h4 class="card-title"><?php echo $result['event']; echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span>" : ""; ?></h4>

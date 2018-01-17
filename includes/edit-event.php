@@ -13,7 +13,7 @@ if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
     exit('Error: invalid token');
   }
 }
-$cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are img, thumbnail, start, end, no_start_time, no_end_time
+$cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are has_img, start, end, no_start_time, no_end_time
 $data = [];
 $query = 'UPDATE calendar SET approved = NULL';
 foreach ($cols as $col) {
@@ -82,12 +82,10 @@ if (isset($_FILES['file']) && file_exists($_FILES['file']['tmp_name']) && is_upl
   $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
-    shell_exec("convert {$_FILES['file']['tmp_name']} -define jpeg:extent=32kb tmp.jpeg"); // https://stackoverflow.com/a/11920384/2624391
-    $fp = fopen($_FILES['file']['tmp_name'], 'rb'); // read binary
-    $fp2 = fopen('tmp.jpeg', 'rb');
-    $query .= ", img = ?, thumbnail = ?";
-    $data[] = 'fp';
-    $data[] = 'fp2';
+    if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/html/oberlin/calendar/images/uploads/event{$success}")) {
+      shell_exec("convert /var/www/html/oberlin/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/html/oberlin/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
+      $query .= ", has_img = 1";
+    }
   }
 }
 $no_start_time = 0;
@@ -112,17 +110,7 @@ $data[] = $date2;
 $stmt = $db->prepare("{$query} WHERE id = ?");
 $i = 1;
 foreach ($data as $entry) {
-  switch ($entry) {
-    case 'fp':
-      $stmt->bindParam($i, $fp, PDO::PARAM_LOB);
-      break;
-    case 'fp2':
-      $stmt->bindParam($i, $fp2, PDO::PARAM_LOB);
-      break;
-    default:
-      $stmt->bindValue($i, $entry);
-      break;
-  }
+  $stmt->bindValue($i, $entry);
   $i++;
 }
 $stmt->bindValue($i, $edit_id);

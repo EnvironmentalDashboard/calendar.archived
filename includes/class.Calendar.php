@@ -30,11 +30,11 @@ class Calendar {
    */
   public function fetch_events() {
     if ($this->start > 0 && $this->end > 0) {
-      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
+      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
       $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
     } elseif ($this->limit > 0) {
       $time = time();
-      $stmt = $this->db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, thumbnail, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE approved = 1 AND start > {$time} ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
+      $stmt = $this->db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE approved = 1 AND start > {$time} ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
     }
     $this->rows = $stmt->fetchAll();
     // $this->expanded_rows = $this->expand_recurring_events();
@@ -214,10 +214,10 @@ class Calendar {
       echo "<div class='card-body'>
               <div class='row'>
                 <div class='col-sm-12 col-md-3'>";
-                if ($result['thumbnail'] === null) {
+                if ($result['has_img'] == '0') {
                   echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                 } else {
-                  echo '<img class="thumbnail img-fluid" src="data:image/jpeg;base64,'.base64_encode($result['thumbnail']).'">';
+                  echo "<img class='thumbnail img-fluid' src='images/uploads/thumbnail{$result['id']}'>";
                 }
                 echo "</div>
                 <div class='col-sm-12 col-md-9'>

@@ -1,8 +1,8 @@
-<?php
+<?php // text heavy slide
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT id, event, start, `end`, description, loc_id, has_img, no_start_time, no_end_time, event_type_id FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT event, start, `end`, description, loc_id, no_start_time, no_end_time, event_type_id FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 if ($stmt->rowCount() === 0) {
   echo "Broken slide ID\n";
@@ -53,14 +53,14 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:400,700" rel="stylesheet">
     <!-- <link href="https://fonts.googleapis.com/css?family=Lato:700|Merriweather:700|Open+Sans:700|Roboto:700|Oswald:700" rel="stylesheet"> -->
-    <!-- <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'> -->
+    <link href='https://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/animate.css">
     <style>
-      @font-face {
+      /*@font-face {
         font-family: 'Bebas Neue';
         src: url(/oberlin/calendar/bebas_neue/BebasNeueRegular.otf);
         font-weight: normal;
-      }
+      }*/
       html {
         background: url(<?php echo $bg; ?>) no-repeat center center fixed;
         -webkit-background-size: <?php echo $image_mode; ?>;
@@ -77,11 +77,6 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         background: #000;
         height: 100%;
         width: 100%;
-        /*text-shadow: 2px 4px 3px rgba(0,0,0,0.3);*/
-        /*text-shadow: 6px 6px 0px rgba(0,0,0,0.2);*/
-        text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
-             0px 8px 13px rgba(0,0,0,0.1),
-             0px 18px 23px rgba(0,0,0,0.1);
       }
       .content {
         padding: 20px;
@@ -91,14 +86,18 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
         left: 0;
       }
       .title {
-        font-size: 8rem;
-        font-size: 5.9vw;
+        font-size: 10rem;
+        font-size: 10vw;
         display: inline;
         font-weight: bold;
         text-transform: uppercase;
-        font-family: 'Bebas Neue';
+        /*font-family: 'Bebas Neue';*/
+        font-family: 'Oswald';
+        letter-spacing: 0.1rem;
+        line-height: 8rem;
         margin-bottom: 10px;
         width: 80%;
+        color: #80CBC4;
         /*font-family: 500;*/
         /*font-family: 'tradeGothic';*/
         /*background: rgba(0,0,0,0.8);*/
@@ -142,7 +141,9 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       .overlay {
         height: 100%;
         width: 100%;
-        background: rgba(0,0,0,0.7);
+        /*background:rgba(63, 81, 181, 0.9);*/
+        /*background: rgba(33, 150, 243, 0.85);*/
+        background: rgba(52, 73, 94,0.8);
         position: absolute;
         top: 0;
         bottom: 0;
@@ -153,19 +154,19 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
   </head>
   <body>
     <div class="overlay"></div>
-    <?php if ($result['has_img'] == '1') {  ?><img style="top:20%" src="images/uploads/<?php echo $result['id']; ?>" alt="" class="animated fadeIn"><?php } ?>
     <div class="content">
       <h1 class="title animated fadeIn"><?php echo $result['event']; ?></h1>
-      <div style="max-width: <?php echo ($result['has_img'] == '1') ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
-        <p class="p animated fadeIn" style="font-size: 3.5vw;color: #badbf2;">
+      <div style="max-width: 90%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
+        <div style="clear:both;height:2vh"></div>
+        <p class="p description animated fadeIn">
+          <?php echo $result['description']; ?>
+        </p>
+        <div style="clear:both;height:0.5vh"></div>
+        <p class="p animated fadeIn" style="font-size: 3.5vw;color: #BBDEFB;">
           <?php
           echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span> ';
           echo '<span style="white-space: nowrap;">| '.$loc.'</span>'; ?>
         </p>
-        <p class="p description animated fadeIn">
-          <?php echo $result['description']; ?>
-        </p>
-        <!-- <div style="clear:both;height:7vh"></div> -->
       </div>
     </div>
     <!-- <img src="images/watermark.png" alt="Environmental Dashboard logo" style="height: 150px;width: 150px;position: fixed; bottom: 15px; right: 20px; opacity: 0.5"> -->

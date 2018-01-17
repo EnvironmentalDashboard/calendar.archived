@@ -7,7 +7,7 @@ if (!isset($edit)) {
   $edit = false;
 } elseif ($edit) {
   if (isset($_REQUEST['token'])) {
-    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num, thumbnail FROM calendar WHERE token = ?');
+    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num, has_img FROM calendar WHERE token = ?');
     $stmt->execute([$_REQUEST['token']]);
     if ($stmt->rowCount() === 0) {
       $edit = false;
@@ -199,8 +199,8 @@ if (!isset($edit)) {
                 <span class="custom-file-control"></span>
               </label>
               <p><small class="text-success" id="filename">
-              <?php if ($edit && $event['thumbnail'] != null) {
-                echo "<p>Only select a new picture if you wish to replace your existing image: <img width='30px' src='data:image/jpeg;base64,".base64_encode($event['thumbnail'])."'></p>";
+              <?php if ($edit && $event['has_img'] == '1') {
+                echo "<p>Only select a new picture if you wish to replace your existing image: <img width='30px' src='images/event{$event['id']}'></p>";
               } ?>
               </small></p>
               <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. <b>Please do NOT upload an image of a poster that contains text information describing the event</b> -- it will be too small to read and will be redundant to the event description.</small></p>
