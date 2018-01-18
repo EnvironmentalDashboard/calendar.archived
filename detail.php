@@ -93,7 +93,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
           <?php if ($event['has_img'] == '0') {
             echo "<img src='images/default.svg' class='img-fluid'>";
           } else {
-            echo "<img src='https://oberlindashboard.org/oberlin/calendar/images/uploads/event{$event['id']}' class='img-fluid'>";
+            echo "<img src='https://environmentaldashboard.org/calendar/images/uploads/event{$event['id']}' class='img-fluid'>";
           }
           if ($locaddr != '') {
             echo '<iframe
@@ -118,7 +118,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
         <?php foreach ($related_events as $row) { ?>
         <div class="col-sm-3">
           <div class="card" style="max-width: 100%;">
-            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "images/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
+            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>

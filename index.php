@@ -102,11 +102,11 @@ $cal->generate_sponsors();
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
-                    <a href="https://oberlindashboard.org/oberlin/calendar/detail?id=<?php echo $result['id'] ?>">
+                    <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>">
                       <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
-                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://oberlindashboard.org/oberlin/calendar/images/uploads/thumbnail{$result['id']}\">";
+                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
                       } ?>
                     </a>
                   </div>
@@ -162,7 +162,7 @@ $cal->generate_sponsors();
                   <?php if ($result['has_img'] == '0') {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { 
-                      echo "<img class=\"thumbnail img-fluid\" src=\"https://oberlindashboard.org/oberlin/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      echo "<img class=\"thumbnail img-fluid\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
                     } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">

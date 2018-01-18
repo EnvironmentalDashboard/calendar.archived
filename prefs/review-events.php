@@ -24,7 +24,7 @@ if (isset($_POST['review-events'])) {
       if ($approved) {
         if ($count > 0) { // event being shown on digital signage
           $s = ($count === 1) ? '' : 's';
-          $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
+          $html_message = "<h1>Your event is live</h1><p><a href='https://environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
           foreach ($screens as $screen_id) {
             $stmt = $db->prepare('SELECT name FROM calendar_screens WHERE id = ?');
             $stmt->execute([$screen_id]);
@@ -33,13 +33,13 @@ if (isset($_POST['review-events'])) {
           }
           $html_message .= "</ul>";
         } else { // event only on website
-          $html_message = "<h1>Your event is live</h1><p><a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
+          $html_message = "<h1>Your event is live</h1><p><a href='https://environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
         }
         if ($feedback) {
           $html_message .= "<p>{$feedback}</p>";
         }
-        $html_message .= "<p>You can use this <a href='https://oberlindashboard.org/oberlin/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
-        $txt_message = "Your event was approved an can be viewed here: https://oberlindashboard.org/oberlin/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
+        $html_message .= "<p>You can use this <a href='https://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
+        $txt_message = "Your event was approved an can be viewed here: https://environmentaldashboard.org/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
       } else {
         if ($feedback) {
           $html_message = "<p>{$feedback}</p><br><br>";
@@ -94,7 +94,7 @@ if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
             ?>
               <div class="form-group row">
                 <div class="col-sm-9">
-                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://oberlindashboard.org/oberlin/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
+                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://environmentaldashboard.org/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
                 </div>
                 <div class="col-sm-3">
                   <div class="form-group">

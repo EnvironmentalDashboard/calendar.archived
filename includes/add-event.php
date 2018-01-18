@@ -104,7 +104,7 @@ function save_emails($db, $event_name, $event_id) {
   if ($handle) {
     while (($line = fgets($handle)) !== false) {
       $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
-      $stmt->execute(array($line, "New event submission: {$event_name}", "{$event_name} is available to review.", "<a href='https://oberlindashboard.org/oberlin/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://oberlindashboard.org/oberlin/calendar/prefs/review-events.php'>review</a>."));
+      $stmt->execute(array($line, "New event submission: {$event_name}", "{$event_name} is available to review.", "<a href='https://environmentaldashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://environmentaldashboard.org/calendar/prefs/review-events.php'>review</a>."));
     }
     fclose($handle);
   } else {

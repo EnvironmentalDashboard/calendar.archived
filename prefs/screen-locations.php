@@ -52,7 +52,7 @@ if (!empty($_POST['loc'])) {
                 <tr>
                   <td><p><?php echo $row['name'] ?></p></td>
                   <td><p>https://oberlindashboard.org/oberlin/cwd/kiosk.php?loc_id=<?php echo $row['id']; ?>&amp;timer=80</p></td>
-                  <td><p>https://oberlindashboard.org/oberlin/calendar/slideshow.php?loc_id=<?php echo $row['id']; ?></p></td>
+                  <td><p>https://environmentaldashboard.org/calendar/slideshow.php?loc_id=<?php echo $row['id']; ?></p></td>
                   <td><a href="#" data-id="<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Delete location</a></td>
                 </tr>
                 <?php } ?>

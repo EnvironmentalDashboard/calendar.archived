@@ -9,9 +9,9 @@ $html_message = "<h1>Oberlin Community Calendar Event Newsletter</h1>";
 $html_message .= "<p>This newsletter details events happening from ".date('j/n/y', $start)." to ".date('j/n/y', $end)."</p>";
 foreach ($db->query("SELECT id, event, start, end, description, has_img FROM calendar WHERE start > {$start} AND start < {$end}") as $row) {
   if ($row['has_img'] == '0') {
-    $img = 'https://oberlindashboard.org/oberlin/calendar/images/default.svg';
+    $img = 'https://environmentaldashboard.org/calendar/images/default.svg';
   } else {
-    $img = "https://oberlindashboard.org/oberlin/calendar/images/uploads/thumbnail{$row['id']}";
+    $img = "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}";
   }
   $html_message .= "<div class='padded'>
                       <div>
@@ -19,11 +19,11 @@ foreach ($db->query("SELECT id, event, start, end, description, has_img FROM cal
                         <span style='font-size:1.3rem;font-weight:bold'>{$row['event']}</span>
                       </div>
                       <p style='margin:0'>{$row['description']}</p>
-                      <p><a href='https://oberlindashboard.org/oberlin/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;height:initial;width:initial;line-height:1rem;margin:0px 0px 20px 0px;'>Read more</a></p>
+                      <p><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;height:initial;width:initial;line-height:1rem;margin:0px 0px 20px 0px;'>Read more</a></p>
                     </div>";
 }
 foreach ($db->query('SELECT email FROM newsletter_recipients') as $row) {
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
-  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p><small>Click <a href='https://oberlindashboard.org/oberlin/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p>"]);
+  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p>"]);
 }
 ?>
