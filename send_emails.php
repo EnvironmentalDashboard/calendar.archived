@@ -84,14 +84,14 @@ $html2 = '</td>
 foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message FROM outbox') as $email) {
   if (filter_var($email['recipient'], FILTER_VALIDATE_EMAIL)) {
     $mail = new PHPMailer;
-    $mail->setFrom('no-reply@oberlindashboard.org', 'Environmental Dashboard');
+    $mail->setFrom('no-reply@environmentaldashboard.org', 'Environmental Dashboard');
     $mail->addAddress($email['recipient']);
     $mail->Subject = $email['subject'];
     $mail->msgHTML($html1 . $email['html_message'] . $html2);
     //This should be the same as the domain of your From address
-    $mail->DKIM_domain = 'oberlindashboard.org';
+    $mail->DKIM_domain = 'environmentaldashboard.org';
     //Path to your private key:
-    $mail->DKIM_private = '/etc/opendkim/keys/oberlindashboard.org/mail.private';
+    $mail->DKIM_private = '/etc/opendkim/keys/environmentaldashboard.org/mail.private';
     //Set this to your own selector
     $mail->DKIM_selector = 'mail';
     //Put your private key's passphrase in here if it has one
