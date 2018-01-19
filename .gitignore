@@ -1,3 +1,4 @@
 *.txt
 .DS_Store
 config.codekit3
+images/uploads
