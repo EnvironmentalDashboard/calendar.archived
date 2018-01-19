@@ -82,8 +82,8 @@ if (isset($_FILES['file']) && file_exists($_FILES['file']['tmp_name']) && is_upl
   $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
-    if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/html/oberlin/calendar/images/uploads/event{$success}")) {
-      shell_exec("convert /var/www/html/oberlin/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/html/oberlin/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
+    if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/repos/calendar/images/uploads/event{$success}")) {
+      shell_exec("convert /var/www/repos/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/repos/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
       $query .= ", has_img = 1";
     }
   }

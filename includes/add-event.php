@@ -80,8 +80,8 @@ elseif (!$date2) {
     $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
     $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
     if (in_array($detectedType, $allowedTypes)) {
-      if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/html/oberlin/calendar/images/uploads/event{$success}")) {
-        shell_exec("convert /var/www/html/oberlin/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/html/oberlin/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
+      if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/repos/calendar/images/uploads/event{$success}")) {
+        shell_exec("convert /var/www/repos/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/repos/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
         $stmt = $db->prepare('UPDATE calendar SET has_img = ? WHERE id = ?');
         $stmt->execute([1, $success]);
       }
@@ -100,7 +100,7 @@ if (isset($error)) {
 }
 
 function save_emails($db, $event_name, $event_id) {
-  $handle = fopen('/var/www/html/oberlin/calendar/prefs/emails.txt', 'r'); // send emails to all these addressess
+  $handle = fopen('/var/www/repos/calendar/prefs/emails.txt', 'r'); // send emails to all these addressess
   if ($handle) {
     while (($line = fgets($handle)) !== false) {
       $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
