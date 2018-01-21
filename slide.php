@@ -153,7 +153,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
   </head>
   <body>
     <div class="overlay"></div>
-    <?php if ($result['has_img'] == '1') {  ?><img style="top:20%" src="images/uploads/<?php echo $result['id']; ?>" alt="" class="animated fadeIn"><?php } ?>
+    <?php if ($result['has_img'] == '1') {  ?><img style="top:20%" src="images/uploads/event<?php echo $result['id']; ?>" alt="" class="animated fadeIn"><?php } ?>
     <div class="content">
       <h1 class="title animated fadeIn"><?php echo $result['event']; ?></h1>
       <div style="max-width: <?php echo ($result['has_img'] == '1') ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
