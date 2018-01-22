@@ -215,9 +215,9 @@ class Calendar {
               <div class='row'>
                 <div class='col-sm-12 col-md-3'>";
                 if ($result['has_img'] == '0') {
-                  echo '<img src="images/default.svg" class="thumbnail img-fluid">';
+                  echo '<img src="https://environmentaldashboard.org/calendar/images/default.svg" class="thumbnail img-fluid">';
                 } else {
-                  echo "<img class='thumbnail img-fluid' src='images/uploads/thumbnail{$result['id']}'>";
+                  echo "<img class='thumbnail img-fluid' src='https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}'>";
                 }
                 echo "</div>
                 <div class='col-sm-12 col-md-9'>

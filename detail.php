@@ -1,36 +1,8 @@
-<?php
-error_reporting(-1);
-ini_set('display_errors', 'On');
-date_default_timezone_set('America/New_York');
-require '../includes/db.php';
-require 'includes/class.Calendar.php';
-$id = (isset($_GET['id'])) ? $_GET['id'] : 0;
-$stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, has_img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
-$stmt->execute(array($id));
-$event = $stmt->fetch();
-if (!$event) {
-  header("location:javascript://history.go(-1)"); // lol
-  die();
-}
-$loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
-$locname = $loc['location'];
-$locaddr = $loc['address'];
-$google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
-$thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-// $cal = new Calendar($db);
-?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags always come first -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="css/bootstrap.css?v=4">
-  </head>
-  <body>
-    <div class="container">
+<?php $dirname = dirname($_SERVER['SCRIPT_FILENAME']);
+$dirs = explode('/', $dirname);
+$website = $dirs[count($dirs)-2];
+$snippets = "{$dirname}/includes/snippets/detail/{$website}";
+include $snippets . '_top.php'; ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
@@ -118,7 +90,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
         <?php foreach ($related_events as $row) { ?>
         <div class="col-sm-3">
           <div class="card" style="max-width: 100%;">
-            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
+            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
@@ -130,15 +102,4 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
       </div>
       <?php } ?>
       <div style="clear: both;height: 80px"></div>
-      <?php include 'includes/footer.php'; ?>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-    <script>
-      $('.alert > button').on('click', function() {
-        $('.alert').css('display', 'none');
-      });
-    </script>
-  </body>
-</html>
+<?php include $snippets . '_bottom.php'; ?>
