@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title><?php echo ($edit) ? 'Edit' : 'Add' ?> event</title>
-    <link rel="stylesheet" href="<?php echo "http://{$_SERVER['HTTP_HOST']}" . explode('calendar', $_SERVER['REQUEST_URI'])[0]; ?>css/bootstrap.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="/css/bootstrap.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="js/jquery-ui-1.12.1.custom/jquery-ui.min.css">
     <link rel="stylesheet" href="js/jquery.timepicker.min.css">
     <style>

@@ -27,7 +27,7 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="<?php echo "http://{$_SERVER['HTTP_HOST']}" . explode('calendar', $_SERVER['REQUEST_URI'])[0]; ?>css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
   </head>
   <body>
     <div class="container">

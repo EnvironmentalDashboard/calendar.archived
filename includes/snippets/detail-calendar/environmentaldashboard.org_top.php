@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="<?php echo "http://{$_SERVER['HTTP_HOST']}" . explode('calendar', $_SERVER['REQUEST_URI'])[0]; ?>css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap.css">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
       tr:nth-child(1n+3) { height: 140px; }
