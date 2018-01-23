@@ -5,6 +5,6 @@ $symlink = 'oberlin';
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
 $stmt->execute(array($symlink));
 if (!isset($_COOKIE['token']) || $stmt->fetchColumn() !== $_COOKIE['token']) {
-  header("Location: https://oberlindashboard.org/{$symlink}/prefs/");
+  header("Location: https://environmentaldashboard.org/calendar/prefs/");
 }
 ?>
