@@ -2,11 +2,11 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../../includes/db.php';
-$symlink = explode('/', $_SERVER['REQUEST_URI'])[1];
+$symlink = 'oberlin';//explode('/', $_SERVER['REQUEST_URI'])[1];
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
 $stmt->execute(array($symlink));
 if (isset($_COOKIE['token']) && $stmt->fetchColumn() !== $_COOKIE['token']) {
-  header("Location: prefs/review-events");
+  header("Location: https://environmentaldashboard.org/calendar/prefs/review-events");
 }
 if (isset($_POST['pass']) && isset($_POST['org'])) {
   $stmt = $db->prepare('SELECT password, token FROM users WHERE slug = ?');
@@ -26,7 +26,7 @@ if (isset($_POST['pass']) && isset($_POST['org'])) {
       $stmt->execute(array($token, $_POST['org']));
     }
     setcookie('token', $token, time()+60*60*24*30, "/{$_POST['org']}/");
-    header("Location: prefs/review-events.php");
+    header("Location: https://environmentaldashboard.org/calendar/prefs/review-events.php");
   }
 }
 $symlink = explode('/', $_SERVER['REQUEST_URI'])[1];
