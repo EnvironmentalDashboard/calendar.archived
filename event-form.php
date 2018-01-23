@@ -216,12 +216,11 @@ include $snippets . '_top.php'; ?>
                 echo "</div>
                 <p style='height:15px;margin-top:-20px'><span style='font-weight:bold'>Public schools</span>
                 <div class=\"custom-control custom-checkbox\">
-                <input type=\"checkbox\" id='id{$whatever}' class=\"custom-control-input\" id='school-checkbox'>
-                <label for='id{$whatever}' class=\"custom-control-label\">Check all</label>
+                <input type=\"checkbox\" id='school-checkbox' class=\"custom-control-input\" id='school-checkbox'>
+                <label for='school-checkbox' class=\"custom-control-label\">Check all</label>
                 </div>
                 </p>
                 <div id='school-locs'>";
-                $whatever++;
                 foreach ($db->query('SELECT id, name FROM calendar_screens WHERE name LIKE \'%School%\' ORDER BY name ASC') as $row) {
                   if ($edit && in_array($row['id'], $edit_event_screens)) {
                     $checked = 'checked=\'true\'';
