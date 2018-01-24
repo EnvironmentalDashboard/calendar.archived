@@ -56,7 +56,7 @@ include $snippets . '_top.php'; ?>
               <?php if (!$edit) { ?>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" checked='true' id='subscribe' name='subscribe'>
-                <label class="custom-control-label">I want to recieve a weekly event newsletter</label>
+                <label class="custom-control-label" for="subscribe">I want to recieve a weekly event newsletter</label>
               </div>
               <?php } ?>
             </div>

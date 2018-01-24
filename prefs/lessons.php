@@ -25,7 +25,7 @@ if (isset($_POST['submit'])) {
   $stmt->execute([$_POST['lesson_id']]);
 }
 
-$limit = 25;
+$limit = 10;
 $page = (empty($_GET['page'])) ? 0 : intval($_GET['page']) - 1;
 $offset = $limit * $page;
 $count = $db->query("SELECT COUNT(*) FROM cv_lessons")->fetchColumn();
