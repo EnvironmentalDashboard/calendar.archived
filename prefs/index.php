@@ -2,37 +2,40 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../../includes/db.php';
-$symlink = 'oberlin';//explode('/', $_SERVER['REQUEST_URI'])[1];
+$symlink = explode('/', $_SERVER['REQUEST_URI'])[1];
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
-$stmt->execute(array($symlink));
-if (isset($_COOKIE['token']) && $stmt->fetchColumn() !== $_COOKIE['token']) {
-  header("Location: https://environmentaldashboard.org/calendar/prefs/review-events");
+$stmt->execute([$symlink]);
+if ($stmt->rowCount() === 0) { // default to oberlin
+  $stmt = $db->query('SELECT token FROM users WHERE slug = \'oberlin\'');
+  $symlink = 'oberlin';
+}
+if (isset($_COOKIE['token']) && $stmt->fetchColumn() === $_COOKIE['token']) {
+  header("Location: https://environmentaldashboard.org/{$symlink}/calendar/prefs/review-events");
 }
 if (isset($_POST['pass']) && isset($_POST['org'])) {
   $stmt = $db->prepare('SELECT password, token FROM users WHERE slug = ?');
-  $stmt->execute(array($_POST['org']));
+  $stmt->execute([$_POST['org']]);
   $users = $stmt->fetch();
   $hash = $users['password'];
   if ($hash == null) { // Entered password becomes new password
     $token = bin2hex(random_bytes(127)); // Will be used to verify a user is logged in
     $stmt = $db->prepare('UPDATE users SET password = ?, token = ? WHERE slug = ?');
-    $stmt->execute(array(password_hash($_POST['pass'], PASSWORD_DEFAULT), $token, $_POST['org']));
+    $stmt->execute([password_hash($_POST['pass'], PASSWORD_DEFAULT), $token, $_POST['org']]);
   } else {
     $token = $users['token'];
   }
   if ($hash == null || password_verify($_POST['pass'], $hash)) { // Log in
     if ($token !== $users['token']) { // if $token !== the token in the database (only true if $hash==null)
       $stmt = $db->prepare('UPDATE users SET token = ? WHERE slug = ?');
-      $stmt->execute(array($token, $_POST['org']));
+      $stmt->execute([$token, $_POST['org']]);
     }
     setcookie('token', $token, time()+60*60*24*30);
-    header("Location: https://environmentaldashboard.org/calendar/prefs/review-events.php");
+    header("Location: https://environmentaldashboard.org/{$symlink}/calendar/prefs/review-events.php");
   }
 }
-$symlink = explode('/', $_SERVER['REQUEST_URI'])[1];
 
 $stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE password IS NULL AND slug = ?');
-$stmt->execute(array($symlink));
+$stmt->execute([$symlink]);
 if ($stmt->fetchColumn() === '0') {
   $msg1 = 'Please sign in';
   $msg2 = 'Sign in';
