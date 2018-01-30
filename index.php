@@ -26,6 +26,7 @@ include $snippets . '_top.php'; ?>
       <div class="row">
         <div class="col-md-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
+          <p><a href="#" class="btn btn-secondary btn-block" id="newsletter-sub">Subscribe to our newsletter</a></p>
           <div id="small-cal">
             <?php
             $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
