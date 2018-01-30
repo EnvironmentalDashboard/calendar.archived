@@ -57,6 +57,7 @@ include $snippets . '_top.php'; ?>
               } ?>
             </select>
           </form>
+          <div style="clear: both;height: 15px"></div>
           <h5>Event sponsors</h5>
           <form action="" method="GET">
             <select class="form-control" name="event-sponsor-toggle" id="event-sponsor-toggle">
@@ -66,10 +67,12 @@ include $snippets . '_top.php'; ?>
               } ?>
             </select>
           </form>
+          <div style="clear: both;height: 15px"></div>
+          <h5>Subscribe to our newsletter</h5>
           <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
             <label class="sr-only" for="newsletter-email">Email</label>
             <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
-            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe to our newsletter</button>
+            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
           </form>
         </div>
         <div class="col-md-8 col-sm-12">
@@ -86,19 +89,21 @@ include $snippets . '_top.php'; ?>
               foreach (array_reverse($cal->rows) as $result) { ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
-                  <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>">
-                    <div class="col-sm-6 hidden-sm-down">
+                  <div class="col-sm-6 hidden-sm-down">
+                    <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>">
                       <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
                         echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
                       } ?>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
+                    </a>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
-                    </div>
-                  </a>
+                    </a>
+                  </div>
                 </div>
               </div>
               <?php
