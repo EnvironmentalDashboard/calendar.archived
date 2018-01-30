@@ -4,11 +4,12 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
 <script>
-  $('#newsletter-sub').on('click', function(e) {
+  $('#newsletter-form').on('submit', function(e) {
     e.preventDefault();
-    var email = prompt('Enter your email');
+    var email = $('#newsletter-email').val();
     if (email) {
       $.post( "includes/newsletter_sub.php", { email: email } );
+      alert('You have subscribed to our newsletter. Please check your email for a confirmation link');
     }
   });
   var limit = 5, offset = 5, scroll_done = false;

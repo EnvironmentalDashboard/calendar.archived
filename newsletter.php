@@ -32,12 +32,12 @@ foreach ($db->query("SELECT id, event, start, end, description, has_img, sponsor
                         <img src='{$img}' alt='{$row['event']}' width='20%' style='display:inline; vertical-align:middle; margin-right:10px'>
                         <div style='font-size:1.3rem;font-weight:bold;flex: 1;'>{$row['event']}</div>
                       </div>
-                      <p style='margin:0'>{$info}</p>
+                      <h4 style='margin:0'>{$info}</h4>
                       <p style='margin:0'>{$row['description']}</p>
-                      <p><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;height:initial;width:initial;line-height:1rem;margin:0px 0px 20px 0px;'>Read more</a></p>
+                      <p style='margin:0;margin-bottom:15px'><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Read more</a></p>
                     </div>";
 }
-foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id IN (3, 34)') as $row) {
+foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id IN (3, 41, 40)') as $row) {
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
   $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>"]);
 }
