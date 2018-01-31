@@ -6,7 +6,7 @@ $start = time();
 $end = $start + 604800;
 require '../includes/db.php';
 $html_message = "<div style='padding:15px'><h1>Oberlin Community Calendar Event Newsletter</h1>";
-$html_message .= "<p>This newsletter details events happening from ".date('j/n/y', $start)." to ".date('j/n/y', $end)."</p>";
+$html_message .= "<p>This newsletter details events happening from ".date('j/n/y', $start)." to ".date('j/n/y', $end).".</p>";
 foreach ($db->query("SELECT id, event, start, end, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end}") as $row) {
   $info = [];
   $stmt = $db->prepare('SELECT location FROM calendar_locs WHERE id = ?');
@@ -39,6 +39,6 @@ foreach ($db->query("SELECT id, event, start, end, description, has_img, sponsor
 }
 foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id IN (3, 41, 40)') as $row) {
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
-  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>"]);
+  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p>You can customize the events you recieve by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a></p><p><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>"]);
 }
 ?>

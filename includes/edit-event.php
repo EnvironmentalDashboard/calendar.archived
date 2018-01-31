@@ -3,6 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
+require '../../includes/Parsedown.php';
 if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
   exit('Error: missing token');
 } else {
@@ -13,7 +14,7 @@ if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
     exit('Error: invalid token');
   }
 }
-$cols = ['event', 'description', 'extended_description', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are has_img, start, end, no_start_time, no_end_time
+$cols = ['event', 'description', 'extended_description_md', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are has_img, start, end, no_start_time, no_end_time
 $data = [];
 $query = 'UPDATE calendar SET approved = NULL';
 foreach ($cols as $col) {
@@ -41,6 +42,12 @@ foreach ($cols as $col) {
         break;
       case 'phone':
         $data[] = (preg_replace('/\D/', '', $_POST['phone']));
+        break;
+      case 'extended_description_md':
+        $Parsedown = new Parsedown();
+        $query .= ", extended_description = ?";
+        $data[] = $Parsedown->text($_POST['extended_description_md']);
+        $data[] = $_POST['extended_description_md'];
         break;
       case 'repeat_on':
         $data[] = json_encode($_POST['repeat_on']);

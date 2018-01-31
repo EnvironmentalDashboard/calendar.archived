@@ -7,7 +7,7 @@ if (!isset($edit)) {
   $edit = false;
 } elseif ($edit) {
   if (isset($_REQUEST['token'])) {
-    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num, has_img FROM calendar WHERE token = ?');
+    $stmt = $db->prepare('SELECT id, event, start, end, description, extended_description_md, event_type_id, loc_id, screen_ids, approved, no_start_time, no_end_time, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, room_num, has_img FROM calendar WHERE token = ?');
     $stmt->execute([$_REQUEST['token']]);
     if ($stmt->rowCount() === 0) {
       $edit = false;
@@ -168,11 +168,11 @@ include $snippets . '_top.php'; ?>
               <small class="text-muted">200 character maximum, 10 character minimum<span id="chars-left"></span></small>
             </div>
             <div class="form-group">
-              <label for="extended_description">Extended description</label>
-              <textarea name="extended_description" id="extended_description" class="form-control"><?php
-              echo (!empty($_REQUEST['extended_description'])) ? $_REQUEST['extended_description'] : '';
-              echo ($edit && empty($_REQUEST['extended_description'])) ? $event['extended_description'] : ''; ?></textarea>
-              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links.</small>
+              <label for="extended_description_md">Extended description</label>
+              <textarea name="extended_description_md" id="extended_description_md" class="form-control"><?php
+              echo (!empty($_REQUEST['extended_description_md'])) ? $_REQUEST['extended_description_md'] : '';
+              echo ($edit && empty($_REQUEST['extended_description_md'])) ? $event['extended_description_md'] : ''; ?></textarea>
+              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links. To format this text and include links, see <a target="_blank" href="https://www.google.com/search?q=markdown">markdown</a>.</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
