@@ -87,7 +87,11 @@ elseif (!$date2) {
         shell_exec("convert /var/www/uploads/calendar/event{$success} -define jpeg:extent=32kb /var/www/uploads/calendar/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
         $stmt = $db->prepare('UPDATE calendar SET has_img = ? WHERE id = ?');
         $stmt->execute([1, $success]);
+      } else {
+        $error = 'An unknown error occured while uploading your image';
       }
+    } else {
+      $error = 'Allowed file types are PNG, JPEG, and GIF';
     }
   }
 }
