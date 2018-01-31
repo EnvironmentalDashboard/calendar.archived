@@ -172,7 +172,7 @@ include $snippets . '_top.php'; ?>
               <textarea name="extended_description_md" id="extended_description_md" class="form-control"><?php
               echo (!empty($_REQUEST['extended_description_md'])) ? $_REQUEST['extended_description_md'] : '';
               echo ($edit && empty($_REQUEST['extended_description_md'])) ? $event['extended_description_md'] : ''; ?></textarea>
-              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links. To format this text and include links, see <a target="_blank" href="https://www.google.com/search?q=markdown">markdown</a>.</small>
+              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links. Use <a target="_blank" href="https://www.google.com/search?q=markdown">markdown</a> to format text such as links.</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
@@ -182,7 +182,7 @@ include $snippets . '_top.php'; ?>
               </div>
               <p><small class="text-success" id="filename">
               <?php if ($edit && $event['has_img'] == '1') {
-                echo "<p>Only select a new picture if you wish to replace your existing image: <img width='30px' src='images/event{$event['id']}'></p>";
+                echo "<p>Only select a new picture if you wish to replace your existing image: <img width='30px' src='images/uploads/event{$event['id']}'></p>";
               } ?>
               </small></p>
               <p><small class="text-muted" id="img-help">We encourage you to upload an image related to your event.  This will be shown on the digital signs and the website together with your text.  The art should contain no text or minimal text. <b>Please do NOT upload an image of a poster that contains text information describing the event</b> -- it will be too small to read and will be redundant to the event description.</small></p>

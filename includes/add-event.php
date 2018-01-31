@@ -83,8 +83,8 @@ elseif (!$date2) {
     $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
     $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
     if (in_array($detectedType, $allowedTypes)) {
-      if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/repos/calendar/images/uploads/event{$success}")) {
-        shell_exec("convert /var/www/repos/calendar/images/uploads/event{$success} -define jpeg:extent=32kb /var/www/repos/calendar/images/uploads/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
+      if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/uploads/calendar/event{$success}")) {
+        shell_exec("convert /var/www/uploads/calendar/event{$success} -define jpeg:extent=32kb /var/www/uploads/calendar/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
         $stmt = $db->prepare('UPDATE calendar SET has_img = ? WHERE id = ?');
         $stmt->execute([1, $success]);
       }
