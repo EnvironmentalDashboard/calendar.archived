@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Oberlin Community Calendar. A component of Environmental Dashboard to enhance civic engagement by making it easy for all community members to post and search for information on events in Oberlin.">
     <link rel="stylesheet" href="/css/bootstrap.css?v=<?php echo time(); ?>">
     <title>Community Events Calendar</title>
     <style>
