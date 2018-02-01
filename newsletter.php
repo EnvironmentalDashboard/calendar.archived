@@ -8,7 +8,7 @@ require '../includes/db.php';
 require 'includes/class.Calendar.php';
 $html_message = "<div style='padding:15px'><h1>Oberlin Community Calendar Event Newsletter</h1>";
 $html_message .= "<p>This newsletter details events happening from ".date('j/n/y', $start)." to ".date('j/n/y', $end).".</p>";
-foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end}") as $row) {
+foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end} AND approved = 1") as $row) {
   $info = [];
   $stmt = $db->prepare('SELECT event_type FROM calendar_event_types WHERE id = ?');
   $stmt->execute([$row['event_type_id']]);
@@ -26,12 +26,19 @@ foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, d
   $date = Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']);
   if ($row['has_img'] == '0') {
     $img = 'https://environmentaldashboard.org/calendar/images/default.svg';
+    $width = 300;
+    $height = 300;
   } else {
     $img = "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}";
+    list($width, $height) = getimagesize(realpath("images/uploads/thumbnail{$row['id']}"));
+    if ($width != 300) {
+      $height = $height * ($width/300);
+      $width = 300;
+    }
   }
   $html_message .= "<div class='padded'>
                       <div style='display: flex; align-items: flex-start;'>
-                        <img src='{$img}' alt='{$row['event']}' width='20%' style='display:inline; vertical-align:middle; margin-right:10px'>
+                        <img src='{$img}' alt='{$row['event']}' width='{$width}' height='{$height}' style='display:inline; vertical-align:middle; margin-right:10px'>
                         <div style='font-size:1.3rem;font-weight:bold;flex: 1;'>{$row['event']}</div>
                       </div>
                       <h3 style='margin:0'>{$date}</h3>
