@@ -32,7 +32,7 @@ foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, d
     $img = "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}";
     list($width, $height) = getimagesize(realpath("images/uploads/thumbnail{$row['id']}"));
     if ($width != 300) {
-      $height = $height * ($width/300);
+      $height = $height * (1/($width/300));
       $width = 300;
     }
   }
@@ -44,7 +44,7 @@ foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, d
                       <h3 style='margin:0'>{$date}</h3>
                       <h4 style='margin:0'>{$info}</h4>
                       <p style='margin:0'>{$row['description']}</p>
-                      <p style='margin:0;margin-bottom:15px'><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Read more</a></p>
+                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
                     </div>";
 }
 foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id IN (3, 41, 40)') as $row) {
