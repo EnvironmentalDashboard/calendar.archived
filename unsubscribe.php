@@ -16,11 +16,11 @@ if (isset($_GET['email'])) {
 	<meta charset="UTF-8">
 	<title>Oberlin Community Calendar</title>
 </head>
-<body>
+<body style="font-family: Helvetica, sans-serif">
 	<h1>You&apos;re unsubscribed.</h1>
-	<p>You will be redirected to the calendar in 5 seconds.</p>
+	<p>You will be redirected to the calendar in 3 seconds.</p>
 	<script>
-		setTimeout(function(){ document.location.href = "/calendar"; }, 5000);
+		setTimeout(function(){ document.location.href = "/calendar"; }, 3000);
 	</script>
 </body>
 </html>

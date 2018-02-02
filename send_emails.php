@@ -21,7 +21,22 @@ $html1 = '<html>
     src: url(https://environmentaldashboard.org/fonts/multicolore/Multicolore.otf);
     font-weight: normal;
   }
-  @import url(\'https://fonts.googleapis.com/css?family=Roboto\');
+  /* latin-ext */
+  @font-face {
+    font-family: \'Roboto\';
+    font-style: normal;
+    font-weight: 400;
+    src: local(\'Roboto\'), local(\'Roboto-Regular\'), url(https://fonts.gstatic.com/s/roboto/v18/Ks_cVxiCiwUWVsFWFA3Bjn-_kf6ByYO6CLYdB4HQE-Y.woff2) format(\'woff2\');
+    unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  }
+  /* latin */
+  @font-face {
+    font-family: \'Roboto\';
+    font-style: normal;
+    font-weight: 400;
+    src: local(\'Roboto\'), local(\'Roboto-Regular\'), url(https://fonts.gstatic.com/s/roboto/v18/oMMgfZMQthOryQo9n22dcuvvDin1pK8aKteLpeZ5c0A.woff2) format(\'woff2\');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2212, U+2215;
+  }
   </style>
   </head>
   <body style="margin: 0;padding: 0;mso-line-height-rule: exactly;min-width: 100%;background-color: #fff">
@@ -89,7 +104,7 @@ $html2 = '</td>
 </html>
 ';
 
-foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message FROM outbox') as $email) {
+foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message, unsub_header FROM outbox') as $email) {
   if (filter_var($email['recipient'], FILTER_VALIDATE_EMAIL)) {
     $mail = new PHPMailer;
     $mail->setFrom('no-reply@environmentaldashboard.org', 'Environmental Dashboard');
@@ -106,6 +121,9 @@ foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message FR
     $mail->DKIM_passphrase = '';
     //The identity you're signing as - usually your From address
     $mail->DKIM_identity = $mail->From;
+    if ($email['unsub_header'] != '') {
+      $mail->addCustomHeader("List-Unsubscribe", $email['unsub_header']);
+    }
     if ($email['txt_message'] != '') {
       $mail->AltBody = $email['txt_message'];
     }

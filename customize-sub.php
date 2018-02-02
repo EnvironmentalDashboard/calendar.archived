@@ -16,10 +16,16 @@ if (isset($_POST['submit'])) {
   $stmt->execute([$rid]);
   foreach ($_POST['event_types'] as $type) {
     $stmt = $db->prepare('INSERT INTO newsletter_prefs (recipient_id, event_type_id) VALUES (?, ?)');
-    $stmt->execute($rid, $type);
+    $stmt->execute([$rid, $type]);
   }
   $submit = true;
 }
+
+$stmt = $db->prepare('SELECT event_type_id FROM newsletter_prefs WHERE recipient_id IN (SELECT id FROM newsletter_recipients WHERE email = ?)');
+$stmt->execute([$_GET['email']]);
+$subscribed_events = $stmt->fetchAll();
+$all = (count($subscribed_events) == 0);
+$subscribed_events = array_column($subscribed_events, 'event_type_id');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +42,7 @@ if (isset($_POST['submit'])) {
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <?php if ($submit) {
-            echo "<p style='margin-bottom:20px'>Your preferences have been updated.</p>";
+            echo "<p style='margin-bottom:20px;color:#5aba50'>Your preferences have been updated.</p>";
           } ?>
           <h1>Oberlin Community Calendar</h1>
         </div>
@@ -47,7 +53,12 @@ if (isset($_POST['submit'])) {
           <form action="" method="POST">
             <input type="hidden" name="email" value="<?php echo $_GET['email']; ?>">
             <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $row) {
-              echo "<div class='form-check'><input class='form-check-input' type='checkbox' value='{$row['id']}' name='event_types[]' id='check{$row['id']}' checked>
+              if ($all || in_array($row['id'], $subscribed_events)) {
+                $checked = 'checked';
+              } else {
+                $checked = '';
+              }
+              echo "<div class='form-check'><input class='form-check-input' type='checkbox' value='{$row['id']}' name='event_types[]' id='check{$row['id']}' {$checked}>
               <label class='form-check-label' for='check{$row['id']}'>
                 {$row['event_type']}
               </label>
