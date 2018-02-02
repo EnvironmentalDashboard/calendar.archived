@@ -7,6 +7,19 @@ if (!isset($_GET['email'])) {
   include('404.php');
   exit();
 }
+$submit = false;
+if (isset($_POST['submit'])) {
+  $stmt = $db->prepare('SELECT id FROM newsletter_recipients WHERE email = ?');
+  $stmt->execute([$_POST['email']]);
+  $rid = $stmt->fetchColumn();
+  $stmt = $db->prepare('DELETE FROM newsletter_prefs WHERE recipient_id = ?');
+  $stmt->execute([$rid]);
+  foreach ($_POST['event_types'] as $type) {
+    $stmt = $db->prepare('INSERT INTO newsletter_prefs (recipient_id, event_type_id) VALUES (?, ?)');
+    $stmt->execute($rid, $type);
+  }
+  $submit = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +35,9 @@ if (!isset($_GET['email'])) {
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
+          <?php if ($submit) {
+            echo "<p style='margin-bottom:20px'>Your preferences have been updated.</p>";
+          } ?>
           <h1>Oberlin Community Calendar</h1>
         </div>
       </div>
@@ -29,8 +45,9 @@ if (!isset($_GET['email'])) {
         <div class="col">
           <h4>Check the event types you want the newsletter to detail.</h4>
           <form action="" method="POST">
+            <input type="hidden" name="email" value="<?php echo $_GET['email']; ?>">
             <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $row) {
-              echo "<div class='form-check'><input class='form-check-input' type='checkbox' value='{$row['id']}' name='event_types[]' id='check{$row['id']}'>
+              echo "<div class='form-check'><input class='form-check-input' type='checkbox' value='{$row['id']}' name='event_types[]' id='check{$row['id']}' checked>
               <label class='form-check-label' for='check{$row['id']}'>
                 {$row['event_type']}
               </label>
