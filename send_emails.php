@@ -15,6 +15,14 @@ require '../includes/db.php'; // Has $db
 // email.html needs to be converted using https://inlinestyler.torchbox.com/styler/convert/
 $html1 = '<html>
   <head>
+  <style>
+  @font-face {
+    font-family: \'Multicolore\';
+    src: url(https://environmentaldashboard.org/fonts/multicolore/Multicolore.otf);
+    font-weight: normal;
+  }
+  @import url(\'https://fonts.googleapis.com/css?family=Roboto\');
+  </style>
   </head>
   <body style="margin: 0;padding: 0;mso-line-height-rule: exactly;min-width: 100%;background-color: #fff">
     <center class="wrapper" style="display: table;table-layout: fixed;width: 100%;min-width: 620px;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;background-color: #fff">
