@@ -37,15 +37,15 @@ foreach ($db->query("SELECT id, event, start, end, no_start_time, no_end_time, d
     }
   }
   $html_message .= "<div class='padded'>
-                      <h2 style='margin:0;font-family: Multicolore;color: #5aba50;text-align:center'>{$row['event']}</h2>
-                      <img src='{$img}' alt='{$row['event']}' width='{$width}' height='{$height}' style='display:block; margin:0 auto;'>
+                      <h2 style='margin:0;font-family: Multicolore;color: #5aba50;'>{$row['event']}</h2>
+                      <img src='{$img}' alt='{$row['event']}' width='{$width}' height='{$height}' style='display:block;'>
                       <h3 style='margin:0;margin-top:10px'>{$date}</h3>
                       <h4 style='margin:0'>{$info}</h4>
                       <p style='margin:0'>{$row['description']}</p>
                       <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?id={$row['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
                     </div>";
 }
-foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id IN (3, 41, 40)') as $row) {
+foreach ($db->query('SELECT email FROM newsletter_recipients') as $row) {
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
   $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', $html_message . "<p>You can customize the events you recieve by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>"]);
 }
