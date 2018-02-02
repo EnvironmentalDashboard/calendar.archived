@@ -4,6 +4,7 @@ ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 $start = time();
 $end = $start + 604800;
+chdir(__DIR__);
 require '../includes/db.php';
 require 'includes/class.Calendar.php';
 $html_message = "<div style='padding:15px'><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
