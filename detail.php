@@ -7,7 +7,7 @@ include $snippets . '_top.php'; ?>
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='#' onclick="window.history.go(-1); return false;" class="btn btn-primary">&larr; Go Back</a></p>
+          <p><a href='/calendar' class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">
