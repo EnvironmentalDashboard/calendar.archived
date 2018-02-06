@@ -1,8 +1,6 @@
 // Wrapper for the slide container and indicators
 .carousel {
   position: relative;
-  box-shadow: $box-shadow4;
-  background: $gray-100;
 }
 
 .carousel-inner {
@@ -93,13 +91,13 @@
 .carousel-control-prev {
   left: 0;
   @if $enable-gradients {
-    background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(0,0,0,.001));
+    background: linear-gradient(90deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .001));
   }
 }
 .carousel-control-next {
   right: 0;
   @if $enable-gradients {
-    background: linear-gradient(270deg, rgba(0,0,0,.25), rgba(0,0,0,.001));
+    background: linear-gradient(270deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .001));
   }
 }
 
@@ -147,7 +145,7 @@
     margin-right: $carousel-indicator-spacer;
     margin-left: $carousel-indicator-spacer;
     text-indent: -999px;
-    background-color: rgba($gray-900, .5);//rgba($carousel-indicator-active-bg, .5);
+    background-color: rgba($carousel-indicator-active-bg, .5);
 
     // Use pseudo classes to increase the hit area by 10px on top and bottom.
     &::before {
@@ -171,7 +169,7 @@
   }
 
   .active {
-    background-color: $gray-300;//$carousel-indicator-active-bg;
+    background-color: $carousel-indicator-active-bg;
   }
 }
 
