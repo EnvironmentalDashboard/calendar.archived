@@ -5,12 +5,28 @@ require '../includes/db.php';
 date_default_timezone_set('America/New_York');
 $time = time();
 $next30days = $time + (3600 * 24 * 30);
-$stmt = $db->prepare("SELECT id FROM calendar
-                      WHERE (`end` >= ? AND `end` <= ?)
-                      AND approved = 1
-                      ORDER BY start ASC, event ASC
-                      LIMIT 30");
-$stmt->execute(array($time, $next30days));
+if (isset($_GET['loc_id'])) {
+  $stmt = $db->prepare("SELECT id, screen_ids FROM calendar
+                        WHERE (`end` >= ? AND `end` <= ?)
+                        AND approved = 1
+                        ORDER BY start ASC, event ASC
+                        LIMIT 30");
+  $stmt->execute(array($time, $next30days));
+  $event_ids = [];
+  foreach ($stmt->fetchAll() as $row) {
+    if (in_array($_GET['loc_id'], explode(',', $row['screen_ids']))) {
+      $event_ids[] = $row['id'];
+    }
+  }
+} else {
+  $stmt = $db->prepare("SELECT id FROM calendar
+                        WHERE (`end` >= ? AND `end` <= ?)
+                        AND approved = 1
+                        ORDER BY start ASC, event ASC
+                        LIMIT 30");
+  $stmt->execute(array($time, $next30days));
+  $event_ids = array_column($stmt->fetchAll(), 'id');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +56,7 @@ $stmt->execute(array($time, $next30days));
     <iframe id="iframe2" class="hidden" onload="hide1(this)"></iframe>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>
-      var event_ids = <?php echo json_encode(array_column($stmt->fetchAll(), 'id')); ?>;
+      var event_ids = <?php echo json_encode($event_ids); ?>;
       var len = event_ids.length;
       var iframe1 = $('#iframe1');
       var iframe2 = $('#iframe2');
