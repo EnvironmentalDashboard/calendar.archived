@@ -9,47 +9,29 @@ if (isset($_POST['delete-submit'])) {
   $stmt->execute(array($_POST['id']));
 }
 if (!empty($_POST['submit'])) {
+  $_POST['id'] = intval($_POST['id']);
   $approved = 0;
   if ($_POST['approved'] === null) {
     $approved = null;
   } elseif (strtolower($_POST['approved']) === 'yes') {
     $approved = 1;
   }
-  if (!isset($_FILES['edit-img']) || !file_exists($_FILES['edit-img']['tmp_name']) ||
-      !is_uploaded_file($_FILES['edit-img']['tmp_name'])) {
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ? WHERE id = ?');
-    $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $approved, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsors'], $_POST['id']));
-  } else {
-    $start = strtotime($_POST['start']);
-    $end = strtotime($_POST['end']);
-    $screen_ids = implode(',', $_POST['screen_ids']);
-    $no_start_time = (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0;
-    $no_end_time = (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0;
-    $repeat_end = strtotime($_POST['repeat_end']);
-    $repeat_on = (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']);
-    $fp = fopen($_FILES['edit-img']['tmp_name'], 'rb'); // read binary
-    $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ?, img = ? WHERE id = ?');
-    $stmt->bindParam(1, $_POST['event']);
-    $stmt->bindParam(2, $start);
-    $stmt->bindParam(3, $end);
-    $stmt->bindParam(4, $_POST['description']);
-    $stmt->bindParam(5, $_POST['extended_description']);
-    $stmt->bindParam(6, $_POST['event_type_id']);
-    $stmt->bindParam(7, $_POST['loc_id']);
-    $stmt->bindParam(8, $screen_ids);
-    $stmt->bindParam(9, $approved);
-    $stmt->bindParam(10, $no_start_time);
-    $stmt->bindParam(11, $no_end_time);
-    $stmt->bindParam(12, $_POST['contact_email']);
-    $stmt->bindParam(13, $_POST['email']);
-    $stmt->bindParam(14, $_POST['phone']);
-    $stmt->bindParam(15, $_POST['website']);
-    $stmt->bindParam(16, $repeat_end);
-    $stmt->bindParam(17, $repeat_on);
-    $stmt->bindParam(18, $_POST['sponsors']);
-    $stmt->bindParam(19, $fp, PDO::PARAM_LOB);
-    $stmt->bindParam(20, $_POST['id']);
-    $stmt->execute();
+  $stmt = $db->prepare('UPDATE calendar SET event = ?, start = ?, `end` = ?, description = ?, extended_description = ?, event_type_id = ?, loc_id = ?, screen_ids = ?, approved = ?, no_start_time = ?, no_end_time = ?, contact_email = ?, email = ?, phone = ?, website = ?, repeat_end = ?, repeat_on = ?, sponsors = ? WHERE id = ?');
+  $stmt->execute(array($_POST['event'], strtotime($_POST['start']), strtotime($_POST['end']), $_POST['description'], $_POST['extended_description'], $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $approved, (strtolower($_POST['no_start_time']) === 'yes') ? 1 : 0, (strtolower($_POST['no_end_time']) === 'yes') ? 1 : 0, $_POST['contact_email'], $_POST['email'], $_POST['phone'], $_POST['website'], strtotime($_POST['repeat_end']), (empty($_POST['repeat_on'])) ? null : json_encode($_POST['repeat_on']), $_POST['sponsors'], $_POST['id']));
+  if (isset($_FILES['edit-img']) && file_exists($_FILES['edit-img']['tmp_name'])) {
+    $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
+    $detectedType = exif_imagetype($_FILES['edit-img']['tmp_name']);
+    if (in_array($detectedType, $allowedTypes)) {
+      if (move_uploaded_file($_FILES['edit-img']['tmp_name'], "/var/www/uploads/calendar/event{$_POST['id']}")) {
+        shell_exec("convert /var/www/uploads/calendar/event{$_POST['id']} -define jpeg:extent=32kb /var/www/uploads/calendar/thumbnail{$_POST['id']}"); // https://stackoverflow.com/a/11920384/2624391
+        $stmt = $db->prepare('UPDATE calendar SET has_img = ? WHERE id = ?');
+        $stmt->execute([1, $_POST['id']]);
+      } else {
+        exit('An unknown error occured while uploading your image');
+      }
+    } else {
+      exit('Allowed file types are PNG, JPEG, and GIF');
+    }
   }
 }
 
@@ -178,10 +160,10 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 }
                 echo "</div></div></div>";
                 echo "</td>";
-                if ($event['img'] == null) {
+                if ($event['has_img'] == 0) {
                   echo "<td><p>No image for this event</p>";
                 } else {
-                  echo "<td style='max-width:200px'><img class='img-fluid' src='data:image/jpeg;base64,".base64_encode($event['img'])."' />";
+                  echo "<td style='max-width:200px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
                 }
                 echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
                 if ($event['approved'] === null) {
