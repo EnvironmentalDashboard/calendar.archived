@@ -40,6 +40,13 @@ include $snippets . '_top.php'; ?>
           </div>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
+          <h5>Subscribe to our newsletter</h5>
+          <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
+            <label class="sr-only" for="newsletter-email">Email</label>
+            <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
+            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
+          </form>
+          <div style="clear: both;height: 15px"></div>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
@@ -66,13 +73,6 @@ include $snippets . '_top.php'; ?>
                 echo "<option value='{$row['id']}'>{$row['sponsor']}</option>";
               } ?>
             </select>
-          </form>
-          <div style="clear: both;height: 15px"></div>
-          <h5>Subscribe to our newsletter</h5>
-          <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
-            <label class="sr-only" for="newsletter-email">Email</label>
-            <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
-            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
           </form>
         </div>
         <div class="col-md-8 col-sm-12">

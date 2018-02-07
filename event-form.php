@@ -56,7 +56,7 @@ include $snippets . '_top.php'; ?>
               <?php if (!$edit) { ?>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" checked='true' id='subscribe' name='subscribe'>
-                <label class="custom-control-label" for="subscribe">I want to recieve a weekly event newsletter</label>
+                <label class="custom-control-label" for="subscribe">I want to receive a weekly event newsletter</label>
               </div>
               <?php } ?>
             </div>
@@ -172,7 +172,7 @@ include $snippets . '_top.php'; ?>
               <textarea name="extended_description_md" id="extended_description_md" class="form-control"><?php
               echo (!empty($_REQUEST['extended_description_md'])) ? $_REQUEST['extended_description_md'] : '';
               echo ($edit && empty($_REQUEST['extended_description_md'])) ? $event['extended_description_md'] : ''; ?></textarea>
-              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links. Use <a target="_blank" href="https://www.google.com/search?q=markdown">markdown</a> to format text such as links.</small>
+              <small class="text-muted">Will only be displayed on website and not digital signage. You may include ticket information and website links.</small>
             </div>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
