@@ -27,6 +27,10 @@ if (isset($_GET['loc_id'])) {
   $stmt->execute(array($time, $next30days));
   $event_ids = array_column($stmt->fetchAll(), 'id');
 }
+if (empty($event_ids)) {
+  echo "<!DOCTYPE html><html lang='en'><head><style>html, body { height: 100%; } body { margin: 0px;padding: 0px; background: #000 }</style></head><body> </body></html>";
+  die;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

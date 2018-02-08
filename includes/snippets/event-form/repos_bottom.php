@@ -119,11 +119,11 @@
               <?php if ($edit) { ?>
                 $('#alert-success-text').text('Your event is now updated. It will be reviewed again before it is displayed on the website and digital signs.');
                 $('#submit-btn').val('Success!');
-                setTimeout(function(){ document.location.href = "index"; }, 5000);
+                setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
               <?php } else { ?>
                 $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
                 $('#submit-btn').val('Success!');
-                setTimeout(function(){ document.location.href = "detail?id="+resp+"&redirect=5"; }, 5000);
+                setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
                 setCookie('event'+resp, $('#token').val(), 365);
               <?php } ?>
             } else {
