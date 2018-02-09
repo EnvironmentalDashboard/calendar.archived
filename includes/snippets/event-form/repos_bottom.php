@@ -124,7 +124,7 @@
                 $('#alert-success-text').text('Your event was successfully uploaded and will be reviewed. You will be redirected to your event in 5 seconds.');
                 $('#submit-btn').val('Success!');
                 setTimeout(function(){ document.location.href = "detail?id="+resp; }, 5000);
-                setCookie('event'+resp, $('#token').val(), 365);
+                setCookie('event'+resp, $('#token').val(), 7);
               <?php } ?>
             } else {
               $('#alert-success-text').text(resp);

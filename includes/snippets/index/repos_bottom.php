@@ -177,6 +177,21 @@
   //     }
   //   });
   // });
+  window.onscroll = function() {scrollFunction()};
+  function scrollFunction() {
+    if (document.body.scrollTop > 700 || document.documentElement.scrollTop > 700) {
+      $("#to-top").css('display', "block");
+    } else {
+      $("#to-top").css('display', "none");
+    }
+  }
+  function topFunction() {
+    window.scroll({
+      top: 0, 
+      left: 0, 
+      behavior: 'smooth' 
+    });
+  }
 </script>
 </body>
 </html>

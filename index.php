@@ -222,4 +222,5 @@ include $snippets . '_top.php'; ?>
         </div>
       </div>
       <div style="clear: both;height: 150px"></div>
+      <img src="images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">
     <?php include $snippets . '_bottom.php'; ?>
