@@ -90,7 +90,7 @@ if (isset($_FILES['file']) && file_exists($_FILES['file']['tmp_name']) && is_upl
   $detectedType = exif_imagetype($_FILES['file']['tmp_name']);
   if (in_array($detectedType, $allowedTypes)) {
     if (move_uploaded_file($_FILES['file']['tmp_name'], "/var/www/uploads/calendar/event{$success}")) {
-      shell_exec("convert /var/www/uploads/calendar/event{$success} -define jpeg:extent=32kb /var/www/uploads/calendar/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
+      shell_exec("convert /var/www/uploads/calendar/event{$success} -define jpeg:extent=128kb /var/www/uploads/calendar/thumbnail{$success}"); // https://stackoverflow.com/a/11920384/2624391
       $query .= ", has_img = 1";
     }
   }
