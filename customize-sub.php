@@ -35,20 +35,21 @@ $subscribed_events = array_column($subscribed_events, 'event_type_id');
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="css/bootstrap.css?v=4">
+    <link rel="stylesheet" href="/css/bootstrap.css?v=4">
   </head>
-  <body>
-    <div class="container">
+  <body style="background: none;">
+    <div class="container" style="padding: 30px">
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <?php if ($submit) {
             echo "<p style='margin-bottom:20px;color:#5aba50'>Your preferences have been updated.</p>";
           } ?>
           <h1>Oberlin Community Calendar</h1>
+          <p><a href="/calendar" class="btn btn-primary btn-sm">&larr; Back to calendar</a></p>
         </div>
       </div>
       <div class="row">
-        <div class="col">
+        <div class="col-12 col-sm-8 offset-sm-2">
           <h4>Check the event types you want the newsletter to detail.</h4>
           <form action="" method="POST">
             <input type="hidden" name="email" value="<?php echo $_GET['email']; ?>">
@@ -64,7 +65,7 @@ $subscribed_events = array_column($subscribed_events, 'event_type_id');
               </label>
             </div>";
             } ?>
-            <input type="submit" name="submit" class="btn btn-primary" value="Update Preferences">
+            <input type="submit" name="submit" class="btn btn-primary mt-2" value="Update Preferences">
           </form>
         </div>
       </div>
