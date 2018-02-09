@@ -16,4 +16,4 @@
     </style>
   </head>
   <body style="padding-top:50px">
-    <div class="container">
+    <div class="container-fluid">

@@ -30,4 +30,4 @@ $thisurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     <link rel="stylesheet" href="css/bootstrap.css?v=4">
   </head>
   <body>
-    <div class="container">
+    <div class="container-fluid">
