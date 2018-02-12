@@ -55,9 +55,9 @@ if (isset($_POST['review-events'])) {
     $feedback = '';
   }
 }
-if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
+if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
   $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
-  $stmt->execute([$_GET['delete-event']]);
+  $stmt->execute([$_POST['delete-id']]);
 }
 ?>
 <!DOCTYPE html>
@@ -99,7 +99,7 @@ if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
                 <div class="col-sm-3">
                   <div class="form-group">
                   <label for="exampleFormControlTextarea1">Feedback</label>
-                  <textarea class="form-control" name="feedback<?php echo $i ?>" rows="3"></textarea>
+                  <textarea class="form-control" id="feedback<?php echo $event['id'] ?>" name="feedback<?php echo $event['id'] ?>" rows="3"></textarea>
                 </div>
                   <div class="custom-controls-stacked">
                     <label class="custom-control custom-radio">
@@ -114,7 +114,7 @@ if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
                     </label>
                   </div>
                   <p>or</p>
-                  <p><a href="?delete-event=<?php echo $event['id'] ?>" class='btn btn-danger'>Delete event</a></p>
+                  <p><a href="#" data-id="<?php echo $event['id'] ?>" class='btn btn-danger delete-event'>Delete event</a></p>
                   <p>Starts at <?php echo date("F j, Y, g:i a", $event['start']) ?>, ends at <?php echo date("F j, Y, g:i a", $event['end']) ?></p>
                   <p>
                     Event location: 
@@ -149,11 +149,54 @@ if (isset($_GET['delete-event']) && is_numeric($_GET['delete-event'])) {
       <div style="clear: both;height: 50px"></div>
       <?php if ($i === 0) { echo '<h1 class="text-center text-muted">No new events to review</h1>'; } ?>
     </div>
+    <form action="" method="POST" id="hidden-form"><input type="hidden" name="delete-id" id="delete-id"></form>
+    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rejectModalLabel">Select a rejection reason</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="rejection-reasons">
+              <p>Post events that target the Oberlin community and visitors</p>
+              <p>Submit public events that occur in Oberlin on specific dates (no advertisements or general announcements)</p>
+              <p>Post events open to the entire community and not to specific or exclusive groups or partisans</p>
+              <p>Upload high resolution images associated with your event; do not upload posters as your image</p>
+              <p>Post events on public school screens only with permission.</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script
     src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script>
+      $('.delete-event').on('click', function(e) {
+        e.preventDefault();
+        if (confirm('ARE YOU SURE???')) {
+          $('#delete-id').val($(this).data('id'));
+          $('#hidden-form').submit();
+        }
+      });
+      $('input[value="reject"]').on('click', function() {
+        $('#rejectModal').modal('show');
+        var id = this.id.substring(6);
+        $('#rejection-reasons > p').on('click', function() {
+          $('#rejectModal').modal('hide');
+          console.log('#feedback' + id);
+          $('#feedback' + id).val('The event you submitted breaks the following rule: ' + $(this).text());
+        });
+      });
+    </script>
   </body>
 </html>
