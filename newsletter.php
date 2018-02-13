@@ -9,8 +9,9 @@ require '../includes/db.php';
 require 'includes/class.Calendar.php';
 function newsletter_html($db, $events, $start, $end) {
   static $cache = [];
+  $start_str = date('n/j/y', $start);
   $html_message = "<div style='padding:15px'><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
-  $html_message .= "<p style='color:#333'>This newsletter details events happening from ".date('n/j/y', $start)." to ".date('n/j/y', $end).".</p>";
+  $html_message .= "<p style='color:#333'>This newsletter details events happening from ".$start_str." to ".date('n/j/y', $end).".</p>";
   foreach ($events as $event) {
     if (array_key_exists($event['id'], $cache)) {
       $info = $cache[$event['id']];
@@ -44,13 +45,14 @@ function newsletter_html($db, $events, $start, $end) {
         $width = 200;
       }
     }
+    $query_string = http_build_query(['id' => $event['id'], 'utm_source' => "{$start_str} newsletter", 'utm_medium' => 'Newsletter']);
     $html_message .= "<div class='padded'>
                       <h2 style='margin:0;font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50;'>{$event['event']}</h2>
                       <img src='{$img}' alt='{$event['event']}' width='{$width}' height='{$height}' style='display:block;'>
                       <h3 style='margin:0;margin-top:10px;color:#333'>{$date}</h3>
                       <h4 style='margin:0;color:#333'>{$info}</h4>
                       <p style='margin:0;color:#333'>{$event['description']}</p>
-                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail/{$event['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
+                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?{$query_string}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
                     </div>";
   }
   return $html_message;

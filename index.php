@@ -15,6 +15,13 @@ $dirname = dirname($_SERVER['SCRIPT_FILENAME']);
 $dirs = explode('/', $dirname);
 $website = $dirs[count($dirs)-2];
 $snippets = "{$dirname}/includes/snippets/index/{$website}";
+if ($website === 'oberlin.org') {
+  $url = 'https://environmentaldashboard.org/symlinks/oberlin.org';
+  $sep = '?id=';
+} else {
+  $url = 'https://environmentaldashboard.org';
+  $sep = '/';
+}
 include $snippets . '_top.php'; ?>
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
@@ -90,16 +97,16 @@ include $snippets . '_top.php'; ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
-                    <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>">
+                    <a href="<?php echo $url ?>/calendar/detail<?php echo $sep . $result['id'] ?>">
                       <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
-                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
+                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$url}/calendar/images/uploads/thumbnail{$result['id']}\">";
                       } ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>" style='text-decoration: none;color: inherit;'>
+                    <a href="{$url}/calendar/detail<?php echo $sep . $result['id'] ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                     </a>
@@ -152,7 +159,7 @@ include $snippets . '_top.php'; ?>
                   <?php if ($result['has_img'] == '0') {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { 
-                      echo "<img class=\"thumbnail img-fluid\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      echo "<img class=\"thumbnail img-fluid\" src=\"{$url}/calendar/images/uploads/thumbnail{$result['id']}\">";
                     } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
@@ -179,7 +186,7 @@ include $snippets . '_top.php'; ?>
                     ?>
                   </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "detail/{$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
+                  <a href="<?php echo "{$url}/calendar/detail{$sep}{$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
               </div>
             </div>
