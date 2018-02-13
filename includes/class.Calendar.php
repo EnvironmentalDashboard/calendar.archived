@@ -241,7 +241,7 @@ class Calendar {
                     }
                   }
                 }
-                echo "</h6><p class='card-text'>{$result['description']}</p><a href='detail/{$result['id']}' class='btn btn-primary'>View event</a>
+                echo "</h6><p class='card-text'>{$result['description']}</p><a href='detail?id={$result['id']}' class='btn btn-primary'>View event</a>
                 </div>
               </div>
             </div>
