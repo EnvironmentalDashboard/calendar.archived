@@ -56,14 +56,14 @@ include $snippets . '_top.php'; ?>
           }
           ?>
           <p>
-            <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="images/calendar-icon.png" alt="Google Calendar" width="50"></a>
-            <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $thisurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="images/fb-art.png" alt="Facebook logo" width="50"></a>
-            <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $thisurl ?>" target="_blank"><img src="images/twitter.png" alt="Twitter logo" width="50"></a>
+            <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="https://environmentaldashboard.org/images/calendar-icon.png" alt="Google Calendar" width="50"></a>
+            <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $thisurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="https://environmentaldashboard.org/images/fb-art.png" alt="Facebook logo" width="50"></a>
+            <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $thisurl ?>" target="_blank"><img src="https://environmentaldashboard.org/images/twitter.png" alt="Twitter logo" width="50"></a>
           </p>
         </div>
         <div class="col-md-4 col-sm-12">
           <?php if ($event['has_img'] == '0') {
-            echo "<img src='images/default.svg' class='img-fluid'>";
+            echo "<img src='https://environmentaldashboard.org/images/default.svg' class='img-fluid'>";
           } else {
             echo "<img src='https://environmentaldashboard.org/calendar/images/uploads/event{$event['id']}' class='img-fluid'>";
           }
@@ -90,7 +90,7 @@ include $snippets . '_top.php'; ?>
         <?php foreach ($related_events as $row) { ?>
         <div class="col-sm-3">
           <div class="card" style="max-width: 100%;">
-            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'images/default.svg' : "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
+            <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'https://environmentaldashboard.org/images/default.svg' : "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
