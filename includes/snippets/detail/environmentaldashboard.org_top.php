@@ -4,13 +4,13 @@ ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
 require 'includes/class.Calendar.php';
-$id = (isset($_GET['id'])) ? $_GET['id'] : 0;
+$id = explode('/', $_SERVER['REQUEST_URI'])[3];
 $stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, has_img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
   http_response_code(404);
-  require '404.php';
+  require '/var/www/repos/environmentaldashboard.org/404.php';
 }
 $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
 $locname = $loc['location'];
