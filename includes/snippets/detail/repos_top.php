@@ -9,8 +9,8 @@ $stmt = $db->prepare('SELECT id, loc_id, event, description, extended_descriptio
 $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
-  header("location:javascript://history.go(-1)"); // lol
-  die();
+  http_response_code(404);
+  require '404.php';
 }
 $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
 $locname = $loc['location'];
