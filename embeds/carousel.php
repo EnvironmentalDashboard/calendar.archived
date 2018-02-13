@@ -23,7 +23,7 @@ var str = `
     <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
       <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
         <div class="col-sm-6 hidden-sm-down">
-          <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>">
+          <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>">
             <?php if ($result['has_img'] == '0') {
               echo '<img class="d-block img-fluid" src="images/default.svg">';
             } else {

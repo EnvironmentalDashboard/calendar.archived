@@ -26,6 +26,12 @@ include $snippets . '_top.php'; ?>
       <div class="row">
         <div class="col-md-4 order-sm-12">
           <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
+          <h5>Subscribe to our newsletter</h5>
+          <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
+            <label class="sr-only" for="newsletter-email">Email</label>
+            <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
+            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
+          </form>
           <!-- <p><a href="#" class="btn btn-secondary btn-block" id="newsletter-sub">Subscribe to our newsletter</a></p> -->
           <div id="small-cal">
             <?php
@@ -40,12 +46,6 @@ include $snippets . '_top.php'; ?>
           </div>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
-          <h5>Subscribe to our newsletter</h5>
-          <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
-            <label class="sr-only" for="newsletter-email">Email</label>
-            <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
-            <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
-          </form>
           <div style="clear: both;height: 15px"></div>
           <h5>Event types</h5>
           <div class="list-group" style="margin-bottom: 15px">
@@ -90,7 +90,7 @@ include $snippets . '_top.php'; ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
-                    <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>">
+                    <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>">
                       <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
@@ -99,7 +99,7 @@ include $snippets . '_top.php'; ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <a href="https://environmentaldashboard.org/calendar/detail?id=<?php echo $result['id'] ?>" style='text-decoration: none;color: inherit;'>
+                    <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                     </a>
@@ -179,7 +179,7 @@ include $snippets . '_top.php'; ?>
                     ?>
                   </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "detail?id={$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
+                  <a href="<?php echo "detail/{$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
               </div>
             </div>

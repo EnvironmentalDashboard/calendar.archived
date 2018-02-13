@@ -94,7 +94,7 @@ include $snippets . '_top.php'; ?>
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
-              <a href="detail?id=<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
+              <a href="detail/<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
         </div>

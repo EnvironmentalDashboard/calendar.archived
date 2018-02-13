@@ -50,7 +50,7 @@ function newsletter_html($db, $events, $start, $end) {
                       <h3 style='margin:0;margin-top:10px;color:#333'>{$date}</h3>
                       <h4 style='margin:0;color:#333'>{$info}</h4>
                       <p style='margin:0;color:#333'>{$event['description']}</p>
-                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?id={$event['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
+                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail/{$event['id']}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View event</a></p>
                     </div>";
   }
   return $html_message;
