@@ -15,14 +15,14 @@ $dirname = dirname($_SERVER['SCRIPT_FILENAME']);
 $dirs = explode('/', $dirname);
 $website = $dirs[count($dirs)-2];
 $snippets = "{$dirname}/includes/snippets/index/{$website}";
+include $snippets . '_top.php';
 if ($website === 'oberlin.org') {
   $url = 'https://environmentaldashboard.org/symlinks/oberlin.org';
   $sep = '?id=';
 } else {
   $url = 'https://environmentaldashboard.org';
   $sep = '/';
-}
-include $snippets . '_top.php'; ?>
+} ?>
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
@@ -186,7 +186,7 @@ include $snippets . '_top.php'; ?>
                     ?>
                   </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "{$url}/calendar/detail{$sep}{$result['id']}";//echo "slide.php?id={$result['id']}"; ?>" class="btn btn-primary">View event</a>
+                  <a href="<?php echo "{$url}/calendar/detail{$sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
               </div>
             </div>

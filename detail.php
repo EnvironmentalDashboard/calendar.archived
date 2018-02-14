@@ -7,7 +7,7 @@ include $snippets . '_top.php'; ?>
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='/calendar' class="btn btn-primary">&larr; Go Back</a></p>
+          <p><a href='.' class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">
@@ -57,8 +57,8 @@ include $snippets . '_top.php'; ?>
           ?>
           <p>
             <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/calendar-icon.png" alt="Google Calendar" width="50"></a>
-            <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $thisurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/fb-art.png" alt="Facebook logo" width="50"></a>
-            <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $thisurl ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/twitter.png" alt="Twitter logo" width="50"></a>
+            <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $encodedurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/fb-art.png" alt="Facebook logo" width="50"></a>
+            <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $encodedurl ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/twitter.png" alt="Twitter logo" width="50"></a>
           </p>
         </div>
         <div class="col-md-4 col-sm-12">
@@ -94,7 +94,7 @@ include $snippets . '_top.php'; ?>
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
-              <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $row['id'] ?>" class="btn btn-primary">View event</a>
+              <a href="<?php echo ($website === 'oberlin.org') ? "detail?id=$row['id']" : "detail/$row['id']" ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
         </div>
