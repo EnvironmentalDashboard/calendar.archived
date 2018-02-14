@@ -32,6 +32,13 @@ $encodedurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <link rel="stylesheet" href="css/bootstrap.css?v=4">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65902947-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-65902947-1');
+    </script>
   </head>
   <body>
     <div class="container-fluid">

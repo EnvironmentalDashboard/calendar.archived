@@ -18,6 +18,13 @@
       .table-bordered {border:4px solid #bdc3c7;}
       /*table-layout:fixed;*/
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65902947-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-65902947-1');
+    </script>
   </head>
   <body>
     <div class="container-fluid">
