@@ -2,30 +2,41 @@
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
-if (!isset($_GET['email'])) {
-  http_response_code(404);
-  include('404.php');
-  exit();
-}
 $submit = false;
 if (isset($_POST['submit'])) {
-  $stmt = $db->prepare('SELECT id FROM newsletter_recipients WHERE email = ?');
-  $stmt->execute([$_POST['email']]);
-  $rid = $stmt->fetchColumn();
-  $stmt = $db->prepare('DELETE FROM newsletter_prefs WHERE recipient_id = ?');
-  $stmt->execute([$rid]);
-  foreach ($_POST['event_types'] as $type) {
-    $stmt = $db->prepare('INSERT INTO newsletter_prefs (recipient_id, event_type_id) VALUES (?, ?)');
-    $stmt->execute([$rid, $type]);
+  if ($_POST['submit'] === 'Update Preferences') {
+    $stmt = $db->prepare('SELECT id FROM newsletter_recipients WHERE email = ?');
+    $stmt->execute([$_POST['email']]);
+    $rid = $stmt->fetchColumn();
+    $stmt = $db->prepare('DELETE FROM newsletter_prefs WHERE recipient_id = ?');
+    $stmt->execute([$rid]);
+    foreach ($_POST['event_types'] as $type) {
+      $stmt = $db->prepare('INSERT INTO newsletter_prefs (recipient_id, event_type_id) VALUES (?, ?)');
+      $stmt->execute([$rid, $type]);
+    }
+    $submit = true;
+  } else {
+    $stmt = $db->prepare('REPLACE INTO newsletter_recipients (email) VALUES (?)');
+    $stmt->execute([$_POST['email']]);
+    $rid = $db->lastInsertId();
+    foreach ($_POST['event_types'] as $type) {
+      $stmt = $db->prepare('INSERT INTO newsletter_prefs (recipient_id, event_type_id) VALUES (?, ?)');
+      $stmt->execute([$rid, $type]);
+    }
+    $submit = true;
   }
-  $submit = true;
 }
 
-$stmt = $db->prepare('SELECT event_type_id FROM newsletter_prefs WHERE recipient_id IN (SELECT id FROM newsletter_recipients WHERE email = ?)');
-$stmt->execute([$_GET['email']]);
-$subscribed_events = $stmt->fetchAll();
-$all = (count($subscribed_events) == 0);
-$subscribed_events = array_column($subscribed_events, 'event_type_id');
+if (isset($_GET['email'])) {
+  $stmt = $db->prepare('SELECT event_type_id FROM newsletter_prefs WHERE recipient_id IN (SELECT id FROM newsletter_recipients WHERE email = ?)');
+  $stmt->execute([$_GET['email']]);
+  $subscribed_events = $stmt->fetchAll();
+  $all = (count($subscribed_events) == 0);
+  $subscribed_events = array_column($subscribed_events, 'event_type_id');
+} else {
+  $subscribed_events = [];
+  $all = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,10 +61,13 @@ $subscribed_events = array_column($subscribed_events, 'event_type_id');
       </div>
       <div class="row">
         <div class="col-12 col-sm-8 offset-sm-2">
-          <h4>Check the event types you want the newsletter to detail.</h4>
           <form action="" method="POST">
-            <input type="hidden" name="email" value="<?php echo $_GET['email']; ?>">
-            <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $row) {
+            <?php if (isset($_GET['email'])) {
+              echo "<h4>Check the event types you want the newsletter to detail.</h4> <input type='hidden' name='email' value='{$_GET['email']}'>";
+            } else {
+              echo "<label for='email'>Enter your email</label><input type='email' class='form-control mb-4' name='email' placeholder='Email' id='email'><p class='mb-0'>Customize your newsletter by checking the event types you wish to be included in your newsletter.</p>";
+            }
+            foreach ($db->query('SELECT id, event_type FROM calendar_event_types') as $row) {
               if ($all || in_array($row['id'], $subscribed_events)) {
                 $checked = 'checked';
               } else {
@@ -65,7 +79,7 @@ $subscribed_events = array_column($subscribed_events, 'event_type_id');
               </label>
             </div>";
             } ?>
-            <input type="submit" name="submit" class="btn btn-primary mt-2" value="Update Preferences">
+            <input type="submit" name="submit" class="btn btn-primary mt-2" value="<?php echo (isset($_GET['email'])) ? 'Update Preferences' : 'Subscribe to newsletter' ?>">
           </form>
         </div>
       </div>
