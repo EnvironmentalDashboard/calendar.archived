@@ -137,7 +137,7 @@ if ($website === 'oberlin.org') {
               <span class="navbar-text" style="width: 100%">
                 <!-- <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a> -->
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
-                <a href="#" id="sort-date" class="btn btn-primary" style="float: right;">Date</a>
+                <a href="#" id="sort-date" class="btn btn-primary" style="float: right;color: #fff">Date</a>
               </span>
               <!-- <span style="position: absolute;right: 10px;" class="navbar-text">
               </span> -->
