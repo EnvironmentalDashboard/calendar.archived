@@ -17,7 +17,8 @@ include $snippets . '_top.php'; ?>
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text">This event is not yet approved.<?php if (isset($_COOKIE["event{$id}"])) {
               $cookie = $_COOKIE["event{$id}"];
-              echo " Since you created this event using this browser, you can click <a href='edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
+              $first_part = ($website === 'oberlin.org') ? 'https://environmentaldashboard.org/symlinks/oberlin.org/calendar/' : 'https://environmentaldashboard.org/calendar/'; // TODO: FIND BETTER WAY TO DEAL WITH URLS
+              echo " Since you created this event using this browser, you can click <a href='{$first_part}edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
               // if (isset($_GET['redirect']) && is_numeric($_GET['redirect'])) {
               //   echo " You will be redirected to the home page in <span id='time-remaining'>5</span> seconds.";
               // }
