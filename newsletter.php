@@ -6,7 +6,7 @@ $start = time();
 $end = $start + 604800;
 chdir(__DIR__);
 require '../includes/db.php';
-require 'includes/class.Calendar.php';
+require 'includes/class.CalendarHTML.php';
 function newsletter_html($db, $events, $start, $end) {
   static $cache = [];
   $start_str = date('n/j/y', $start);

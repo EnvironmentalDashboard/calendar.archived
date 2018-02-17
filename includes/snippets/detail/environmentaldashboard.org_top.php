@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
-require 'includes/class.Calendar.php';
+require 'includes/class.CalendarHTML.php';
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   $id = $_GET['id'];
 } else {
@@ -16,12 +16,12 @@ if (!$event) {
   http_response_code(404);
   require '/var/www/repos/environmentaldashboard.org/404.php';
 }
-$loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.$event['loc_id'])->fetch();
+$loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.intval($event['loc_id']))->fetch();
 $locname = $loc['location'];
 $locaddr = $loc['address'];
 $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
 $encodedurl = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-// $cal = new Calendar($db);
+// $cal = new CalendarHTML($db);
 ?>
 <!DOCTYPE html>
 <html lang="en">

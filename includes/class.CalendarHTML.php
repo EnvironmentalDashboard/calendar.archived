@@ -1,10 +1,10 @@
 <?php
 /**
- * calendar app backend
+ * prints html calendar components
  *
  * @author Tim Robert-Fitzgerald
  */
-class Calendar {
+class CalendarHTML {
 
   /**
    * @param $db pdo object
@@ -68,7 +68,7 @@ class Calendar {
    * events that populate the calendar are expected to have been retrieved by fetch_events()
    * @param $small the small calendar as is on the home page or the larger calendar as is on detail-calendar.php
    */
-  public function print_cal($small = true) {
+  public function print_cal($router, $small = true) {
     $next_start = $this->end;
     $next_end = $this->end + 2592000;
     $prev_end = $this->start;
@@ -180,7 +180,7 @@ class Calendar {
           echo "\">*/
           echo "<span class='day-num $day_color'>{$day_num}</span><div style='height:100px;overflow:scroll'>";
           for ($i=0; $i < count($popover_titles); $i++) { 
-            echo "<p style='text-align:left'><a href='detail.php?id={$popover_ids[$i]}'>{$popover_titles[$i]}</a></p>";
+            echo "<p style='text-align:left'><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$popover_ids[$i]}'>{$popover_titles[$i]}</a></p>";
           }
           // </a>
           echo "</div></td>";
@@ -200,9 +200,9 @@ class Calendar {
     echo "</tr></table>";
   }
 
-  public function print_event_cards() {
+  public function print_event_cards($router) {
     foreach ($this->rows as $result) {
-      $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
+      $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.intval($result['loc_id']))->fetchColumn();
       echo "<div class='card iterable-event' id='{$result['id']}'
           style='margin-bottom: 20px' data-date='{$result['start']}'
           data-loc='{$locname}'
@@ -241,7 +241,7 @@ class Calendar {
                     }
                   }
                 }
-                echo "</h6><p class='card-text'>{$result['description']}</p><a href='detail?id={$result['id']}' class='btn btn-primary'>View event</a>
+                echo "</h6><p class='card-text'>{$result['description']}</p><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>
                 </div>
               </div>
             </div>

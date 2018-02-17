@@ -3,7 +3,8 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
-require 'includes/class.Calendar.php';
+require 'includes/class.CalendarHTML.php';
+require 'includes/class.CalendarRoutes.php';
 if (isset($_GET['month']) && isset($_GET['year'])) {
   $start_time = strtotime("{$_GET['year']}-{$_GET['month']}-01 00:00:00");
   $end_time = strtotime("{$_GET['year']}-{$_GET['month']}-".cal_days_in_month(CAL_GREGORIAN, $_GET['month'], $_GET['year'])." 00:00:00");
@@ -11,16 +12,14 @@ if (isset($_GET['month']) && isset($_GET['year'])) {
   $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
   $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
 }
-$cal = new Calendar($db);
+$cal = new CalendarHTML($db);
 $cal->set_start($start_time);
 $cal->set_end($end_time);
 $cal->fetch_events();
 $cal->generate_sponsors();
-$dirname = dirname($_SERVER['SCRIPT_FILENAME']);
-$dirs = explode('/', $dirname);
-$website = $dirs[count($dirs)-2];
-$snippets = "{$dirname}/includes/snippets/detail-calendar/{$website}";
-include $snippets . '_top.php';
+
+$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
+include $router->header_path;
 ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
@@ -35,8 +34,8 @@ include $snippets . '_top.php';
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <?php $cal->print_cal(false); ?>
+          <?php $cal->print_cal($router, false); ?>
         </div>
       </div>
       <div style="clear: both;height: 100px"></div>
-<?php include $snippets . '_bottom.php'; ?>
+<?php include $router->footer_path; ?>

@@ -2,6 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
+require 'includes/class.CalendarRoutes.php';
 date_default_timezone_set("America/New_York");
 if (!isset($edit)) {
   $edit = false;
@@ -19,11 +20,8 @@ if (!isset($edit)) {
     $edit = false;
   }
 }
-$dirname = dirname($_SERVER['SCRIPT_FILENAME']);
-$dirs = explode('/', $dirname);
-$website = $dirs[count($dirs)-2];
-$snippets = "{$dirname}/includes/snippets/event-form/{$website}";
-include $snippets . '_top.php'; ?>
+$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
+include $router->header_path; ?>
       <div class="row justify-content-center">
         <div class="col-sm-7">
           <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
@@ -267,4 +265,4 @@ include $snippets . '_top.php'; ?>
         </div>
       </div>
       <div style="height: 130px;clear: both;"></div>
-    <?php include $snippets . '_bottom.php'; ?>
+    <?php include $router->footer_path; ?>

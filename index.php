@@ -3,26 +3,19 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
-require 'includes/class.Calendar.php';
+require 'includes/class.CalendarHTML.php';
+require 'includes/class.CalendarRoutes.php';
 define('CAROUSEL_SLIDES', 5);
 $time = time();
-$cal = new Calendar($db);
+
+$cal = new CalendarHTML($db);
 $cal->set_limit(5);
 $cal->set_offset(0);
 $cal->fetch_events();
 $cal->generate_sponsors();
-$dirname = dirname($_SERVER['SCRIPT_FILENAME']);
-$dirs = explode('/', $dirname);
-$website = $dirs[count($dirs)-2];
-$snippets = "{$dirname}/includes/snippets/index/{$website}";
-include $snippets . '_top.php';
-if ($website === 'oberlin.org') {
-  $url = 'https://environmentaldashboard.org/symlinks/oberlin.org';
-  $sep = '?id=';
-} else {
-  $url = 'https://environmentaldashboard.org';
-  $sep = '/';
-} ?>
+
+$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
+include $router->header_path; ?>
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
@@ -44,11 +37,11 @@ if ($website === 'oberlin.org') {
             <?php
             $start_time = strtotime(date('Y-m-') . "01 00:00:00"); // Start of the month
             $end_time = strtotime(date('Y-m-t') . " 24:00:00"); // End of the month
-            $small_cal = new Calendar($db);
+            $small_cal = new CalendarHTML($db);
             $small_cal->set_start($start_time);
             $small_cal->set_end($end_time);
             $small_cal->fetch_events();
-            $small_cal->print_cal();
+            $small_cal->print_cal($router);
             ?>
           </div>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
@@ -97,16 +90,16 @@ if ($website === 'oberlin.org') {
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
-                    <a href="<?php echo $url ?>/calendar/detail<?php echo $sep . $result['id'] ?>">
+                    <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
                       <?php if ($result['has_img'] == '0') {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
-                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$url}/calendar/images/uploads/thumbnail{$result['id']}\">";
+                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
                       } ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <a href="{$url}/calendar/detail<?php echo $sep . $result['id'] ?>" style='text-decoration: none;color: inherit;'>
+                    <a href="{$router->base_url}/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                     </a>
@@ -159,7 +152,7 @@ if ($website === 'oberlin.org') {
                   <?php if ($result['has_img'] == '0') {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { 
-                      echo "<img class=\"thumbnail img-fluid\" src=\"{$url}/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      echo "<img class=\"thumbnail img-fluid\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
                     } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
@@ -186,7 +179,7 @@ if ($website === 'oberlin.org') {
                     ?>
                   </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
-                  <a href="<?php echo "{$url}/calendar/detail{$sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
+                  <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
                 </div>
               </div>
             </div>
@@ -230,4 +223,4 @@ if ($website === 'oberlin.org') {
       </div>
       <div style="clear: both;height: 150px"></div>
       <img src="images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">
-    <?php include $snippets . '_bottom.php'; ?>
+    <?php include $router->footer_path; ?>

@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/javascript');
 require '../../includes/db.php';
-require '../includes/class.Calendar.php';
+require '../includes/class.CalendarHTML.php';
 define('CAROUSEL_SLIDES', 5);
-$cal = new Calendar($db);
+$cal = new CalendarHTML($db);
 $cal->set_limit(5);
 $cal->set_offset(0);
 $cal->fetch_events();

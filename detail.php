@@ -1,8 +1,6 @@
-<?php $dirname = dirname($_SERVER['SCRIPT_FILENAME']);
-$dirs = explode('/', $dirname);
-$website = $dirs[count($dirs)-2];
-$snippets = "{$dirname}/includes/snippets/detail/{$website}";
-include $snippets . '_top.php'; ?>
+<?php require 'includes/class.CalendarRoutes.php';
+$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
+include $router->header_path; ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
@@ -17,8 +15,7 @@ include $snippets . '_top.php'; ?>
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text">This event is not yet approved.<?php if (isset($_COOKIE["event{$id}"])) {
               $cookie = $_COOKIE["event{$id}"];
-              $first_part = ($website === 'oberlin.org') ? 'https://environmentaldashboard.org/symlinks/oberlin.org/calendar/' : 'https://environmentaldashboard.org/calendar/'; // TODO: FIND BETTER WAY TO DEAL WITH URLS
-              echo " Since you created this event using this browser, you can click <a href='{$first_part}edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
+              echo " Since you created this event using this browser, you can click <a href='{$router->base_url}/calendar/edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
               // if (isset($_GET['redirect']) && is_numeric($_GET['redirect'])) {
               //   echo " You will be redirected to the home page in <span id='time-remaining'>5</span> seconds.";
               // }
@@ -95,7 +92,7 @@ include $snippets . '_top.php'; ?>
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
-              <a href="<?php echo ($website === 'oberlin.org' || isset($_GET['id'])) ? "detail?id={$row['id']}" : "{$row['id']}" ?>" class="btn btn-primary">View event</a>
+              <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$row['id']}"; ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
         </div>
@@ -103,4 +100,4 @@ include $snippets . '_top.php'; ?>
       </div>
       <?php } ?>
       <div style="clear: both;height: 80px"></div>
-<?php include $snippets . '_bottom.php'; ?>
+<?php include $router->footer_path; ?>
