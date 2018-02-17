@@ -10,10 +10,14 @@ class CalendarRoutes {
    * @param $dir of current script, must be $_SERVER['SCRIPT_FILENAME'] and not __DIR__ or something so symlinks are resolved
    */
   public function __construct($script_filename) {
+    $fn = basename($script_filename, '.php');
+    if ($fn === 'add-event' || $fn === 'edit-event') {
+      $fn = 'event-form';
+    }
     $dir = dirname($script_filename);
     $dirs = explode('/', $dir);
     $website = $dirs[count($dirs)-2];
-    $this->snippet_base = "{$dir}/includes/snippets/index/{$website}";
+    $this->snippet_base = "{$dir}/includes/snippets/{$fn}/{$website}";
     $this->header_path = $this->snippet_base . '_top.php';
     $this->footer_path = $this->snippet_base . '_bottom.php';
     switch ($website) {

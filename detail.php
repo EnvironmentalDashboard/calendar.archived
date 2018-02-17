@@ -1,11 +1,15 @@
-<?php require 'includes/class.CalendarRoutes.php';
+<?php
+error_reporting(-1);
+ini_set('display_errors', 'On');
+require 'includes/class.CalendarRoutes.php';
 $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
-include $router->header_path; ?>
+include $router->header_path;
+?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='.' class="btn btn-primary">&larr; Go Back</a></p>
+          <p><a href='<?php echo $router->base_url ?>/calendar' class="btn btn-primary">&larr; Go Back</a></p>
         </div>
       </div>
       <div class="row">
@@ -26,7 +30,7 @@ include $router->header_path; ?>
           <hr>
           <p><?php echo $event['description']; ?></p>
           <?php echo ($event['extended_description'] !== '') ? "<p>{$event['extended_description']}</p>" : '' ?>
-          <p><?php echo Calendar::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
+          <p><?php echo CalendarHTML::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']) . ' | ' . $locname; ?></p>
           <?php if ($event['email'] != '' || $event['phone'] != '' || $event['phone'] != 0 || $event['website'] != '') { ?><h5>Contact</h5><p><?php } ?>
           <?php echo ($event['email'] == '') ? '' : "<a href='mailto:{$event['email']}'>{$event['email']}</a><br>"; ?>
           <?php echo ($event['phone'] == '' || $event['phone'] == 0) ? '' : preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']) . "<br>"; // https://stackoverflow.com/a/10741461/2624391
@@ -91,7 +95,7 @@ include $router->header_path; ?>
             <img class="card-img-top" src="<?php echo ($row['has_img'] == '0') ? 'https://environmentaldashboard.org/calendar/images/default.svg' : "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$row['id']}"; ?>" alt="<?php echo $row['event'] ?>">
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
-              <?php echo "<p class='card-text'>" . Calendar::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
+              <?php echo "<p class='card-text'>" . CalendarHTML::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
               <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$row['id']}"; ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
