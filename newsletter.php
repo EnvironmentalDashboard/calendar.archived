@@ -45,7 +45,7 @@ function newsletter_html($db, $events, $start, $end) {
         $width = 200;
       }
     }
-    $query_string = http_build_query(['id' => $event['id'], 'utm_source' => "{$start_str} newsletter", 'utm_medium' => 'Newsletter']);
+    $query_string = http_build_query(['id' => $event['id'], 'utm_source' => "{$start_str} newsletter", 'utm_medium' => 'email', 'utm_campaign' => 'newsletter']);
     $html_message .= "<div class='padded'>
                       <h2 style='margin:0;font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50;'>{$event['event']}</h2>
                       <img src='{$img}' alt='{$event['event']}' width='{$width}' height='{$height}' style='display:block;'>
