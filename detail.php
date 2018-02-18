@@ -4,8 +4,8 @@ ini_set('display_errors', 'On');
 require 'includes/class.CalendarRoutes.php';
 $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
 include $router->header_path;
-$stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND start >= ? ORDER BY start ASC LIMIT 1');
-$stmt->execute([$event['end']]);
+$stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND start >= ? AND id != ? ORDER BY start ASC LIMIT 1');
+$stmt->execute([$event['end'], $event['id']]);
 ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
