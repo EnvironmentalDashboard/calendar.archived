@@ -99,7 +99,7 @@ include $router->header_path; ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <a href="{$router->base_url}/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>" style='text-decoration: none;color: inherit;'>
+                    <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <p style="overflow: scroll;height: 170px;"><?php echo $result['description'] ?></p>
                     </a>
