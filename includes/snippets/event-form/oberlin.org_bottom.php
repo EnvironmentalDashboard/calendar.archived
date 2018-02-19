@@ -71,6 +71,7 @@
 
     $('#event-form').on('submit', function(e) {
       e.preventDefault();
+      var form_files = $(this);
       if ($('#img').val() !== '') {
         var file = ($('#img'))[0].files[0];
         var img = new Image();
@@ -80,14 +81,14 @@
               height = img.naturalHeight;
           window.URL.revokeObjectURL( img.src );
           if ((height/width) < 1.5) {
-            send_data($(this));
+            send_data(form_files);
           } else {
             $('#alert-warning').css('display', 'block');
             $('#alert-warning-text').text('The image you selected is too tall; please upload an image with a height no greater than 1.5x the width of the image');
           }
         }
       } else {
-        send_data($(this));
+        send_data(form_files);
       }
     });
 
