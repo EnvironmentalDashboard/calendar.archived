@@ -80,18 +80,18 @@
               height = img.naturalHeight;
           window.URL.revokeObjectURL( img.src );
           if ((height/width) < 1.5) {
-            send_data();
+            send_data($(this));
           } else {
             $('#alert-warning').css('display', 'block');
             $('#alert-warning-text').text('The image you selected is too tall; please upload an image with a height no greater than 1.5x the width of the image');
           }
         }
       } else {
-        send_data();
+        send_data($(this));
       }
     });
 
-    function send_data() {
+    function send_data(files) {
       var valid_sponsors = true;
       sponsor_fields.forEach(function(f) {
         if (f.hasClass('is-invalid')) {
@@ -124,7 +124,7 @@
         $('#submit-btn').val('Loading');
         $('#alert-success').css('display', 'block');
         $('#alert-success-text').text('Loading');
-        var data = $(this).serializefiles();
+        var data = files.serializefiles();
         $.ajax({
           url: 'includes/<?php echo ($edit) ? 'edit-event' : 'add-event' ?>.php',
           cache: false,
