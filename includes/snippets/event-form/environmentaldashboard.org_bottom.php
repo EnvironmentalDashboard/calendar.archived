@@ -67,16 +67,36 @@
       $('.alert').css('display', 'none');
     });
 
-    // Send data
     $('#event-form').on('submit', function(e) {
       e.preventDefault();
-      var description_len = $('#description').val().length;
+      if ($('#img').val() !== '') {
+        var file = ($('#img'))[0].files[0];
+        var img = new Image();
+        img.src = window.URL.createObjectURL(file);
+        img.onload = function() {
+          var width = img.naturalWidth,
+              height = img.naturalHeight;
+          window.URL.revokeObjectURL( img.src );
+          if ((height/width) < 1.5) {
+            send_data();
+          } else {
+            $('#alert-warning').css('display', 'block');
+            $('#alert-warning-text').text('The image you selected is too tall; please upload an image with a height no greater than 1.5x the width of the image');
+          }
+        }
+      } else {
+        send_data();
+      }
+    });
+
+    function send_data() {
       var valid_sponsors = true;
       sponsor_fields.forEach(function(f) {
         if (f.hasClass('is-invalid')) {
           valid_sponsors = false;
         }
       });
+      var description_len = $('#description').val().length;
       if (description_len < 10 || description_len > 200) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Event description must be between 10 and 200 characters.');
@@ -134,13 +154,13 @@
           }
         });
       }
-    });
+    }
 
     $('#description').on('input', function() {
       var left = $(this).val().length;
       $('#chars-left').text(', ' + (200-left) + ' characters left');
     });
-    $('#file2').on('change', function() {
+    $('#img').on('change', function() {
       $('#filename').text('You selected ' + $(this)[0].files[0].name);
     });
     $('#date').on('input', function() {

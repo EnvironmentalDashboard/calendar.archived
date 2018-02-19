@@ -175,7 +175,7 @@ include $router->header_path; ?>
             <div class="form-group">
               <p>Upload image (max size 16MB)</p>
               <div class="custom-file" id="img-txt" style="max-width: 300px">
-                <input type="file" id="file2" class="custom-file-input" id="img" name="file" value="">
+                <input type="file" class="custom-file-input" id="img" name="file" value="">
                 <label for="img" class="custom-file-label"></label>
               </div>
               <p><small class="text-success" id="filename">
