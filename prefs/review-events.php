@@ -137,7 +137,7 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
                   }?></p>
                   <p>Phone: <?php echo preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']); ?></p>
                   <p>
-                    <a class="btn btn-primary" href="../edit-event?token=<?php echo $event['token']; ?>">Edit event</a>
+                    <a class="btn btn-primary" href="https://environmentaldashboard.org/calendar/edit-event?token=<?php echo $event['token']; ?>">Edit event</a>
                   </p>
                 </div>
               </div>

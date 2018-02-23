@@ -1,6 +1,7 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
+date_default_timezone_set('America/New_York');
 require '../includes/db.php';
 $stmt = $db->prepare('SELECT id, event, start, `end`, description, loc_id, has_img, no_start_time, no_end_time, event_type_id FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));

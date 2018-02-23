@@ -32,7 +32,7 @@ function newsletter_html($db, $events, $start, $end) {
       $cache[$event['id']] = $info;
     }
     $info = implode(' &middot; ', $info);
-    $date = Calendar::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']);
+    $date = CalendarHTML::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']);
     if ($event['has_img'] == '0') {
       $img = 'https://environmentaldashboard.org/calendar/images/default.png'; // most email clients wont display svg
       $width = 200;
