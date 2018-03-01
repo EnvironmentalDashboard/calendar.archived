@@ -101,7 +101,7 @@ include $router->header_path; ?>
                   <div class="col-md-6 col-sm-12">
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="margin-bottom:0px;font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
-                      <h6 class="mb-0 mt-0"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
+                      <h6 class="mb-0 mt-2"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
                       <p style="overflow: scroll;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
                     </a>
                   </div>
