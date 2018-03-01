@@ -44,6 +44,7 @@ if (!empty($_POST['loc'])) {
                   <th>Location</th>
                   <th>CWD URL</th>
                   <th>Calendar URL</th>
+                  <th>Community Voices URL</th>
                   <th>&nbsp;</th>
                 </tr>
               </thead>
@@ -53,6 +54,7 @@ if (!empty($_POST['loc'])) {
                   <td><p><?php echo $row['name'] ?></p></td>
                   <td><p>https://environmentaldashboard.org/cwd-files/kiosk.php?loc_id=<?php echo $row['id']; ?>&amp;timer=80</p></td>
                   <td><p>https://environmentaldashboard.org/calendar/slideshow.php?loc_id=<?php echo $row['id']; ?></p></td>
+                  <td><p>https://environmentaldashboard.org/community-voices/slide.php?loc_id=<?php echo $row['id']; ?></p></td>
                   <td><a href="#" data-id="<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Delete location</a></td>
                 </tr>
                 <?php } ?>
