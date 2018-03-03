@@ -57,20 +57,19 @@ function newsletter_html($db, $events, $start, $end) {
                       <h3 style='margin:0;margin-top:10px;color:#333'>{$date}</h3>
                       <h4 style='margin:0;color:#333'>{$info}</h4>
                       <p style='margin:0;color:#333'>{$event['description']}</p>
-                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?{$query_string}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View Event Details</a> <a href='{$gcal_href}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;text-transform:uppercase;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Add to my Calendar</a></p>
+                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?{$query_string}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View Event Details</a> <a href='{$gcal_href}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Add to my Calendar</a></p>
                     </div>";
   }
   return $html_message;
 }
 $unfiltered_events = $db->query("SELECT id, event, start, end, no_start_time, no_end_time, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end} AND approved = 1")->fetchAll();
-foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id NOT IN (SELECT recipient_id FROM newsletter_prefs) AND id = 14') as $row) {
+foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id NOT IN (SELECT recipient_id FROM newsletter_prefs)') as $row) {
   if (count($unfiltered_events) === 0) {
     break;
   }
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message, unsub_header) VALUES (?, ?, ?, ?, ?)');
   $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $unfiltered_events, $start, $end) . "<p style='color:#333'>You can customize the events you recieve by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
 }
-/*
 if (count($unfiltered_events) > 0) {
   foreach ($db->query('SELECT id, email FROM newsletter_recipients WHERE id IN (SELECT recipient_id FROM newsletter_prefs)') as $row) {
     $stmt = $db->prepare('SELECT event_type_id FROM newsletter_prefs WHERE recipient_id = ?');
@@ -89,5 +88,4 @@ if (count($unfiltered_events) > 0) {
     $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $filtered_events, $start, $end) . "<p style='color:#333'>You can customize the events you recieve by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
   }
 }
-*/
 ?>
