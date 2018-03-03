@@ -105,6 +105,7 @@ $html2 = '</td>
 ';
 
 foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message, unsub_header FROM outbox') as $email) {
+  $email['recipient'] = trim($email['recipient']);
   if (filter_var($email['recipient'], FILTER_VALIDATE_EMAIL)) {
     $mail = new PHPMailer;
     $mail->setFrom('no-reply@environmentaldashboard.org', 'Environmental Dashboard');

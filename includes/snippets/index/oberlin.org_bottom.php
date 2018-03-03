@@ -9,7 +9,7 @@
     var email = $('#newsletter-email').val();
     if (email) {
       $.post( "includes/newsletter_sub.php", { email: email } );
-      alert('You have subscribed to our newsletter');
+      alert('Please check your inbox and spam folder for a confirmation email');
     }
   });
   var limit = 5, offset = 5, scroll_done = false;
