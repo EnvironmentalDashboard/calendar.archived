@@ -175,7 +175,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <?php if ($result['event_type_id'] === '1') { ?>
     <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
     <?php } elseif ($result['announcement'] == 1) { ?>
-    <img src="images/announcement.svg" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
+    <img src="images/announcement.svg" style="width: 12vw;position: fixed;bottom: 65px;left: 10px;height: auto;">
     <?php } ?>
   </body>
 </html>
