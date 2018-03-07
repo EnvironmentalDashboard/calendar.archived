@@ -14,7 +14,7 @@ if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
     exit('Error: invalid token');
   }
 }
-$cols = ['event', 'description', 'extended_description_md', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num']; // missing columns are has_img, start, end, no_start_time, no_end_time
+$cols = ['event', 'description', 'extended_description_md', 'event_type_id', 'loc_id', 'screen_ids', 'contact_email', 'email', 'phone', 'website', 'repeat_end', 'repeat_on', 'sponsors', 'room_num', 'announcement']; // missing columns are has_img, start, end, no_start_time, no_end_time
 $data = [];
 $query = 'UPDATE calendar SET approved = NULL';
 foreach ($cols as $col) {

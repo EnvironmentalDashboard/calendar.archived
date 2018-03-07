@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../includes/db.php';
-$stmt = $db->prepare('SELECT id, event, start, `end`, description, loc_id, has_img, no_start_time, no_end_time, event_type_id FROM calendar WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT id, event, start, `end`, description, loc_id, has_img, no_start_time, no_end_time, event_type_id, announcement FROM calendar WHERE id = ? LIMIT 1');
 $stmt->execute(array($_GET['id']));
 if ($stmt->rowCount() === 0) {
   echo "Broken slide ID\n";
@@ -174,6 +174,8 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
     <?php if ($result['event_type_id'] === '1') { ?>
     <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
+    <?php } elseif ($result['announcement'] == 1) { ?>
+    <img src="images/announcement.svg" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
     <?php } ?>
   </body>
 </html>

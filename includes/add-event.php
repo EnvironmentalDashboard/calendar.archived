@@ -21,6 +21,7 @@ $_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_
 $_POST['loc_id'] = (isset($_POST['loc_id'])) ? convertUTF8($_POST['loc_id']) : '';
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
 $_POST['subscribe'] = (isset($_POST['subscribe'])) ? true : false;
+$_POST['announcement'] = (isset($_POST['announcement']) && $_POST['announcement'] === '1') ? 1 : 0;
 $rand = (isset($_POST['token'])) ? $_POST['token'] : uniqid(bin2hex(random_bytes(116)), true);
 // get the id from the location name or insert it as a new row (perhaps calendar_locs shouldnt be a seperate table?)
 $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
@@ -75,8 +76,8 @@ if (!$date) {
 elseif (!$date2) {
   $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event was not submitted";
 } else { // no errors
-  $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, extended_description_md, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  $stmt->execute(array($_POST['event'], $rand, $date, $date2, $_POST['description'], $extended_description_html, $extended_description_md, $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($sponsors), $no_start_time, $no_end_time, $_POST['room_num']));
+  $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, extended_description_md, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num, announcement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  $stmt->execute(array($_POST['event'], $rand, $date, $date2, $_POST['description'], $extended_description_html, $extended_description_md, $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($sponsors), $no_start_time, $no_end_time, $_POST['room_num'], $_POST['announcement']));
   $success = $db->lastInsertId();
   save_emails($db, $_POST['event'], $success);
 

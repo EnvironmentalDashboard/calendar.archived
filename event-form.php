@@ -96,6 +96,17 @@ include $router->header_path; ?>
               <p><a href="#" id="add-another-sponsor">Add another sponsor</a></p>
             </div>
             <div class="form-group">
+              <span class="mr-4">This is an:</span>
+              <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="is_announcement" value="1" name="announcement" class="custom-control-input">
+                <label class="custom-control-label" for="is_announcement">Announcement</label>
+              </div>
+              <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="not_announcement" value="0" name="announcement" class="custom-control-input">
+                <label class="custom-control-label" for="not_announcement">Event</label>
+              </div>
+            </div>
+            <div class="form-group">
               <label for="event_type">Event type</label>
               <select class="form-control" id="event_type" name="event_type_id">
                 <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $row) {
