@@ -4,13 +4,14 @@ ini_set('display_errors', 'On');
 require '../includes/db.php';
 date_default_timezone_set('America/New_York');
 $time = time();
+$limit = (isset($_GET['limit'])) ? intval($_GET['limit']) : 30;
 $next30days = $time + (3600 * 24 * 30);
 if (isset($_GET['loc_id'])) {
   $stmt = $db->prepare("SELECT id, screen_ids FROM calendar
                         WHERE (`end` >= ? AND `end` <= ?)
                         AND approved = 1
                         ORDER BY start ASC, event ASC
-                        LIMIT 30");
+                        LIMIT {$limit}");
   $stmt->execute(array($time, $next30days));
   $event_ids = [];
   foreach ($stmt->fetchAll() as $row) {
@@ -23,7 +24,7 @@ if (isset($_GET['loc_id'])) {
                         WHERE (`end` >= ? AND `end` <= ?)
                         AND approved = 1
                         ORDER BY start ASC, event ASC
-                        LIMIT 30");
+                        LIMIT {$limit}");
   $stmt->execute(array($time, $next30days));
   $event_ids = array_column($stmt->fetchAll(), 'id');
 }
