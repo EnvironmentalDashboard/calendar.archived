@@ -50,7 +50,7 @@ function newsletter_html($db, $events, $start, $end) {
     $locaddr = $loc['address'];
     $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
     $query_string = http_build_query(['id' => $event['id'], 'utm_source' => "{$start_str} newsletter", 'utm_medium' => 'email', 'utm_campaign' => 'newsletter']);
-    $gcal_href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=".urlencode($event['event'])."&dates=".date('Ymd\THi', $event['start']) . '00Z/' . date('Ymd\THi', $event['end']) . '00Z&details='. urlencode($event['description']) ."&location={$google_cal_loc}&sf=true&output=xml";
+    $gcal_href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=".urlencode($event['event'])."&dates=".date('Ymd\THi', $event['start']) . '00/' . date('Ymd\THi', $event['end']) . '00&details='. urlencode($event['description']) ."&location={$google_cal_loc}&sf=true&output=xml";
     $html_message .= "<div class='padded'>
                       <h2 style='margin:0;font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50;'>{$event['event']}</h2>
                       <img src='{$img}' alt='{$event['event']}' width='{$width}' height='{$height}' style='display:block;'>
