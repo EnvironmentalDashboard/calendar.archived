@@ -12,6 +12,7 @@ if (!isset($edit)) {
     $stmt->execute([$_REQUEST['token']]);
     if ($stmt->rowCount() === 0) {
       $edit = false;
+      $error = 'The event you\'re trying to edit does not exist.';
     } else {
       $event = $stmt->fetch();
       $edit_event_screens = explode(',', $event['screen_ids']);

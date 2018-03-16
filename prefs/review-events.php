@@ -194,7 +194,7 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
         $('#rejection-reasons > p').on('click', function() {
           $('#rejectModal').modal('hide');
           console.log('#feedback' + id);
-          $('#feedback' + id).val('<p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
+          $('#feedback' + id).val('<br><br><p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
         });
       });
     </script>
