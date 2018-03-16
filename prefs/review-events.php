@@ -40,14 +40,13 @@ if (isset($_POST['review-events'])) {
         }
         $html_message .= "<p>You can use this <a href='https://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
         $txt_message = "Your event was approved an can be viewed here: https://environmentaldashboard.org/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
-      } else {
+      } else { // event rejected
         if ($feedback) {
-          $html_message = "<p>{$feedback}</p><br><br>";
-          $txt_message = $feedback;
+          $html_message = $feedback;
         } else {
           $html_message = "<p>Your event was rejected.</p><br><br>";
-          $txt_message = "Your event was rejected.";
         }
+        $txt_message = "Your event was rejected.";
       }
       $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
       $stmt->execute(array($contact_email, 'Environmental Dashboard Calendar Submission', $txt_message, $html_message));
@@ -108,7 +107,7 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
                       <span class="custom-control-description">Approve event</span>
                     </label>
                     <label class="custom-control custom-radio">
-                      <input value="reject" id="reject<?php echo $event['id']; ?>" name="<?php echo $event['id']; ?>" type="radio" class="custom-control-input">
+                      <input value="reject" data-token="<?php echo $event['token'] ?>" id="reject<?php echo $event['id']; ?>" name="<?php echo $event['id']; ?>" type="radio" class="custom-control-input">
                       <span class="custom-control-indicator"></span>
                       <span class="custom-control-description">Reject event</span>
                     </label>
@@ -191,10 +190,11 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
       $('input[value="reject"]').on('click', function() {
         $('#rejectModal').modal('show');
         var id = this.id.substring(6);
+        var $token = $(this).data('token');
         $('#rejection-reasons > p').on('click', function() {
           $('#rejectModal').modal('hide');
           console.log('#feedback' + id);
-          $('#feedback' + id).val('The event you submitted breaks the following rule: ' + $(this).text());
+          $('#feedback' + id).val('<p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
         });
       });
     </script>
