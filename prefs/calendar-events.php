@@ -23,7 +23,9 @@ if (!empty($_POST['submit'])) {
     $detectedType = exif_imagetype($_FILES['edit-img']['tmp_name']);
     if (in_array($detectedType, $allowedTypes)) {
       if (move_uploaded_file($_FILES['edit-img']['tmp_name'], "/var/www/uploads/calendar/event{$_POST['id']}")) {
-        shell_exec("convert /var/www/uploads/calendar/event{$_POST['id']} -define jpeg:extent=128kb /var/www/uploads/calendar/thumbnail{$_POST['id']}"); // https://stackoverflow.com/a/11920384/2624391
+        $event_pic = escapeshellarg("/var/www/uploads/calendar/event{$_POST['id']}");
+        $thumbnail = escapeshellarg("/var/www/uploads/calendar/thumbnail{$_POST['id']}");
+        shell_exec("rm {$thumbnail} && convert {$event_pic} -define jpeg:extent=128kb {$thumbnail}"); // https://stackoverflow.com/a/11920384/2624391
         $stmt = $db->prepare('UPDATE calendar SET has_img = ? WHERE id = ?');
         $stmt->execute([1, $_POST['id']]);
       } else {
