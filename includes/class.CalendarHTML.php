@@ -177,7 +177,7 @@ class CalendarHTML {
             $data_ids = json_encode($popover_ids);
             $data_titles = str_replace("'", "&apos;", json_encode($popover_titles));
             $data_descripts = str_replace("'", "&apos;", json_encode($popover_descripts));
-            echo "<button type='button' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#eventModal' data-ids='{$data_ids}' data-titles='{$data_titles}' data-descripts='{$data_descripts}'>{$count_popover_titles} events</button>";
+            echo "<button type='button' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#eventModal' data-ids='{$data_ids}' data-titles='{$data_titles}' data-descripts='{$data_descripts}' data-date='".date('F jS', $today)."'>{$count_popover_titles} events</button>";
           } elseif ($count_popover_titles === 1) {
             echo "<p style='text-align:left'><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$popover_ids[0]}'>{$popover_titles[0]}</a></p>";
           }

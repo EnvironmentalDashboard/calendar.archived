@@ -6,7 +6,8 @@
       $('#eventModal').on('show.bs.modal', function (event) {
       	var dest = $('#modal-body');
       	dest.html('');
-			  var button = $(event.relatedTarget)
+			  var button = $(event.relatedTarget);
+			  $('#eventModalLabel').text('Events on '+button.data('date'));
 			  var ids = button.data('ids');
 			  var titles = JSON.parse(button.attr('data-titles'));
 			  var descripts = JSON.parse(button.attr('data-descripts'));

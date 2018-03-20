@@ -6,10 +6,11 @@
       $('#eventModal').on('show.bs.modal', function (event) {
       	var dest = $('#modal-body');
       	dest.html('');
-			  var button = $(event.relatedTarget)
+			  var button = $(event.relatedTarget);
+			  $('#eventModalLabel').text('Events on '+button.data('date'));
 			  var ids = button.data('ids');
-			  var titles = JSON.parse(button.attr('data-titles'));
-			  var descripts = JSON.parse(button.attr('data-descripts'));
+			  var titles = JSON.parse(button.data('titles'));
+			  var descripts = JSON.parse(button.data('descripts'));
 			  for (var i=0; i < ids.length; i++) { 
 			  	dest.append('<h4>'+titles[i]+'</h4>'+'<p>'+descripts[i]+'</p><p><a class="btn btn-primary btn-sm" href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}"; ?>'+ids[i]+'">View more</a></p>');
 			  }
