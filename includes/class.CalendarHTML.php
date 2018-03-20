@@ -144,12 +144,13 @@ class CalendarHTML {
       $popover_descripts = array();
       $popover_titles = array();
       $popover_ids = array();
+      $quote_char = ($small) ? '&quot;' : '&amp;quot;';
       foreach ($this->rows as $result) { // check all the events
         $event_date_is_today = ($result['start'] >= $today && $result['start'] < $tomorrow);
         if ($event_date_is_today || ($small && $result['end'] > $today && $today > $result['start'])) { // small and large calendar show different events
           $day_color = "bg-primary";
-          $popover_descripts[] = str_replace('"', '&quot;', $result['description']); //addslashes();
-          $popover_titles[] = str_replace('"', '&quot;', $result['event']);
+          $popover_descripts[] = str_replace('"', $quote_char, $result['description']); //addslashes();
+          $popover_titles[] = str_replace('"', $quote_char, $result['event']);
           $popover_ids[] = $result['id'];
         }
       }
@@ -169,20 +170,17 @@ class CalendarHTML {
           }
           echo "\"><span class='day-num'>{$day_num}</span></a></td>";
         } else {
-          echo "<td class=\"day\" data-mdy='".date('mdy', $today)."'>";
-          /*
-          <a tabindex='0' data-html='true' data-trigger='focus' data-toggle='popover' data-placement='top' style='color:#333;padding:5px;margin:-5px;text-decoration:none;display:block' title='";
-          echo date('F j', $today);
-          echo "' data-content=\"";
-          for ($i=0; $i < count($popover_titles); $i++) { 
-            echo "<h6>{$popover_titles[$i]}</h6><p>{$popover_descripts[$i]}</p>";
-          }
-          echo "\">*/
+          echo "<td class=\"day\">";
           echo "<span class='day-num $day_color'>{$day_num}</span><div style='height:100px;overflow:scroll'>";
-          for ($i=0; $i < count($popover_titles); $i++) { 
-            echo "<p style='text-align:left'><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$popover_ids[$i]}'>{$popover_titles[$i]}</a></p>";
+          $count_popover_titles = count($popover_titles);
+          if ($count_popover_titles > 1) {
+            $data_ids = json_encode($popover_ids);
+            $data_titles = str_replace("'", "&apos;", json_encode($popover_titles));
+            $data_descripts = str_replace("'", "&apos;", json_encode($popover_descripts));
+            echo "<button type='button' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#eventModal' data-ids='{$data_ids}' data-titles='{$data_titles}' data-descripts='{$data_descripts}'>{$count_popover_titles} events</button>";
+          } elseif ($count_popover_titles === 1) {
+            echo "<p style='text-align:left'><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$popover_ids[0]}'>{$popover_titles[0]}</a></p>";
           }
-          // </a>
           echo "</div></td>";
         }
       }
