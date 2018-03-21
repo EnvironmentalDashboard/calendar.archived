@@ -134,6 +134,9 @@ foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message, u
     } else {
       echo $mail->ErrorInfo;
     }
+  } else { // invalid email
+    $stmt = $db->prepare('DELETE FROM outbox WHERE id = ?');
+    $stmt->execute(array($email['id']));
   }
 }
 
