@@ -15,6 +15,7 @@ class CalendarHTML {
     $this->end = 0;
     $this->limit = 0;
     $this->offset = 0;
+    $this->filter = null;
     $this->rows = []; // will contain all the events we're working with
     // $this->expanded_rows = []; // will contain all the events with the recurring ones duplicated the number of times they recur
     $this->sponsors = []; // will contain the sponsors of the events within the calendar $start and $end
@@ -24,17 +25,32 @@ class CalendarHTML {
   public function set_end($end) { $this->end = (int) $end; }
   public function set_limit($limit) { $this->limit = (int) $limit; }
   public function set_offset($offset) { $this->offset = (int) $offset; }
+  public function set_filter($filter) { $this->filter = $filter; }
 
   /**
    * grabs events that happen between $start and $end if they're set or the $limit most recent events given the $offset
    */
   public function fetch_events() {
+    if ($this->filter === null) {
+      $like = ' ';
+    } else {
+      $like = ' AND (event LIKE ? OR description LIKE ?) ';
+    }
     if ($this->start > 0 && $this->end > 0) {
-      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1 ORDER BY start ASC');
-      $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
+      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1'.$like.'ORDER BY start ASC');
+      if ($this->filter === null) {
+        $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
+      } else {
+        $stmt->execute([$this->start, $this->end, $this->start, $this->end, "%{$this->filter}%", "%{$this->filter}%"]);
+      }
     } elseif ($this->limit > 0) {
       $time = time();
-      $stmt = $this->db->query("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE approved = 1 AND start > {$time} ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
+      $stmt = $this->db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE approved = 1 AND start > ?{$like}ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
+      if ($this->filter === null) {
+        $stmt->execute([$time]);
+      } else {
+        $stmt->execute([$time, "%{$this->filter}%", "%{$this->filter}%"]);
+      }
     }
     $this->rows = $stmt->fetchAll();
     // $this->expanded_rows = $this->expand_recurring_events();

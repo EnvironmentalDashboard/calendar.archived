@@ -8,6 +8,9 @@ require '../includes/class.CalendarRoutes.php';
 $cal = new CalendarHTML($db);
 $cal->set_limit(intval($_GET['limit']));
 $cal->set_offset(intval($_GET['offset']));
+if (isset($_GET['search'])) {
+	$cal->set_filter($_GET['search']);
+}
 $cal->fetch_events();
 if (!empty($cal->rows)) {
 	$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);

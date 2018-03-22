@@ -2,7 +2,6 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-
 <script>
   $('#newsletter-form').on('submit', function(e) {
     e.preventDefault();
@@ -12,7 +11,7 @@
       alert('Please check your inbox and spam folder for a confirmation email');
     }
   });
-  var limit = 5, offset = 5, scroll_done = false;
+  var limit = 5, offset = 5, scroll_done = false; // start offset at 5 bc first 5 events already loaded
   $(window).scroll(function() { // https://stackoverflow.com/a/21561584/2624391
     var hT = $('#bottom-of-events').offset().top,
         hH = $('#bottom-of-events').outerHeight(),
@@ -24,12 +23,21 @@
     }
   });
   function load_events() {
-    console.log('Loading more events');
-    $.get("includes/load_events.php", {limit:limit, offset:offset}, function(data) {
+    var query = $('#search').val();
+    if (query == '') {
+      var payload = {limit:limit, offset:offset};
+      var end_of_feed = '<p id="end-of-feed">You have reached the end of the feed.</p>';
+    } else {
+      var payload = {limit:limit, offset:offset, search:query};
+      var end_of_feed = '<p id="end-of-feed">There are no more results for "'+(query.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+        return '&#'+i.charCodeAt(0)+';'; // https://stackoverflow.com/a/18750001/2624391
+      }))+'"</p>';
+    }
+    $.get("includes/load_events.php", payload, function(data) {
       if (data == '0') {
         scroll_done = true;
-        $('#bottom-of-events').html('<p>You have reached the end of the feed.</p>');
-        $('#loader').remove();
+        $('#bottom-of-events').html(end_of_feed);
+        $('#loader').hide();
       } else {
         scroll_done = false;
         $('#bottom-of-events').before(data);
@@ -60,16 +68,12 @@
   }
   $(document).on('click', '#next-month-btn', function(e) {
     e.preventDefault();
-    console.log(month, year);
     next_month();
-    console.log(month, year);
     load_small_cal();
   });
   $(document).on('click', '#prev-month-btn', function(e) {
     e.preventDefault();
-    console.log(month, year);
     prev_month();
-    console.log(month, year);
     load_small_cal();
   });
   function load_small_cal() {
@@ -153,8 +157,9 @@
       prev_id = id;
     }
   });
+  var stopped_typing = null;
   $('#search').on('input', function() {
-    $('.iterable-event').each(function() {
+    $('.iterable-event').each(function() { // hide/show events already on page
       var query = $('#search').val().toLowerCase(),
           card = $(this);
       if (card.data('name').toLowerCase().indexOf(query) === -1) {
@@ -163,6 +168,19 @@
         card.css('display', 'block');
       }
     });
+    // search db for more events because the query has changed
+    clearTimeout(stopped_typing);
+    stopped_typing = setTimeout(function(){
+      $('.iterable-event').remove();
+      offset = 0;
+      if (scroll_done) {
+        $('#loader').show();
+        $('#end-of-feed').remove();
+        scroll_done = false;
+      }
+      load_events();
+    }, 250);
+
   });
 
   $(function () {
