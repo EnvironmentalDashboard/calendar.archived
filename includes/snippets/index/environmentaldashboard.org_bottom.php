@@ -22,6 +22,9 @@
       load_events();
     }
   });
+  var filter_all = $('#filter-all'),
+      filter_announcements = $('#filter-announcements'),
+      filter_events = $('#filter-events');
   function load_events() {
     var query = $('#search').val();
     if (query == '') {
@@ -32,6 +35,13 @@
       var end_of_feed = '<p id="end-of-feed">There are no more results for "'+(query.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
         return '&#'+i.charCodeAt(0)+';'; // https://stackoverflow.com/a/18750001/2624391
       }))+'"</p>';
+    }
+    if (!filter_all.hasClass('active')) {
+      if (filter_events.hasClass('active')) {
+        payload.announcements = 0;
+      } else {
+        payload.announcements = 1;
+      }
     }
     $.get("includes/load_events.php", payload, function(data) {
       if (data == '0') {
@@ -181,6 +191,50 @@
       load_events();
     }, 250);
 
+  });
+
+  // event/announcements toggle buttons in navbar
+  filter_events.on('click', function() {
+    if (!$(this).hasClass('active')) {
+      $(this).addClass('active');
+      filter_announcements.removeClass('active');
+      filter_all.removeClass('active');
+      offset = 0;
+      if (scroll_done) {
+        scroll_done = false;
+        $('#end-of-feed').remove();
+      }
+      $('.iterable-event').remove();
+      load_events();
+    }
+  });
+  filter_announcements.on('click', function() {
+    if (!$(this).hasClass('active')) {
+      $(this).addClass('active');
+      filter_events.removeClass('active');
+      filter_all.removeClass('active');
+      offset = 0;
+      if (scroll_done) {
+        scroll_done = false;
+        $('#end-of-feed').remove();
+      }
+      $('.iterable-event').remove();
+      load_events();
+    }
+  });
+  filter_all.on('click', function() {
+    if (!$(this).hasClass('active')) {
+      $(this).addClass('active');
+      filter_announcements.removeClass('active');
+      filter_events.removeClass('active');
+      offset = 0;
+      if (scroll_done) {
+        scroll_done = false;
+        $('#end-of-feed').remove();
+      }
+      $('.iterable-event').remove();
+      load_events();
+    }
   });
 
   $(function () {

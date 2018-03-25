@@ -219,7 +219,7 @@ class CalendarHTML {
       $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.intval($result['loc_id']))->fetchColumn();
       echo "<div class='card iterable-event' id='{$result['id']}'
           style='margin-bottom: 20px' data-date='{$result['start']}'
-          data-loc='{$locname}'
+          data-loc='{$locname}' data-announcement='{$result['announcement']}'
           data-name='{$result['event']}' data-eventtype='{$result['event_type_id']}'
           data-eventloc='{$result['loc_id']}' data-mdy='".date('mdy', $result['start'])."'
           data-eventsponsor='";
@@ -235,8 +235,13 @@ class CalendarHTML {
                 }
                 echo "</div>
                 <div class='col-sm-12 col-md-9'>
-                  <h4 class='card-title'>{$result['event']}";
-                echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span></h4>" : "</h4>";
+                  <h4 class='card-title'>{$result['event']}</h4>";
+                if ($result['event_type_id'] == '1') {
+                  echo "<span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:10px'>Volunteer Opportunity</span> ";
+                }
+                if ($result['announcement'] == '1') {
+                  echo "<span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:10px'>Announcement</span>";
+                }
                 echo "<h6 class='card-subtitle mb-2 text-muted'>";
                 echo $this->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);
                 if (!empty($locname)) {

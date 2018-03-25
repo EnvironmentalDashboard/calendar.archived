@@ -15,7 +15,10 @@ if (isset($_GET['month']) && isset($_GET['year'])) {
 $cal = new CalendarHTML($db);
 $cal->set_start($start_time);
 $cal->set_end($end_time);
-$cal->fetch_events();
+// $cal->fetch_events();
+$stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors FROM calendar WHERE `end` >= ? AND `end` <= ? AND approved = 1 AND announcement = 0 ORDER BY start ASC');
+$stmt->execute([$this->start, $this->end]);
+$cal->rows = $stmt->fetchAll();
 $cal->generate_sponsors();
 
 $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);

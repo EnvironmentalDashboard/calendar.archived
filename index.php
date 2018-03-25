@@ -129,6 +129,11 @@ include $router->header_path; ?>
           <nav class="navbar navbar-light bg-light" style="margin-bottom: 10px;margin-top: 40px">
             <form class="form-inline" style="width: 100%">
               <span class="navbar-text" style="width: 100%">
+                <div class="btn-group" role="group" aria-label="Event or announcement">
+                  <button type="button" id="filter-all" class="btn btn-secondary active">All</button>
+                  <button type="button" id="filter-events" class="btn btn-secondary">Events</button>
+                  <button type="button" id="filter-announcements" class="btn btn-secondary">Announcements</button>
+                </div>
                 <!-- <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a> -->
                 <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
                 <a href="#" id="sort-date" class="btn btn-primary" style="float: right;color: #fff">Date</a>
@@ -143,7 +148,7 @@ include $router->header_path; ?>
           ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
           style="margin-bottom: 20px" data-date="<?php echo $result['start']; ?>"
-          data-loc="<?php echo $locname; ?>"
+          data-loc="<?php echo $locname; ?>" data-announcement="<?php echo $result['announcement'] ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
           data-eventloc='<?php echo $result['loc_id'] ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'
           data-eventsponsor='<?php $tmp = json_decode($result['sponsors'], true); echo (is_array($tmp)) ? implode('$SEP$', $tmp) : ''; ?>'>
