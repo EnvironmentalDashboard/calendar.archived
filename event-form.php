@@ -110,6 +110,7 @@ include $router->header_path; ?>
             <div class="form-group">
               <label for="event_type">Event type</label>
               <select class="form-control" id="event_type" name="event_type_id">
+                <option value=''>&nbsp;</option>
                 <?php foreach ($db->query('SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC') as $row) {
                   if ($edit && $event['event_type_id'] === $row['id']) {
                     echo "<option value='{$row['id']}' selected>{$row['event_type']}</option>";

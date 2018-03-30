@@ -115,6 +115,9 @@
       } else if ($('#date2').val().length < 9) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Invalid end date');
+      } else if ($('#event_type').val() == '') {
+        $('#alert-warning').css('display', 'block');
+        $('#alert-warning-text').text('Please select an event type');
       } else if ($('#loc_id').hasClass('is-invalid')) {
         $('#alert-warning').css('display', 'block');
         $('#alert-warning-text').text('Please select a valid location');
