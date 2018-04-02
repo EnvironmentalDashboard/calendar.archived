@@ -25,7 +25,8 @@ include $router->header_path; ?>
       </div>
       <div class="row">
         <div class="col-md-4 order-sm-12">
-          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit an event</a></p>
+          <h5>Have an event or announcement?</h5>
+          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Submit</a></p>
           <h5>Subscribe to our newsletter</h5>
           <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
             <label class="sr-only" for="newsletter-email">Email</label>
