@@ -10,7 +10,7 @@ if ($stmt->rowCount() === 0) {
   exit();
 }
 $result = $stmt->fetch();
-$stmt = $db->prepare('SELECT `location`, img FROM calendar_locs WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT `location`, img, address FROM calendar_locs WHERE id = ? LIMIT 1');
 $stmt->execute(array($result['loc_id']));
 $loc_arr = $stmt->fetch();
 if ($loc_arr['img'] == null) {
@@ -23,7 +23,7 @@ if ($loc_arr['img'] == null) {
   $bg_width = $bg_size[0];
   $bg_height = $bg_size[1];
 }
-$loc = $loc_arr['location'];
+$loc = ($loc_arr['address'] == '') ? $loc_arr['location'] : "{$loc_arr['location']}, $loc_arr['address']}";
 $ratio = $bg_width / $bg_height;
 $hd = 16 / 9;
 // $image_mode = ($ratio > $hd*0.8 && $ratio < $hd*1.2) ? 'cover' : 'contain';
