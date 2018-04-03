@@ -23,7 +23,7 @@ if ($loc_arr['img'] == null) {
   $bg_width = $bg_size[0];
   $bg_height = $bg_size[1];
 }
-$loc = ($loc_arr['address'] == '') ? $loc_arr['location'] : "{$loc_arr['location']}, {$loc_arr['address']}";
+$loc = ($loc_arr['address'] == '') ? $loc_arr['location'] : "{$loc_arr['location']}, " . explode(',', $loc_arr['address'])[0];
 $ratio = $bg_width / $bg_height;
 $hd = 16 / 9;
 // $image_mode = ($ratio > $hd*0.8 && $ratio < $hd*1.2) ? 'cover' : 'contain';
@@ -160,8 +160,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
       <div style="max-width: <?php echo ($result['has_img'] == '1') ? 65 : 90; ?>%;<?php echo (strlen($result['event'] > 35)) ? 'position: absolute;top:370px' : ''; ?>">
         <p class="p animated fadeIn" style="font-size: 3.5vw;color: #badbf2;">
           <?php
-          echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span> ';
-          echo '<span style="white-space: nowrap;">| '.$loc.'</span>'; ?>
+          echo '<span style="white-space: nowrap;">' . formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']) . '</span><br>' . $loc; ?>
         </p>
         <p class="p description animated fadeIn">
           <?php echo $result['description']; ?>
