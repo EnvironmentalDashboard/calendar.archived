@@ -23,7 +23,7 @@ if ($loc_arr['img'] == null) {
   $bg_width = $bg_size[0];
   $bg_height = $bg_size[1];
 }
-$loc = ($loc_arr['address'] == '') ? $loc_arr['location'] : "{$loc_arr['location']}, $loc_arr['address']}";
+$loc = ($loc_arr['address'] == '') ? $loc_arr['location'] : "{$loc_arr['location']}, {$loc_arr['address']}";
 $ratio = $bg_width / $bg_height;
 $hd = 16 / 9;
 // $image_mode = ($ratio > $hd*0.8 && $ratio < $hd*1.2) ? 'cover' : 'contain';
