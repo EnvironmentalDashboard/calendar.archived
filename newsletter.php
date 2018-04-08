@@ -25,7 +25,7 @@ function newsletter_html($db, $events, $start, $end) {
       $info[] = $stmt->fetchColumn();
       $json = json_decode($event['sponsors'], true);
       if (is_array($json) && count($json) > 0) {
-        foreach ($db->query('SELECT sponsor FROM calendar_sponsors WHERE id IN (' . implode(', ', $json) . ')') as $sponsor) {
+        foreach ($db->query('SELECT sponsor FROM calendar_sponsors WHERE id IN (' . implode(', ', $json) . ') ORDER BY sponsor ASC') as $sponsor) {
           $info[] = $sponsor['sponsor'];
         }
       }
@@ -45,7 +45,7 @@ function newsletter_html($db, $events, $start, $end) {
         $width = 200;
       }
     }
-    $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.intval($event['loc_id']))->fetch();
+    $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.intval($event['loc_id']).' ORDER BY location ASC')->fetch();
     $locname = $loc['location'];
     $locaddr = $loc['address'];
     $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
@@ -62,7 +62,7 @@ function newsletter_html($db, $events, $start, $end) {
   }
   return $html_message;
 }
-$unfiltered_events = $db->query("SELECT id, event, start, end, no_start_time, no_end_time, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end} AND approved = 1")->fetchAll();
+$unfiltered_events = $db->query("SELECT id, event, start, end, no_start_time, no_end_time, description, has_img, sponsors, loc_id, event_type_id FROM calendar WHERE start > {$start} AND start < {$end} AND approved = 1 ORDER BY start ASC")->fetchAll();
 foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id NOT IN (SELECT recipient_id FROM newsletter_prefs)') as $row) {
   if (count($unfiltered_events) === 0) {
     break;

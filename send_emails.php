@@ -108,6 +108,7 @@ foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message, u
   $email['recipient'] = trim($email['recipient']);
   if (filter_var($email['recipient'], FILTER_VALIDATE_EMAIL)) {
     $mail = new PHPMailer;
+    $mail->CharSet = 'UTF-8';
     $mail->setFrom('no-reply@environmentaldashboard.org', 'Environmental Dashboard');
     $mail->addAddress($email['recipient']);
     $mail->Subject = $email['subject'];
