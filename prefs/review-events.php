@@ -40,16 +40,18 @@ if (isset($_POST['review-events'])) {
         }
         $html_message .= "<p>You can use this <a href='https://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
         $txt_message = "Your event was approved an can be viewed here: https://environmentaldashboard.org/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
+        $subject = "Your event, {$row['event']}, is now live!";
       } else { // event rejected
         if ($feedback) {
           $html_message = $feedback;
         } else {
-          $html_message = "<p>Your event was rejected.</p><br><br>";
+          $html_message = "<p>Your event, {$row['event']}, was rejected. Contact dashboard@oberlin.edu for more information.</p><br><br>";
         }
-        $txt_message = "Your event was rejected.";
+        $txt_message = "Your event, {$row['event']}, was rejected. Contact dashboard@oberlin.edu for more information.";
+        $subject = 'Environmental Dashboard Calendar Submission';
       }
       $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
-      $stmt->execute(array($contact_email, 'Environmental Dashboard Calendar Submission', $txt_message, $html_message));
+      $stmt->execute(array($contact_email, $subject, $txt_message, $html_message));
     }
     $feedback = '';
   }
