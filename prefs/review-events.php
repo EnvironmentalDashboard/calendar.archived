@@ -60,6 +60,10 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
   $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
   $stmt->execute([$_POST['delete-id']]);
 }
+if (isset($_POST['add-note'])) {
+  $stmt = $db->prepare('UPDATE calendar SET note = ? WHERE id = ? LIMIT 1');
+  $stmt->execute([$_POST['note'], $_POST['eventid']]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -89,7 +93,7 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
             <input type="hidden" name="review-events" value="true">
             <?php
             $i = 0;
-            foreach ($db->query('SELECT id, token, event, start, `end`, extended_description, loc_id, screen_ids, contact_email, email, phone FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
+            foreach ($db->query('SELECT id, token, event, start, `end`, extended_description, loc_id, screen_ids, contact_email, email, phone, note FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
               $screens = explode(',', $event['screen_ids']);
               $i++;
             ?>
@@ -99,9 +103,15 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
                 </div>
                 <div class="col-sm-3">
                   <div class="form-group">
-                  <label for="exampleFormControlTextarea1">Feedback</label>
-                  <textarea class="form-control" id="feedback<?php echo $event['id'] ?>" name="feedback<?php echo $event['id'] ?>" rows="3"></textarea>
-                </div>
+                    <label for="exampleFormControlTextarea1">Feedback</label>
+                    <textarea class="form-control" id="feedback<?php echo $event['id'] ?>" name="feedback<?php echo $event['id'] ?>" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <?php if ($event['note'] != '') {
+                      echo "<p>{$event['note']}</p>";
+                    } ?>
+                    <button type="button" class="btn btn-primary" id="note-btn" data-note="<?php echo $event['note'] ?>" data-id="<?php echo $event['id'] ?>">Enter private notes</button>
+                  </div>
                   <div class="custom-controls-stacked">
                     <label class="custom-control custom-radio">
                       <input value="approve" id="approve<?php echo $event['id']; ?>" name="<?php echo $event['id']; ?>" type="radio" class="custom-control-input">
@@ -175,6 +185,31 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
         </div>
       </div>
     </div>
+    <div class="modal fade" id="notesModal" tabindex="-1" role="dialog" aria-labelledby="notesModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form action="" method="POST">
+            <div class="modal-header">
+              <h5 class="modal-title" id="notesModalLabel">Add notes</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="note">Note</label>
+                <textarea class="form-control" id="note" name="note" rows="3" maxlength="512"></textarea>
+              </div>
+              <input type="hidden" value="" id="eventid" name="eventid">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <input type="submit" name="add-note" class="btn btn-primary" value="Add note">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <script
     src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -184,7 +219,7 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
     <script>
       $('.delete-event').on('click', function(e) {
         e.preventDefault();
-        if (confirm('ARE YOU SURE???')) {
+        if (confirm('Are you sure?')) {
           $('#delete-id').val($(this).data('id'));
           $('#hidden-form').submit();
         }
@@ -199,6 +234,11 @@ if (isset($_POST['delete-id']) && is_numeric($_POST['delete-id'])) {
           $('#feedback' + id).val('<br><br><p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
         });
       });
+      $('#note-btn').on('click', function() {
+        $('#notesModal').modal('show');
+        $('#eventid').val($(this).data('id'));
+        $('#note').val($(this).data('note'));
+      })
     </script>
   </body>
 </html>
