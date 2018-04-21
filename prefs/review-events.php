@@ -64,6 +64,10 @@ if (isset($_POST['add-note'])) {
   $stmt = $db->prepare('UPDATE calendar SET note = ? WHERE id = ? LIMIT 1');
   $stmt->execute([$_POST['note'], $_POST['eventid']]);
 }
+$events = $db->query('SELECT id, token, event, start, `end`, extended_description, loc_id, screen_ids, contact_email, email, phone, note FROM calendar WHERE approved IS NULL ORDER BY id ASC')->fetchAll();
+$num_newsletter_subs = $db->query('SELECT COUNT(*) FROM newsletter_recipients')->fetchColumn();
+$num_events = $db->query('SELECT COUNT(*) FROM calendar WHERE announcement = 0 AND start > '.time())->fetchColumn();
+$num_announcements = $db->query('SELECT COUNT(*) FROM calendar WHERE announcement = 1 AND start > '.time())->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,6 +85,17 @@ if (isset($_POST['add-note'])) {
       <div class="row">
         <div class="col-xs-12">
           <?php include 'includes/navbar.php'; ?>
+          <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Info</h4>
+            <ul>
+              <li><?php echo $num_events ?> active events, <?php echo $num_announcements ?> active announcements</li>
+              <li><?php echo count($events) ?> events awaiting approval</li>
+              <li><?php echo $num_newsletter_subs ?> newsletter subscribers</li>
+            </ul>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
         </div>
       </div>
       <div style="height:20px;clear:both"></div>
@@ -93,7 +108,7 @@ if (isset($_POST['add-note'])) {
             <input type="hidden" name="review-events" value="true">
             <?php
             $i = 0;
-            foreach ($db->query('SELECT id, token, event, start, `end`, extended_description, loc_id, screen_ids, contact_email, email, phone, note FROM calendar WHERE approved IS NULL ORDER BY id ASC') as $event) {
+            foreach ($events as $event) {
               $screens = explode(',', $event['screen_ids']);
               $i++;
             ?>
