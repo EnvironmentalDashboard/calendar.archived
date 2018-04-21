@@ -37,7 +37,7 @@ class CalendarHTML {
       $like = ' AND (event LIKE ? OR description LIKE ?) ';
     }
     if ($this->start > 0 && $this->end > 0) {
-      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1'.$like.'ORDER BY start ASC');
+      $stmt = $this->db->prepare('SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement, likes FROM calendar WHERE ((`end` >= ? AND `end` <= ?) OR (repeat_end >= ? AND repeat_end <= ?)) AND approved = 1'.$like.'ORDER BY start ASC');
       if ($this->filter === null) {
         $stmt->execute([$this->start, $this->end, $this->start, $this->end]);
       } else {
@@ -45,7 +45,7 @@ class CalendarHTML {
       }
     } elseif ($this->limit > 0) {
       $time = time();
-      $stmt = $this->db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE approved = 1 AND start > ?{$like}ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
+      $stmt = $this->db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement, likes FROM calendar WHERE approved = 1 AND start > ?{$like}ORDER BY start ASC LIMIT ".intval($this->offset).', '.intval($this->limit));
       if ($this->filter === null) {
         $stmt->execute([$time]);
       } else {
@@ -260,8 +260,16 @@ class CalendarHTML {
                     }
                   }
                 }
-                echo "</h6><p class='card-text'>{$result['description']}</p><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>
-                </div>
+                if (isset($_COOKIE["event{$result['id']}"])) {
+                  $disabled = 'disabled';
+                } else {
+                  $disabled = '';
+                }
+                echo "</h6><p class='card-text'>{$result['description']}</p><p class='card-text'><a href='#' class='btn btn-secondary interested-btn {$disabled}' data-eventid='{$result['id']}'>I&apos;m interested</a> <a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>";
+                if ($result['likes'] > 1) {
+                  echo "<br><small>{$result['likes']} people are interested in this event</small>";
+                }
+                echo "</p></div>
               </div>
             </div>
           </div>";

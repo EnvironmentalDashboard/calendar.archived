@@ -3,6 +3,19 @@
 </div> <!-- /.container -->
 <?php include dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/includes/js.php'; ?>
 <script>
+  $('.interested-btn').on('click', function(e) {
+    e.preventDefault();
+    if (!$(this).hasClass('disabled')) {
+      $(this).text('Interested');
+      $(this).addClass('disabled');
+      var eventid = $(this).data('eventid');
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + 30);
+      var c_value = "1; expires=" + exdate.toUTCString();
+      document.cookie = 'event' + eventid + "=" + c_value; // https://stackoverflow.com/a/14573665/2624391
+      $.post( "includes/like_btn.php", { eventid: eventid } );
+    }
+  });
   $('#newsletter-form').on('submit', function(e) {
     e.preventDefault();
     var email = $('#newsletter-email').val();

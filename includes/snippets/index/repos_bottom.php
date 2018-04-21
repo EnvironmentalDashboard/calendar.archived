@@ -3,6 +3,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script>
+  $('.interested-btn').on('click', function(e) {
+    e.preventDefault();
+    if (!$(this).hasClass('disabled')) {
+      $(this).text('Interested');
+      $(this).addClass('disabled');
+      var eventid = $(this).data('eventid');
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + 30);
+      var c_value = "1; expires=" + exdate.toUTCString();
+      document.cookie = 'event' + eventid + "=" + c_value; // https://stackoverflow.com/a/14573665/2624391
+      $.post( "includes/like_btn.php", { eventid: eventid } );
+    }
+  });
   $('#newsletter-form').on('submit', function(e) {
     e.preventDefault();
     var email = $('#newsletter-email').val();
