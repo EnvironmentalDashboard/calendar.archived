@@ -66,9 +66,23 @@
         $('#bottom-of-events').before(data);
         offset += limit;
         sidebar_filters();
+        set_future_heading();
       }
     });
   }
+  var tomorrow = <?php echo strtotime('tomorrow') ?>;
+  function set_future_heading() {
+    $('#future').remove();
+    var cards = $('.iterable-event');
+    for (var i = 0; i < cards.length; i++) {
+      var div = $(cards[i]);
+      if (div.data('date') > tomorrow) {
+        div.before('<h4 id="future">Future</h4>');
+        break;
+      }
+    }
+  }
+  set_future_heading();
 
   var month = <?php echo date('n') ?>, year = <?php echo date('Y') ?>;
   function next_month() {

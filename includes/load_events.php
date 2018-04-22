@@ -18,10 +18,10 @@ if (isset($_GET['announcements'])) {
 }
 if (isset($_GET['search'])) {
 	// $cal->set_filter($_GET['search']);
-	$stmt = $db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE approved = 1 AND start > ? {$filter} AND (event LIKE ? OR description LIKE ?) ORDER BY start ASC LIMIT ".intval($cal->offset).', '.intval($cal->limit));
+	$stmt = $db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement, likes FROM calendar WHERE approved = 1 AND start > ? {$filter} AND (event LIKE ? OR description LIKE ?) ORDER BY start ASC LIMIT ".intval($cal->offset).', '.intval($cal->limit));
 	$stmt->execute([time(), "%{$_GET['search']}%", "%{$_GET['search']}%"]);
 } else {
-	$stmt = $db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement FROM calendar WHERE approved = 1 AND start > ? {$filter} ORDER BY start ASC LIMIT ".intval($cal->offset).', '.intval($cal->limit));
+	$stmt = $db->prepare("SELECT id, loc_id, event, description, start, `end`, repeat_end, repeat_on, has_img, sponsors, event_type_id, no_start_time, no_end_time, sponsors, announcement, likes FROM calendar WHERE approved = 1 AND start > ? {$filter} ORDER BY start ASC LIMIT ".intval($cal->offset).', '.intval($cal->limit));
 	$stmt->execute([time()]);
 }
 // $cal->fetch_events();

@@ -143,6 +143,7 @@ include $router->header_path; ?>
               </span> -->
             </form>
           </nav>
+          <h4>Today</h4>
           <div id="top-of-events"></div>
           <?php foreach ($cal->rows as $result) {
           $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
