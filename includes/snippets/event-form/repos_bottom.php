@@ -15,6 +15,11 @@
       window.open('slide?id=<?php echo $event['id'] ?>', '_blank');
     });
     <?php } ?>
+    $('#show-datetime2').on('click', function(e) {
+      e.preventDefault();
+      $('#datetime2').css('display', '');
+      $(this).css('display', 'none');
+    });
     $('#other-checkbox').on('change', function() {
       if (this.checked) {
         $('#reg-locs').find('input').prop('checked', true);
@@ -269,10 +274,13 @@
         }
       });
       $( "#date2" ).datepicker();
-      $( "#end_date" ).datepicker();
+      $( "#dup_date" ).datepicker();
+      $( "#dup_date2" ).datepicker();
       // also found this little library...
       $('#time').timepicker();
       $('#time2').timepicker();
+      $( "#dup_time" ).timepicker();
+      $( "#dup_time2" ).timepicker();
     }
 
     window.onbeforeunload = function() {

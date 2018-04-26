@@ -141,6 +141,7 @@ include $router->header_path; ?>
                 <input type="text" class="form-control" id="date2" name="date2" value="<?php
                 echo (!empty($_REQUEST['date2'])) ? $_REQUEST['date2'] : '';
                 echo ($edit && empty($_REQUEST['date2'])) ? date('m/d/Y', $event['end']) : ''; ?>" placeholder="mm/dd/yyyy">
+                <p><a href="#" id="show-datetime2">Add second date/time</a></p>
               </div>
               <div class="col-sm-4">
                 <label for="time2">Time event ends</label>
@@ -148,6 +149,29 @@ include $router->header_path; ?>
                 echo (!empty($_REQUEST['time2'])) ? $_REQUEST['time2'] : '';
                 echo ($edit && empty($_REQUEST['time2']) && $event['no_end_time'] === '0') ? date('g:ia', $event['end']) : ''; ?>" placeholder="12:30pm">
                 <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
+              </div>
+            </div>
+            <div id="datetime2" style="display: none">
+              <div class="form-group row">
+                <div class="col-sm-8">
+                  <label for="dup_date">Date event begins</label>
+                  <input type="text" class="form-control" id="dup_date" name="dup_date" value="" placeholder="mm/dd/yyyy">
+                </div>
+                <div class="col-sm-4">
+                  <label for="dup_time">Time event begins</label>
+                  <input type="text" class="form-control" id="dup_time" name="dup_time" value="" placeholder="12:30pm">
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-8">
+                  <label for="dup_date2">Date event ends</label>
+                  <input type="text" class="form-control" id="dup_date2" name="dup_date2" value="" placeholder="mm/dd/yyyy">
+                </div>
+                <div class="col-sm-4">
+                  <label for="dup_time2">Time event ends</label>
+                  <input type="text" class="form-control" id="dup_time2" name="dup_time2" value="" placeholder="12:30pm">
+                  <p style="margin-bottom: -10px"><small class="text-muted">Optional</small></p>
+                </div>
               </div>
             </div>
             <div class="form-group">
