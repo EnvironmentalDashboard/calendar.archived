@@ -266,7 +266,7 @@ class CalendarHTML {
                   $disabled = '';
                 }
                 echo "</h6><p class='card-text'>{$result['description']}</p><p class='card-text'><a href='#' class='btn btn-secondary interested-btn {$disabled}' data-eventid='{$result['id']}'>I&apos;m interested</a> <a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>";
-                if ($result['likes'] > 1) {
+                if ($result['likes'] > 9) {
                   echo "<br><small>{$result['likes']} people are interested in this event</small>";
                 }
                 echo "</p></div>

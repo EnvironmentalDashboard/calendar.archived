@@ -190,7 +190,7 @@ include $router->header_path; ?>
                   <p class="card-text">
                     <a href='#' class='btn btn-secondary interested-btn <?php echo (isset($_COOKIE["event{$result['id']}"])) ? 'disabled' : ''; ?>' data-eventid='<?php echo $result['id'] ?>'>I&apos;m interested</a>
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
-                    <?php if ($result['likes'] > 1) {
+                    <?php if ($result['likes'] > 9) {
                       echo "<br><small>{$result['likes']} people are interested in this event</small>";
                     } ?>
                   </p>

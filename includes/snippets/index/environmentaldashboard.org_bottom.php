@@ -3,7 +3,7 @@
 </div> <!-- /.container -->
 <?php include dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/includes/js.php'; ?>
 <script>
-  $('.interested-btn').on('click', function(e) {
+  $(document).on('click', '.interested-btn', function(e) {
     e.preventDefault();
     if (!$(this).hasClass('disabled')) {
       $(this).text('Interested');
