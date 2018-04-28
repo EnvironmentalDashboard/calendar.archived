@@ -23,6 +23,11 @@ include $router->header_path; ?>
           <h6 class="hidden-sm-down"><?php echo date('l, F j, Y') ?></h6>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
         </div>
+        <!--[if lte IE 9]>
+          <div class="alert alert-danger" role="alert">
+            You are using an unsupported browser. Some features might not work as designed or not work at all.
+          </div>
+        <![endif]-->
       </div>
       <div class="row">
         <div class="col-md-4 order-sm-12">

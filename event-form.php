@@ -25,6 +25,11 @@ $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
 include $router->header_path; ?>
       <div class="row justify-content-center">
         <div class="col-sm-7">
+          <!--[if lte IE 9]>
+            <div class="alert alert-danger" role="alert">
+              You are using an unsupported browser. Some features might not work as designed or not work at all.
+            </div>
+          <![endif]-->
           <div class="alert alert-warning" id="alert-warning" role="alert" style="position:fixed;top:50px;z-index:100;<?php echo (isset($error)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text"><?php echo (isset($error)) ? $error : ''; ?></div>
