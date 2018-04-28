@@ -66,6 +66,7 @@ $stmt->execute([$event['end'], $event['id']]);
           }
           ?>
           <p>
+            <a style="margin-right:10px" href="https://environmentaldashboard.org/calendar/download-ics.php?<?php echo http_build_query(['location' => ($locaddr == '') ? $locname : $locaddr, 'description' => $event['description'], 'date_start' => $event['start'], 'date_end' => $event['end'], 'url' => $this_url]) ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/ics.jpeg" alt="Download ICS file" width="50"></a>
             <a style="margin-right:10px" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=<?php echo urlencode($event['event']) ?>&dates=<?php echo date('Ymd\THi', $event['start']) . '00/' . date('Ymd\THi', $event['end']) . '00' ?>&details=<?php echo urlencode($event['description']) ?>&location=<?php echo $google_cal_loc; ?>&sf=true&output=xml" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/calendar-icon.png" alt="Google Calendar" width="50"></a>
             <a style="margin-right:10px" href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $encodedurl ?>&t=<?php echo urlencode($event['event']) ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/fb-art.png" alt="Facebook logo" width="50"></a>
             <a href="http://twitter.com/share?text=<?php echo urlencode($event['event']) ?>&url=<?php echo $encodedurl ?>" target="_blank"><img src="https://environmentaldashboard.org/calendar/images/twitter.png" alt="Twitter logo" width="50"></a>
