@@ -70,7 +70,7 @@
       }
     });
   }
-  var tomorrow = <?php echo strtotime('tomorrow') ?>;
+  var tomorrow = <?php echo $tomorrow ?>;
   function set_future_heading() {
     $('#future').remove();
     var cards = $('.iterable-event');

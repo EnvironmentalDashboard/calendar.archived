@@ -7,6 +7,7 @@ require 'includes/class.CalendarHTML.php';
 require 'includes/class.CalendarRoutes.php';
 define('CAROUSEL_SLIDES', 5);
 $time = time();
+$tomorrow = strtotime('tomorrow');
 
 $cal = new CalendarHTML($db);
 $cal->set_limit(5);
@@ -143,7 +144,11 @@ include $router->header_path; ?>
               </span> -->
             </form>
           </nav>
-          <h4>Today</h4>
+          <?php if ($cal->rows[0]['start'] < $tomorrow) {
+            echo "<h4>Today</h4>";
+          } elseif ($cal->rows[0]['start'] < $tomorrow + 86400) {
+            echo "<h4>Tomorrow</h4>";
+          } ?>
           <div id="top-of-events"></div>
           <?php foreach ($cal->rows as $result) {
           $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
