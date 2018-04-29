@@ -17,6 +17,31 @@ $cal->generate_sponsors();
 
 $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
 include $router->header_path; ?>
+      <!-- modal can be placed anywhere -->
+      <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <form action="POST" method="includes/feedback_form.php" id="feedback-form">
+              <div class="modal-header">
+                <h5 class="modal-title" id="feedbackModalLabel">Leave comments or suggestions</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <textarea name="feedback" id="feedback" rows="5" class="form-control" placeholder="Type your feedback here..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Send feedback</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
@@ -81,6 +106,7 @@ include $router->header_path; ?>
               } ?>
             </select>
           </form>
+          <p class="mt-3">Have a suggestion? <a href="#" data-toggle="modal" data-target="#feedbackModal">Leave feedback</a>.</p>
         </div>
         <div class="col-md-8 col-sm-12">
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">

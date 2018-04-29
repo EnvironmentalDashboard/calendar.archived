@@ -1,7 +1,7 @@
-</div> <!-- ./padding -->
-<?php include dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/includes/footer.php'; ?>
 </div> <!-- /.container -->
-<?php include dirname(dirname($_SERVER['SCRIPT_FILENAME'])).'/includes/js.php'; ?>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script>
   $(document).on('click', '.interested-btn', function(e) {
     e.preventDefault();
@@ -22,6 +22,15 @@
     if (email) {
       $.post( "includes/newsletter_sub.php", { email: email } );
       alert('Please check your inbox and spam folder for a confirmation email');
+    }
+  });
+  $('#feedback-form').on('submit', function(e) {
+    e.preventDefault();
+    var feedback = $('#feedback').val();
+    if (feedback) {
+      $.post( "includes/feedback_form.php", { feedback: feedback } );
+      $('#feedbackModal').modal('hide');
+      alert('Thanks for your feedback!');
     }
   });
   var limit = 5, offset = 5, scroll_done = false; // start offset at 5 bc first 5 events already loaded

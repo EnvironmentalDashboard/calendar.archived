@@ -24,6 +24,15 @@
       alert('Please check your inbox and spam folder for a confirmation email');
     }
   });
+  $('#feedback-form').on('submit', function(e) {
+    e.preventDefault();
+    var feedback = $('#feedback').val();
+    if (feedback) {
+      $.post( "includes/feedback_form.php", { feedback: feedback } );
+      $('#feedbackModal').modal('hide');
+      alert('Thanks for your feedback!');
+    }
+  });
   var limit = 5, offset = 5, scroll_done = false; // start offset at 5 bc first 5 events already loaded
   $(window).scroll(function() { // https://stackoverflow.com/a/21561584/2624391
     var hT = $('#bottom-of-events').offset().top,
