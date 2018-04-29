@@ -6,18 +6,21 @@ $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
 include $router->header_path;
 $stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND start >= ? AND id != ? ORDER BY start ASC LIMIT 1');
 $stmt->execute([$event['end'], $event['id']]);
+$next_event = $stmt->fetchColumn();
+$stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND `end` <= ? AND id != ? ORDER BY start ASC LIMIT 1');
+$stmt->execute([$event['start'], $event['id']]);
+$prev_event = $stmt->fetchColumn();
 ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p>
-            <a href='<?php echo $router->base_url ?>/calendar' class="btn btn-primary">&larr; Go Back</a>
-            <?php if ($stmt->rowCount() > 0) {
-              $next_event = $stmt->fetchColumn();
-              echo "<a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$next_event}' class='btn btn-primary float-right'>Next Event &rarr;</a>";
-            } ?>
-          </p>
+          <p><a href='<?php echo $router->base_url ?>/calendar' class="btn btn-primary">&larr; Go Home</a></p>
+          <p><?php if ($prev_event != null) {
+              echo "<a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$prev_event}' class='btn btn-sm btn-outline-primary'>&larr; Previous Event</a>";
+            } if ($next_event != null) {
+              echo "<a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$next_event}' class='btn btn-sm btn-outline-primary float-right'>Next Event &rarr;</a>";
+            } ?></p>
         </div>
       </div>
       <div class="row">
