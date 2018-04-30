@@ -7,7 +7,7 @@ include $router->header_path;
 $stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND start >= ? AND id != ? ORDER BY start ASC LIMIT 1');
 $stmt->execute([$event['end'], $event['id']]);
 $next_event = $stmt->fetchColumn();
-$stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND `end` <= ? AND id != ? ORDER BY start ASC LIMIT 1');
+$stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND `end` <= ? AND id != ? ORDER BY start DESC LIMIT 1');
 $stmt->execute([$event['start'], $event['id']]);
 $prev_event = $stmt->fetchColumn();
 ?>
