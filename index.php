@@ -179,6 +179,7 @@ include $router->header_path; ?>
             echo "<h4>Today</h4>";
           } elseif ($cal->rows[0]['start'] < $tomorrow + 86400) {
             echo "<h4>Tomorrow</h4>";
+            $tomorrow += 86400; // offset so set_future_heading() (in js code) will place after tomorrow heading
           } ?>
           <div id="top-of-events"></div>
           <?php foreach ($cal->rows as $result) {
