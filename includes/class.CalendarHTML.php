@@ -228,7 +228,7 @@ class CalendarHTML {
       echo "<div class='card-body'>
               <div class='row'>
                 <div class='col-sm-12 col-md-3'>";
-                if ($result['has_img'] == '0') {
+                if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                   echo '<img src="https://environmentaldashboard.org/calendar/images/default.svg" class="thumbnail img-fluid">';
                 } else {
                   echo "<img class='thumbnail img-fluid' src='https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}'>";

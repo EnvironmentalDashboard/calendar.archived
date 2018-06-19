@@ -124,7 +124,7 @@ include $router->header_path; ?>
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
-                      <?php if ($result['has_img'] == '0') {
+                      <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                         echo '<img class="d-block img-fluid" src="images/default.svg">';
                       } else {
                         echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
@@ -194,7 +194,7 @@ include $router->header_path; ?>
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-12 col-md-3">
-                  <?php if ($result['has_img'] == '0') {
+                  <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                     } else { 
                       echo "<img class=\"thumbnail img-fluid\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
