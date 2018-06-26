@@ -2,14 +2,9 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../../includes/db.php';
-$symlink = explode('/', $_SERVER['REQUEST_URI'])[1];
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
 $stmt->execute([$symlink]);
-if ($stmt->rowCount() === 0) { // default to oberlin
-  $stmt = $db->query('SELECT token FROM users WHERE slug = \'oberlin\'');
-  $symlink = 'oberlin';
-}
-if (isset($_COOKIE['token']) && $stmt->fetchColumn() === $_COOKIE['token']) {
+if (isset($_COOKIE['token']) && $stmt->fetchColumn() === $_COOKIE['token'] && $_COOKIE['token'] !== null) {
   header("Location: https://environmentaldashboard.org/{$symlink}/calendar/prefs/review-events");
 }
 if (isset($_POST['pass']) && isset($_POST['org'])) {
