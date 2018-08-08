@@ -13,7 +13,7 @@ if (isset($_POST['review-events'])) {
     $approved = ($value === 'approve') ? 1 : 0;
     $stmt = $db->prepare('UPDATE calendar SET approved = ? WHERE id = ? LIMIT 1');
     $stmt->execute(array($approved, $key));
-    $stmt = $db->prepare('SELECT contact_email, token, event, description, extended_description, event_type_id, screen_ids, sponsors FROM calendar WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, contact_email, email, phone, start, `end`, token, event, description, extended_description, event_type_id, screen_ids, sponsors FROM calendar WHERE id = ?');
     $stmt->execute(array($key));
     $row = $stmt->fetch();
     $screens = explode(',', $row['screen_ids']);
@@ -22,6 +22,7 @@ if (isset($_POST['review-events'])) {
     $contact_email = $row['contact_email'];
     if ($contact_email != '') {
       if ($approved) {
+        notify_wobc($db, $row);
         if ($count > 0) { // event being shown on digital signage
           $s = ($count === 1) ? '' : 's';
           $html_message = "<h1>Your event is live</h1><p><a href='https://environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
@@ -68,6 +69,28 @@ $events = $db->query('SELECT id, token, event, start, `end`, extended_descriptio
 $num_newsletter_subs = $db->query('SELECT COUNT(*) FROM newsletter_recipients')->fetchColumn();
 $num_events = $db->query('SELECT COUNT(*) FROM calendar WHERE announcement = 0 AND start > '.time())->fetchColumn();
 $num_announcements = $db->query('SELECT COUNT(*) FROM calendar WHERE announcement = 1 AND start > '.time())->fetchColumn();
+
+function notify_wobc($db, $event) {
+  $stmt = $db->prepare('SELECT location, address FROM calendar_locs WHERE id = ?');
+  $stmt->execute([$event['id']]);
+  $res = $stmt->fetch();
+  $loc = "{$event['location']} ({$event['address']})";
+  file_get_contents('http://wobc.org/eventint?' .
+    http_build_query([
+      'From' => 'Dashboard',
+      'Status' => 'New',
+      'ID' => $event['id'],
+      'Name' => $event['name'],
+      'Phone' => $event['phone'],
+      'Email' => $event['email'],
+      'StartDate' => date('c', $event['start']),
+      'EndDate' => date('c', $event['end']),
+      'Title' => $event['event'],
+      'Description' => $event['description'],
+      'Location' => $loc
+    ])
+  );
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
