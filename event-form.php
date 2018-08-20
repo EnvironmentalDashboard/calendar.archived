@@ -69,6 +69,7 @@ include $router->header_path; ?>
               <input type="text" class="form-control" id="event" name="event" value="<?php
               echo (!empty($_REQUEST['event'])) ? $_REQUEST['event'] : '';
               echo ($edit && empty($_REQUEST['event'])) ? $event['event'] : ''; ?>" maxlength="60">
+              <p style="margin-bottom: 0px"><small class="text-muted">Choose a brief title that will provide clear indication of the specific focus of your event to a person who is completely unfamiliar with your group. Avoid using acronyms in the title.</small></p>
             </div>
             <div class="form-group">
               <label for="sponsor1">Who is organizing/sponsoring this event?</label>
