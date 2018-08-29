@@ -7,7 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/repos/bootstrap.css">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
       tr:nth-child(1n+3) { height: 140px; }

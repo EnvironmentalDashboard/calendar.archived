@@ -7,7 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/repos/bootstrap.css">
     <style>
       .bg-primary, .bg-dark {color:#fff;}
       tr:nth-child(1n+3) { height: 140px; }
@@ -18,6 +18,13 @@
       .table-bordered {border:4px solid #bdc3c7;}
       /*table-layout:fixed;*/
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65902947-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-65902947-1');
+    </script>
   </head>
   <body>
     <div class="container">

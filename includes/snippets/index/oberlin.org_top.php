@@ -8,7 +8,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap.css?<?php echo time(); ?>">
+    <link rel="stylesheet" href="css/repos/bootstrap.css?<?php echo time(); ?>">
     <style>
       /*@media (max-width: 950px) {*/
       @media (max-width: 768px) {

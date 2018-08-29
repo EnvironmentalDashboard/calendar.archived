@@ -8,7 +8,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap.css?<?php echo time(); ?>">
+    <link rel="stylesheet" href="css/repos/bootstrap.css?<?php echo time(); ?>">
     <style>
       /*@media (max-width: 950px) {*/
       @media (max-width: 768px) {
@@ -21,6 +21,13 @@
       td.day {border: 1px solid #eee}
       table {table-layout: fixed;width: 100%}
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65902947-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-65902947-1');
+    </script>
   </head>
   <body>
     <div class="container">
