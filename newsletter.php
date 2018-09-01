@@ -34,13 +34,14 @@ function newsletter_html($db, $events, $start, $end) {
     }
     $info = implode(' &middot; ', $info);
     $date = CalendarHTML::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']);
-    if ($event['has_img'] == '0') {
+    $realpath = realpath("images/uploads/thumbnail{$event['id']}");
+    if ($event['has_img'] == '0' || !file_exists($realpath)) {
       $img = 'https://environmentaldashboard.org/calendar/images/default.png'; // most email clients wont display svg
       $width = 200;
       $height = 200;
     } else {
       $img = "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$event['id']}";
-      list($width, $height) = getimagesize(realpath("images/uploads/thumbnail{$event['id']}"));
+      list($width, $height) = getimagesize($realpath);
       if ($width != 200) {
         $height = $height * (1/($width/200));
         $width = 200;
