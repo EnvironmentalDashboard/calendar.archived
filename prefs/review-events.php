@@ -74,7 +74,7 @@ function notify_wobc($db, $event) {
   $stmt = $db->prepare('SELECT location, address FROM calendar_locs WHERE id = ?');
   $stmt->execute([$event['id']]);
   $res = $stmt->fetch();
-  $loc = "{$event['location']} ({$event['address']})";
+  $loc = "{$res['location']} ({$res['address']})";
   file_get_contents('http://wobc.org/eventint?' .
     http_build_query([
       'From' => 'Dashboard',
