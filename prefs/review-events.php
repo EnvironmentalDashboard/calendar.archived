@@ -80,7 +80,7 @@ function notify_wobc($db, $event) {
       'From' => 'Dashboard',
       'Status' => 'New',
       'ID' => $event['id'],
-      'Name' => $event['name'],
+      'Name' => $event['event'],
       'Phone' => $event['phone'],
       'Email' => $event['email'],
       'StartDate' => date('c', $event['start']),
