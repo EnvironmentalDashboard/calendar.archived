@@ -16,6 +16,12 @@ if (!isset($edit)) {
     } else {
       $event = $stmt->fetch();
       $edit_event_screens = explode(',', $event['screen_ids']);
+      if (isset($_GET['delete']) && $_GET['delete'] === 'true') {
+        $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
+        $stmt->execute([$event['id']]);
+        header("Location: https://environmentaldashboard.org/calendar/");
+        exit;
+      }
     }
   } else {
     $edit = false;
@@ -300,6 +306,7 @@ include $router->header_path; ?>
             <!-- <input type="hidden" name="img_size" value="<?php //echo ($which_form) ? 'halfscreen' : 'fullscreen' ?>" id="img_size"> -->
             <?php if ($edit) { echo '<a href="#" class="btn btn-secondary" id="preview">View event</a>'; } ?>
             <input type="submit" name="submit-btn" id="submit-btn" value="<?php echo ($edit) ? 'Update event' : 'Submit event for review' ?>" class="btn btn-primary">
+            <?php if ($edit) { echo "<a href=\"https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}&delete=true\" class=\"btn btn-danger\">Delete event</a>"; } ?>
           </form>
           <div class="alert alert-success" id="alert-success" role="alert" style="margin-top:20px;<?php echo (isset($success)) ? '' : 'display:none'; ?>">
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
