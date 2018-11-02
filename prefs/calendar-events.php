@@ -89,45 +89,26 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
         <div class="col-sm-12" style="overflow: scroll;">
           <h2>Archived events</h2>
           <table class="table table-responsive table-sm">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Event</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Indefinite start time</th>
-                <th>Indefinite end time</th>
-                <th>Description</th>
-                <th>Extended description</th>
-                <th>Event type</th>
-                <th>Event location</th>
-                <th>Screens shown on</th>
-                <th>Image</th>
-                <th>Approved</th>
-                <th>Contact email</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Website</th>
-                <th>Recurs</th>
-                <th>Sponsor</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-              </tr>
-            </thead>
             <tbody>
               <?php
               foreach ($db->query("SELECT * FROM calendar WHERE approved IS NOT NULL ORDER BY id DESC LIMIT {$offset}, {$limit}") as $event) {
                 $sponsors_arr = json_decode($event['sponsors'], true);
                 echo "<tr><form enctype='multipart/form-data' action='' method='POST'>";
-                echo "<th scope='row'><input type='hidden' name='id' value='{$event['id']}'>{$event['id']}</th>";
-                echo "<td><input type='text' name='event' value='{$event['event']}' class='form-control'></td>";
-                echo "<td><input type='text' name='start' value='".date('c', $event['start'])."' class='form-control'></td>";
-                echo "<td><input type='text' name='end' value='".date('c', $event['end'])."' class='form-control'></td>";
-                echo ($event['no_start_time'] === '0') ? "<td><input type='text' name='no_start_time' value='No' class='form-control'></td>" : "<td><input type='text' name='no_start_time' value='Yes' class='form-control'></td>";
-                echo ($event['no_end_time'] === '0') ? "<td><input type='text' name='no_end_time' value='No' class='form-control'></td>" : "<td><input type='text' name='no_end_time' value='Yes' class='form-control'></td>";
-                echo "<td><textarea class='form-control' rows='3' name='description'>{$event['description']}</textarea></td>";
-                echo "<td><textarea class='form-control' rows='3' name='extended_description'>{$event['extended_description']}</textarea></td>";
-                echo "<td><select name='event_type_id' class='custom-select'>";
+                echo "<input type='hidden' name='id' value='{$event['id']}'>";
+                if ($event['has_img'] == 0) {
+                  echo "<td><p>No image for this event</p>";
+                } else {
+                  echo "<td style='max-width:200px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
+                }
+                echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
+                echo "<td><label for='event'>Event</label> <input id='event' type='text' name='event' value='{$event['event']}' class='form-control'>";
+                echo "<label for='start'>Start</label> <input id='start' type='text' name='start' value='".date('c', $event['start'])."' class='form-control'>";
+                echo "<label for='end'>End</label> <input id='end' type='text' name='end' value='".date('c', $event['end'])."' class='form-control'>";
+                echo ($event['no_start_time'] === '0') ? "<label for='no_start_time'>Indefinite start time</label> <input id='no_start_time' type='text' name='no_start_time' value='No' class='form-control'>" : "<label for='no_start_time'>Indefinite start time</label> <input id='no_start_time' type='text' name='no_start_time' value='Yes' class='form-control'>";
+                echo ($event['no_end_time'] === '0') ? "<label for='no_end_time'>Indefinite end time</label> <input id='no_end_time' type='text' name='no_end_time' value='No' class='form-control'>" : "<label id='no_end_time' for='no_end_time'>Indefinite end time</label> <input id='no_end_time' type='text' name='no_end_time' value='Yes' class='form-control'></td>";
+                echo "<td><label for='description'>Description</label> <textarea class='form-control' rows='3' name='description'>{$event['description']}</textarea>";
+                echo "<label for='extended_description'>Extended Description</label> <textarea style='margin-bottom:10px' class='form-control' rows='3' name='extended_description'>{$event['extended_description']}</textarea>";
+                echo "<label for='event_type_id'>Event type</label> <select name='event_type_id' id='event_type_id' class='custom-select'>";
                 foreach ($event_types as $id => $type) {
                   if ($id == $event['event_type_id']) {
                     echo "<option selected value='{$id}'>{$type}</option>";
@@ -135,8 +116,8 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                     echo "<option value='{$id}'>{$type}</option>";
                   }
                 }
-                echo "</select></td>";
-                echo "<td><select name='loc_id' class='custom-select'>";
+                echo "</select>";
+                echo "<div><label for='loc_id'>Location</label> <select id='loc_id' name='loc_id' class='custom-select'>";
                 foreach ($event_locs as $id => $loc) {
                   if ($id == $event['loc_id']) {
                     echo "<option selected value='{$id}'>{$loc}</option>";
@@ -144,8 +125,28 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                     echo "<option value='{$id}'>{$loc}</option>";
                   }
                 }
+                echo "</select></div>";
+                echo "<label for='sponsors'>Sponsors</label> <select for='sponsors' name='sponsors' class='custom-select'>";
+                foreach ($sponsors as $id => $sponsor) {
+                  if (is_array($sponsors_arr) && in_array($id, $sponsors_arr)) {
+                    echo "<option selected value='{$id}'>{$sponsor}</option>";
+                  } else {
+                    echo "<option value='{$id}'>{$sponsor}</option>";
+                  }
+                }
                 echo "</select></td>";
-                echo "<td>";
+                if ($event['approved'] === null) {
+                  echo "<td><label for='approved'>Approved</label> <input type='text' id='approved' name='approved' value='null' class='form-control'>";
+                } elseif ($event['approved'] === '1') {
+                  echo "<td><label for='approved'>Approved</label> <input type='text' id='approved' name='approved' value='Yes' class='form-control'>";
+                } else {
+                  echo "<td><label for='approved'>Approved</label> <input type='text' id='approved' name='approved' value='No' class='form-control'>";
+                }
+                echo "<label for='contact_email'>Contact email</label> <input id='contact_email' type='email' name='contact_email' value='{$event['contact_email']}' class='form-control'>";
+                echo "<label for='email'>Email</label> <input id='email' type='email' name='email' value='{$event['email']}' class='form-control'>";
+                echo "<label for='phone'>Phone</label> <input type='text' id='phone' name='phone' value='{$event['phone']}' class='form-control'>";
+                echo "<label for='website'>Website</label> <input type='text' id='website' name='website' value='{$event['website']}' class='form-control'></td>";
+                echo "<td><p>Screens</p>";
                 $screen_ids = explode(',', $event['screen_ids']);
                 $half_screens = floor(count($screens)/2);
                 $counter = 0;
@@ -161,25 +162,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                   }
                 }
                 echo "</div></div></div>";
-                echo "</td>";
-                if ($event['has_img'] == 0) {
-                  echo "<td><p>No image for this event</p>";
-                } else {
-                  echo "<td style='max-width:200px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
-                }
-                echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
-                if ($event['approved'] === null) {
-                  echo "<td><input type='text' name='approved' value='null' class='form-control'></td>";
-                } elseif ($event['approved'] === '1') {
-                  echo "<td><input type='text' name='approved' value='Yes' class='form-control'></td>";
-                } else {
-                  echo "<td><input type='text' name='approved' value='No' class='form-control'></td>";
-                }
-                echo "<td><input type='email' name='contact_email' value='{$event['contact_email']}' class='form-control'></td>";
-                echo "<td><input type='email' name='email' value='{$event['email']}' class='form-control'></td>";
-                echo "<td><input type='text' name='phone' value='{$event['phone']}' class='form-control'></td>";
-                echo "<td><input type='text' name='website' value='{$event['website']}' class='form-control'></td>";
-                echo "<td>";
+                echo "<td><p><b>Recurs on</b></p>";
                 $days_repeat_on = ($event['repeat_on'] == null) ? null : json_decode($event['repeat_on']);
                 for ($day = 0; $day < 7; $day++) {
                   if ($days_repeat_on !== null && in_array($day, $days_repeat_on)) {
@@ -188,19 +171,9 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                     echo "<label class='custom-control custom-checkbox'><input type='checkbox' name='repeat_on[]' value='{$id}' class='custom-control-input'><span class='custom-control-indicator'></span><span class='custom-control-description'>{$days[$day]}</span></label>";
                   }
                 }
-                echo "<input type='text' name='repeat_end' value='".date('c', $event['repeat_end'])."' class='form-control'>";
-                echo "</td>";
-                echo "<td><select name='sponsors' class='custom-select'>";
-                foreach ($sponsors as $id => $sponsor) {
-                  if (is_array($sponsors_arr) && in_array($id, $sponsors_arr)) {
-                    echo "<option selected value='{$id}'>{$sponsor}</option>";
-                  } else {
-                    echo "<option value='{$id}'>{$sponsor}</option>";
-                  }
-                }
-                echo "</select></td>";
-                echo "<td><input type='submit' name='submit' value='Save changes' class='btn btn-primary'></td></form>
-                <td><form action='' method='POST' style='display:inline' id='delete-form'>
+                echo "<label for='repeat_end'>Repeat ends</label> <input type='text' id='repeat_end' name='repeat_end' value='".date('c', $event['repeat_end'])."' class='form-control'></td>";
+                echo "<td><input style='margin-bottom:10px' type='submit' name='submit' value='Save changes' class='btn btn-primary'></form>
+                <form action='' method='POST' style='display:inline;' id='delete-form'>
                 <input type='hidden' name='id' value='{$event['id']}'>
                 <input type='submit' class='btn btn-danger' value='Delete' name='delete-submit'></form></td>";
                 echo "</tr>";
@@ -209,7 +182,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
             </tbody>
           </table>
         </div>
-        <div class="row">
+        <div class="row" style="max-width: 100%;overflow: scroll;">
           <nav aria-label="Page navigation" class="text-xs-center">
             <ul class="pagination pagination-lg">
               <?php if ($page > 0) { ?>

@@ -127,7 +127,7 @@ if (!empty($_POST['edit-name'])) {
                 echo "<td><p>{$loc['location']}</p></td>";
                 echo "<td><p>{$loc['address']}</p></td>";
                 echo "<td>
-                <button type='button' data-id='{$loc['id']}' data-name='{$loc['location']}' data-address='{$loc['address']}' class='btn btn-primary' data-toggle='modal' data-target='#editmodal' class='btn btn-primary'>Edit</button>
+                <button type='button' data-id='{$loc['id']}' data-name='{$loc['location']}' data-address='{$loc['address']}' class='btn btn-primary' data-toggle='modal' data-target='#editmodal' class='btn btn-primary' style='margin-bottom:10px'>Edit</button>
                 <form action='' method='POST' style='display:inline'>
                 <input type='hidden' name='delete-loc' value='{$loc['id']}'>
                 <input type='submit' class='btn btn-danger' value='Delete' name='delete-submit'></form>

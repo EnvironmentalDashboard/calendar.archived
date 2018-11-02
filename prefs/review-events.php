@@ -108,16 +108,16 @@ function notify_wobc($db, $event) {
       <div class="row">
         <div class="col-xs-12">
           <?php include 'includes/navbar.php'; ?>
-          <div class="alert alert-success" role="alert">
+          <div class="alert alert-success" role="alert" style="margin-top: 1em">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
             <h4 class="alert-heading">Info</h4>
             <ul>
               <li><?php echo $num_events ?> active events, <?php echo $num_announcements ?> active announcements</li>
               <li><?php echo count($events) ?> events awaiting approval</li>
               <li><?php echo $num_newsletter_subs ?> newsletter subscribers</li>
             </ul>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
         </div>
       </div>
