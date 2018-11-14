@@ -84,7 +84,7 @@ include $router->header_path; ?>
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
             <!-- <a href="#" class="list-group-item active"> -->
             <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC") as $event) {
-              echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
+                echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
             } ?>
           </div>
           <h5>Event locations</h5>
@@ -93,7 +93,7 @@ include $router->header_path; ?>
               <option value='All'>All</option>
               <?php foreach ($db->query('SELECT id, location FROM calendar_locs ORDER BY location ASC') as $row) {
                 echo "<option value='{$row['id']}'>{$row['location']}</option>";
-              } ?>
+            } ?>
             </select>
           </form>
           <div style="clear: both;height: 15px"></div>
@@ -103,7 +103,7 @@ include $router->header_path; ?>
               <option value='All'>All</option>
               <?php foreach ($db->query('SELECT id, sponsor FROM calendar_sponsors ORDER BY sponsor ASC') as $row) {
                 echo "<option value='{$row['id']}'>{$row['sponsor']}</option>";
-              } ?>
+            } ?>
             </select>
           </form>
           <p class="mt-3">Have a suggestion? <a href="#" data-toggle="modal" data-target="#feedbackModal">Leave feedback</a>.</p>
@@ -112,39 +112,40 @@ include $router->header_path; ?>
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">
             <ol class="carousel-indicators">
               <li data-target="#carousel-indicators" data-slide-to="0" class="active"></li>
-              <?php for ($s = 1; $s < CAROUSEL_SLIDES; $s++) { 
+              <?php for ($s = 1; $s < CAROUSEL_SLIDES; $s++) {
                 echo "<li data-target=\"#carousel-indicators\" data-slide-to=\"{$s}\"></li>";
-              } ?>
+            } ?>
             </ol>
             <div class="carousel-inner" role="listbox">
               <?php
               $counter = 0;
-              foreach (array_reverse($cal->rows) as $result) { ?>
+              foreach (array_reverse($cal->rows) as $result) {
+                  ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
-                <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
+                <div class="row" style="width: 100%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
                       <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
-                        echo '<img class="d-block img-fluid" src="images/default.svg">';
-                      } else {
-                        echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
-                      } ?>
+                      echo '<img class="d-block img-fluid" src="images/default.svg">';
+                  } else {
+                      echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
+                  } ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
-                      <h2 style="margin-bottom:0px;font-size: <?php echo (1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
+                      <h2 style="margin-bottom:0px;font-size: <?php echo(1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <h6 class="mb-0 mt-2"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
-                      <p style="overflow: scroll;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
+                      <p style="overflow: auto;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
                     </a>
                   </div>
                 </div>
               </div>
               <?php
               $counter++;
-              if ($counter >= CAROUSEL_SLIDES) {
-                break;
-              }
+                  if ($counter >= CAROUSEL_SLIDES) {
+                      break;
+                  }
               } ?>
             </div>
             <a class="carousel-control-prev" href="#carousel-indicators" role="button" data-slide="prev">
@@ -176,52 +177,53 @@ include $router->header_path; ?>
             </form>
           </nav>
           <?php if ($cal->rows[0]['start'] < $tomorrow) {
-            echo "<h4>Today</h4>";
-          } elseif ($cal->rows[0]['start'] < $tomorrow + 86400) {
-            echo "<h4>Tomorrow</h4>";
-            $tomorrow += 86400; // offset so set_future_heading() (in js code) will place after tomorrow heading
-          } ?>
+                  echo "<h4>Today</h4>";
+              } elseif ($cal->rows[0]['start'] < $tomorrow + 86400) {
+                  echo "<h4>Tomorrow</h4>";
+                  $tomorrow += 86400; // offset so set_future_heading() (in js code) will place after tomorrow heading
+              } ?>
           <div id="top-of-events"></div>
           <?php foreach ($cal->rows as $result) {
-          $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn();
-          ?>
+                  $locname = $db->query('SELECT location FROM calendar_locs WHERE id = '.$result['loc_id'])->fetchColumn(); ?>
           <div class="card iterable-event" id="<?php echo $result['id']; ?>"
           style="margin-bottom: 20px" data-date="<?php echo $result['start']; ?>"
           data-loc="<?php echo $locname; ?>" data-announcement="<?php echo $result['announcement'] ?>"
           data-name="<?php echo $result['event'] ?>" data-eventtype="<?php echo $result['event_type_id']; ?>"
           data-eventloc='<?php echo $result['loc_id'] ?>' data-mdy='<?php echo date('mdy', $result['start']); ?>'
-          data-eventsponsor='<?php $tmp = json_decode($result['sponsors'], true); echo (is_array($tmp)) ? implode('$SEP$', $tmp) : ''; ?>'>
+          data-eventsponsor='<?php $tmp = json_decode($result['sponsors'], true);
+                  echo (is_array($tmp)) ? implode('$SEP$', $tmp) : ''; ?>'>
             <div class="card-body">
               <div class="row">
                 <div class="col-sm-12 col-md-3">
                   <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
-                    } else { 
+                  } else {
                       echo "<img class=\"thumbnail img-fluid\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
-                    } ?>
+                  } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
-                  <h4 class="card-title"><?php echo $result['event']; echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span>" : ""; echo ($result['announcement'] == 1) ? " <span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Announcement</span>" : ""; ?></h4>
+                  <h4 class="card-title"><?php echo $result['event'];
+                  echo ($result['event_type_id'] == '1') ? " <br><span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Volunteer Opportunity</span>" : "";
+                  echo ($result['announcement'] == 1) ? " <span class='badge badge-primary' style='font-size:0.9rem;position:relative;bottom:5px'>Announcement</span>" : ""; ?></h4>
                   <h6 class="card-subtitle mb-2 text-muted">
                     <?php
                     echo $cal->formatted_event_date($result['start'], $result['end'], $result['no_start_time'], $result['no_end_time']);
-                    if (!empty($locname)) {
+                  if (!empty($locname)) {
                       echo " &middot {$locname}";
-                    }
-                    $array = json_decode($result['sponsors'], true);
-                    if (is_array($array)) {
+                  }
+                  $array = json_decode($result['sponsors'], true);
+                  if (is_array($array)) {
                       $count = count($array);
                       echo ' &middot ';
-                      for ($i = 0; $i < $count; $i++) { 
-                        if (array_key_exists($array[$i], $cal->sponsors)) {
-                          echo $cal->sponsors[$array[$i]];
-                        } // else there's an event for which no sponsor exists in the sponsors table
+                      for ($i = 0; $i < $count; $i++) {
+                          if (array_key_exists($array[$i], $cal->sponsors)) {
+                              echo $cal->sponsors[$array[$i]];
+                          } // else there's an event for which no sponsor exists in the sponsors table
                         if ($i+1 !== $count) {
-                          echo ", ";
+                            echo ", ";
                         }
                       }
-                    }
-                    ?>
+                  } ?>
                   </h6>
                   <p class="card-text"><?php echo $result['description'] ?></p>
                   <p class="card-text">
@@ -229,13 +231,15 @@ include $router->header_path; ?>
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
                     <?php if ($result['likes'] > 9) {
                       echo "<br><small>{$result['likes']} people are interested in this event</small>";
-                    } ?>
+                  } ?>
                   </p>
                 </div>
               </div>
             </div>
           </div>
-          <?php } ?>
+          <?php
+
+              } ?>
           <div id="bottom-of-events"></div>
           <!-- svg from http://goo.gl/7AJzbL -->
           <svg width="120" height="30" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" fill="#21a7df" style="padding-top: 15px;margin: 0 auto;margin-bottom: 20px;display: block;" id="loader">
