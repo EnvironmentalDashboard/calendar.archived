@@ -122,7 +122,7 @@ include $router->header_path; ?>
               foreach (array_reverse($cal->rows) as $result) {
                   ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
-                <div class="row" style="width: 100%;margin: 0 auto;padding-top: 20px">
+                <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
                       <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
