@@ -128,11 +128,7 @@ include $router->header_path; ?>
                       <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                       echo '<img class="d-block img-fluid" src="images/default.svg">';
                   } else {
-<<<<<<< HEAD
                       echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
-=======
-                      echo "<img class=\"d-block img-fluid\" style=\"overflow:scroll;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
->>>>>>> cac50521d7eeabc8ce190e858b0f7b6dcebffc94
                   } ?>
                     </a>
                   </div>
@@ -140,11 +136,7 @@ include $router->header_path; ?>
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="margin-bottom:0px;font-size: <?php echo(1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <h6 class="mb-0 mt-2"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
-<<<<<<< HEAD
                       <p style="overflow: auto;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
-=======
-                      <p style="overflow: hidden;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
->>>>>>> cac50521d7eeabc8ce190e858b0f7b6dcebffc94
                     </a>
                   </div>
                 </div>
