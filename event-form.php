@@ -55,7 +55,7 @@ include $router->header_path; ?>
             <?php if ($edit) {
               echo "<input type='hidden' name='token' id='token' value='{$_REQUEST['token']}'>";
             } else {
-              echo "<input type='hidden' name='token' id='token' value='".uniqid(bin2hex(random_bytes(116)), true)."'>";
+              echo "<input type='hidden' name='token' id='token' value='".uniqid(bin2hex(random_bytes(8)))."'>";
             } ?>
             <div class="form-group">
               <label for="contact_email">Your email</label>

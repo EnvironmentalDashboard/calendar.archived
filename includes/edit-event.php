@@ -4,7 +4,7 @@ ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
 require '../../includes/Parsedown.php';
-if (!isset($_REQUEST['token']) || strlen($_REQUEST['token']) !== 255) {
+if (!isset($_REQUEST['token'])) {
   exit('Error: missing token');
 } else {
   $stmt = $db->prepare('SELECT id FROM calendar WHERE token = ? LIMIT 1');

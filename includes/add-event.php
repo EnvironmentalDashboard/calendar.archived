@@ -22,7 +22,7 @@ $_POST['loc_id'] = (isset($_POST['loc_id'])) ? convertUTF8($_POST['loc_id']) : '
 $_POST['room_num'] = (isset($_POST['room_num']) && $_POST['room_num'] != '') ? $_POST['room_num'] : null;
 $_POST['subscribe'] = (isset($_POST['subscribe'])) ? true : false;
 $_POST['announcement'] = (isset($_POST['announcement']) && $_POST['announcement'] === '1') ? 1 : 0;
-$rand = (isset($_POST['token'])) ? $_POST['token'] : uniqid(bin2hex(random_bytes(8)), true);
+$rand = (isset($_POST['token'])) ? $_POST['token'] : uniqid(bin2hex(random_bytes(8)));
 // get the id from the location name or insert it as a new row (perhaps calendar_locs shouldnt be a seperate table?)
 $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location = ? LIMIT 1');
 $stmt->execute([$_POST['loc_id']]);
@@ -140,7 +140,7 @@ function duplicate_event($db, $date, $date2, $event, $img) {
   if (!$date || !$date2) {
     return false;
   }
-  $event[1] = uniqid(bin2hex(random_bytes(8)), true);
+  $event[1] = uniqid(bin2hex(random_bytes(8)));
   $event[2] = $date;
   $event[3] = $date2;
   if ($img) {
