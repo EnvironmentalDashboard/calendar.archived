@@ -44,9 +44,9 @@ if (isset($_POST['review-events'])) {
         $subject = "Your event, {$row['event']}, is now live!";
       } else { // event rejected
         if ($feedback) {
-          $html_message = $feedback;
+          $html_message = "<p>{$feedback}<p><p>You can edit this event to submit it for re-approval <a href='http://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>here</a>.</p><br><br>";
         } else {
-          $html_message = "<p>Your event, {$row['event']}, was rejected. Contact dashboard@oberlin.edu for more information.</p><br><br>";
+          $html_message = "<p>Your event, {$row['event']}, was rejected. Contact dashboard@oberlin.edu for more information.</p><p>You can edit this event to submit it for re-approval <a href='http://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>here</a>.</p><br><br>";
         }
         $txt_message = "Your event, {$row['event']}, was rejected. Contact dashboard@oberlin.edu for more information.";
         $subject = 'Environmental Dashboard Calendar Submission';
