@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 require '../../includes/db.php';
-require 'includes/check-signed-in.php';
+// require 'includes/check-signed-in.php';
 if (isset($_POST['delete-submit'])) {
   $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
   $stmt->execute(array($_POST['id']));
@@ -40,7 +40,14 @@ if (!empty($_POST['submit'])) {
 $limit = 25;
 $page = (empty($_GET['page'])) ? 0 : intval($_GET['page']) - 1;
 $offset = $limit * $page;
-$count = $db->query("SELECT COUNT(*) FROM calendar")->fetchColumn();
+if (isset($_GET['q']) && strlen($_GET['q']) > 0) {
+  $stmt = $db->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL AND event LIKE ? ORDER BY id DESC LIMIT {$offset}, {$limit}");
+  $stmt->execute(["%{$_GET['q']}%"]);
+  $rows = $stmt->fetchAll();
+} else {
+  $rows = $db->query("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL ORDER BY id DESC LIMIT {$offset}, {$limit}");
+}
+$count = $db->query('SELECT FOUND_ROWS();')->fetchColumn();
 $final_page = ceil($count / $limit);
 $event_types = array();
 foreach ($db->query("SELECT id, event_type FROM calendar_event_types") as $row) {
@@ -88,10 +95,15 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
       <div class="row">
         <div class="col-sm-12" style="overflow: scroll;">
           <h2>Archived events</h2>
+          <form class="form-inline" action="" method="GET">
+            <label class="sr-only" for="q">Search</label>
+            <input type="text" class="form-control mb-2 mr-sm-2" id="q" name="q" placeholder="Search query">
+            <button type="submit" class="btn btn-primary mb-2">Search</button>
+          </form>
           <table class="table table-responsive table-sm">
             <tbody>
               <?php
-              foreach ($db->query("SELECT * FROM calendar WHERE approved IS NOT NULL ORDER BY id DESC LIMIT {$offset}, {$limit}") as $event) {
+              foreach ($rows as $event) {
                 $sponsors_arr = json_decode($event['sponsors'], true);
                 echo "<tr><form enctype='multipart/form-data' action='' method='POST'>";
                 echo "<input type='hidden' name='id' value='{$event['id']}'>";
