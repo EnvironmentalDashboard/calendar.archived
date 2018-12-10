@@ -100,6 +100,29 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
             <input type="text" class="form-control mb-2 mr-sm-2" id="q" name="q" placeholder="Search query">
             <button type="submit" class="btn btn-primary mb-2">Search</button>
           </form>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <form action="" method="GET">
+                <?php foreach ($_GET as $key => $value) {
+                  if ($key !== 'active') {
+                    echo "<input type='hidden' name='{$key}' value='{$value}' />";
+                  }
+                } ?>
+                <input type="submit" name="active" value="1" class="nav-link <?php echo (!isset($_GET['active']) || $_GET['active'] === '1') ? 'active' : ''; ?>">Active</button>
+              </form>
+            </li>
+            <li class="nav-item">
+              <form action="" method="GET">
+                <?php foreach ($_GET as $key => $value) {
+                  if ($key !== 'active') {
+                    echo "<input type='hidden' name='{$key}' value='{$value}' />";
+                  }
+                } ?>
+                <input type="submit" name="active" value="0" class="nav-link <?php echo (isset($_GET['active']) && $_GET['active'] === '0') ? 'active' : ''; ?>">Archived</button>
+              </form>
+              <a class="nav-link" href="#">Archived</a>
+            </li>
+          </ul>
           <table class="table table-responsive table-sm">
             <tbody>
               <?php
@@ -110,7 +133,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 if ($event['has_img'] == 0) {
                   echo "<td><p>No image for this event</p>";
                 } else {
-                  echo "<td style='max-width:200px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
+                  echo "<td style='max-width:250px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
                 }
                 echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
                 echo "<td><label for='event'>Event</label> <input id='event' type='text' name='event' value='{$event['event']}' class='form-control'>";
