@@ -100,29 +100,31 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
             <input type="text" class="form-control mb-2 mr-sm-2" id="q" name="q" placeholder="Search query">
             <button type="submit" class="btn btn-primary mb-2">Search</button>
           </form>
-          <ul class="nav nav-pills">
-            <li class="nav-item">
-              <form action="" method="GET">
-                <?php foreach ($_GET as $key => $value) {
-                  if ($key !== 'active') {
-                    echo "<input type='hidden' name='{$key}' value='{$value}' />";
-                  }
-                } ?>
-                <input type="submit" name="active" value="1" class="nav-link <?php echo (!isset($_GET['active']) || $_GET['active'] === '1') ? 'active' : ''; ?>">Active</button>
-              </form>
-            </li>
-            <li class="nav-item">
-              <form action="" method="GET">
-                <?php foreach ($_GET as $key => $value) {
-                  if ($key !== 'active') {
-                    echo "<input type='hidden' name='{$key}' value='{$value}' />";
-                  }
-                } ?>
-                <input type="submit" name="active" value="0" class="nav-link <?php echo (isset($_GET['active']) && $_GET['active'] === '0') ? 'active' : ''; ?>">Archived</button>
-              </form>
-              <a class="nav-link" href="#">Archived</a>
-            </li>
-          </ul>
+          <form action="" method="GET" class="d-inline" style="margin-right: -4px">
+            <?php foreach ($_GET as $key => $value) {
+              if ($key !== 'active') {
+                echo "<input type='hidden' name='{$key}' value='{$value}' />";
+              }
+            } ?>
+            <input type='hidden' name="active" value="1" />
+            <div class="btn-group" role="group">
+              <button type="submit" class="btn btn-secondary <?php echo (!isset($_GET['active']) || $_GET['active'] === '1') ? 'active' : ''; ?>">Active</button>
+              <button style="display: none"></button> <!-- dummy button to make form group -->
+            </div>
+          </form>
+          <form action="" method="GET" class="d-inline">
+            <?php foreach ($_GET as $key => $value) {
+              if ($key !== 'active') {
+                echo "<input type='hidden' name='{$key}' value='{$value}' />";
+              }
+            } ?>
+            <input type='hidden' name="active" value="0" />
+            <div class="btn-group" role="group">
+              <button style="display: none"></button>
+              <button type="submit" class="btn btn-secondary <?php echo (isset($_GET['active']) && $_GET['active'] === '0') ? 'active' : ''; ?>">Archived</button>
+            </div>
+          </form>
+          <div style="clear: both;height: 15px"></div>
           <table class="table table-responsive table-sm">
             <tbody>
               <?php
