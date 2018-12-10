@@ -37,15 +37,16 @@ if (!empty($_POST['submit'])) {
   }
 }
 
-$limit = 25;
+$limit = 20;
 $page = (empty($_GET['page'])) ? 0 : intval($_GET['page']) - 1;
 $offset = $limit * $page;
+$start = (!isset($_GET['active']) || $_GET['active'] === '1') ? 'AND start > ' . time() : 'AND start < ' . time();
 if (isset($_GET['q']) && strlen($_GET['q']) > 0) {
-  $stmt = $db->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL AND event LIKE ? ORDER BY id DESC LIMIT {$offset}, {$limit}");
+  $stmt = $db->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL AND event LIKE ? {$start} ORDER BY id DESC LIMIT {$offset}, {$limit}");
   $stmt->execute(["%{$_GET['q']}%"]);
   $rows = $stmt->fetchAll();
 } else {
-  $rows = $db->query("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL ORDER BY id DESC LIMIT {$offset}, {$limit}");
+  $rows = $db->query("SELECT SQL_CALC_FOUND_ROWS * FROM calendar WHERE approved IS NOT NULL {$start} ORDER BY id DESC LIMIT {$offset}, {$limit}");
 }
 $count = $db->query('SELECT FOUND_ROWS();')->fetchColumn();
 $final_page = ceil($count / $limit);
