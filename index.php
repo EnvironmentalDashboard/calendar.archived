@@ -116,12 +116,12 @@ include $router->header_path; ?>
                 echo "<li data-target=\"#carousel-indicators\" data-slide-to=\"{$s}\"></li>";
             } ?>
             </ol>
-            <div class="carousel-inner" role="listbox">
+            <div class="carousel-inner" role="listbox" style="height: 100%">
               <?php
               $counter = 0;
               foreach (array_reverse($cal->rows) as $result) {
                   ?>
-              <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
+              <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>" style="height: 100%">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
@@ -136,7 +136,7 @@ include $router->header_path; ?>
                     <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="margin-bottom:0px;font-size: <?php echo(1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <h6 class="mb-0 mt-2"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
-                      <p style="overflow: auto;height: 170px;margin-top: 5px"><?php echo $result['description'] ?></p>
+                      <p style="overflow: hidden;height: 170px;margin-top: 5px;"><?php echo $result['description'] ?></p>
                     </a>
                   </div>
                 </div>
