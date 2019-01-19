@@ -14,7 +14,7 @@ $_POST['end_date'] = (isset($_POST['end_date'])) ? $_POST['end_date'] : '';
 $_POST['event'] = (isset($_POST['event'])) ? convertUTF8($_POST['event']) : '';
 $_POST['description'] = (isset($_POST['description'])) ? convertUTF8($_POST['description']) : '';
 $extended_description_md = (isset($_POST['extended_description_md'])) ? convertUTF8($_POST['extended_description_md']) : '';
-$extended_description_html = $Parsedown->text($extended_description_md);
+$extended_description_html = $Parsedown->text(convertUTF8($extended_description_md));
 $_POST['email'] = (isset($_POST['email'])) ? $_POST['email'] : '';
 $_POST['contact_email'] = (isset($_POST['contact_email'])) ? $_POST['contact_email'] : '';
 $_POST['event_type_id'] = (isset($_POST['event_type_id'])) ? $_POST['event_type_id'] : '';
@@ -155,4 +155,3 @@ function duplicate_event($db, $date, $date2, $event, $img) {
   $stmt->execute($event);
 }
 function convertUTF8($text) { return iconv(mb_detect_encoding($text, mb_detect_order(), true), "UTF-8", $text); } // https://stackoverflow.com/a/7980354/2624391
-?>
