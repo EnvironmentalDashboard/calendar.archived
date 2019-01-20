@@ -6,13 +6,18 @@ This open source project was developed in Oberlin to create a central calendar f
 
 ### Installation
 
-To adopt the calendar for your own community, you will need to
+The calendar can be run either through Docker (`./run.sh` will build the image and run it on port 8080) or by placing the files in your web servers document root. If you use Docker, create a file `includes/conn.php` that has the database connection information similiar to below:
+```
+<?php
+$host = 'localhost';
+$username = 'user';
+$password = 'pass';
+$con = "mysql:host={$host};dbname={$dbname};charset=utf8";
 
-1. Clone this repository
-2. Create the database tables
-3. Create a file called `db.php` which will instantiate a PDO object named `$db`, which is used on every page as the database connection
+```
+and the Dockerfile will handle the rest. If you're manually installing the calendar, you'll need to clone this repository, the [includes](https://github.com/EnvironmentalDashboard/includes) repository, and manually set up the connection file ([local](https://github.com/EnvironmentalDashboard/includes/blob/master/db.php#L5), [remote](https://github.com/EnvironmentalDashboard/includes/blob/master/db.php#L7)) referenced in `db.php` in the includes repo.
 
-The database tables should look something like this:
+Additionally, with either approach, you'll need to create the database tables the schemas of which are dumped below:
 
 ```
 CREATE TABLE `calendar` (

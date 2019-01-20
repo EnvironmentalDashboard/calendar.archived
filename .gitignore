@@ -2,3 +2,5 @@
 .DS_Store
 config.codekit3
 images/uploads
+includes/conn.php
+
