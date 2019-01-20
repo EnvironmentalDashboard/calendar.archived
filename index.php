@@ -83,7 +83,7 @@ include $router->header_path; ?>
           <div class="list-group" style="margin-bottom: 15px">
             <a href='#' data-value='All' class='list-group-item list-group-item-action event-type-toggle active'>All</a>
             <!-- <a href="#" class="list-group-item active"> -->
-            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types ORDER BY event_type ASC") as $event) {
+            <?php foreach ($db->query("SELECT id, event_type FROM calendar_event_types WHERE id != 1 ORDER BY event_type ASC") as $event) { // Skip volunteer opportunities as it sits in the next to the 'Type to search' input
                 echo "<a href='#' data-value='{$event['id']}' class='list-group-item list-group-item-action event-type-toggle'>{$event['event_type']}</a>";
             } ?>
           </div>
@@ -164,13 +164,14 @@ include $router->header_path; ?>
             <form class="form-inline" style="width: 100%">
               <span class="navbar-text" style="width: 100%">
                 <div class="btn-group" role="group" aria-label="Event or announcement">
-                  <button type="button" id="filter-all" class="btn btn-secondary active">All</button>
-                  <button type="button" id="filter-events" class="btn btn-secondary">Events</button>
-                  <button type="button" id="filter-announcements" class="btn btn-secondary">Announcements</button>
+                  <button type="button" id="filter-all" class="btn btn-sm btn-secondary active">All</button>
+                  <button type="button" id="filter-events" class="btn btn-sm btn-secondary">Events</button>
+                  <button type="button" id="filter-announcements" class="btn btn-sm btn-secondary">Announcements</button>
+                  <button type="button" id="filter-volunteer" class="btn btn-sm btn-secondary">Volunteer opportunities</button>
                 </div>
                 <!-- <a href="?start=now" class="btn btn-primary hidden-md-down">Today</a> -->
-                <input class="form-control mr-sm-2" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
-                <a href="#" id="sort-date" class="btn btn-primary" style="float: right;color: #fff">Date</a>
+                <input class="form-control mr-sm-2 form-control-sm" type="text" id="search" placeholder="Type to search" style="float: right;margin-left: 10px">
+                <a href="#" id="sort-date" class="btn btn-sm btn-primary" style="float: right;color: #fff">Date</a>
               </span>
               <!-- <span style="position: absolute;right: 10px;" class="navbar-text">
               </span> -->

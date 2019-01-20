@@ -46,7 +46,8 @@
   });
   var filter_all = $('#filter-all'),
       filter_announcements = $('#filter-announcements'),
-      filter_events = $('#filter-events');
+      filter_events = $('#filter-events'),
+      filter_volunteer = $('#filter-volunteer');
   function load_events() {
     var query = $('#search').val();
     if (query == '') {
@@ -59,11 +60,8 @@
       }))+'"</p>';
     }
     if (!filter_all.hasClass('active')) {
-      if (filter_events.hasClass('active')) {
-        payload.announcements = 0;
-      } else {
-        payload.announcements = 1;
-      }
+      payload.announcements = (filter_announcements.hasClass('active')) ? 1 : 0;
+      payload.volunteer = (filter_volunteer.hasClass('active')) ? 1 : 0;
     }
     $.get("includes/load_events.php", payload, function(data) {
       if (data == '0') {
@@ -235,6 +233,7 @@
       $(this).addClass('active');
       filter_announcements.removeClass('active');
       filter_all.removeClass('active');
+      filter_volunteer.removeClass('active');
       offset = 0;
       if (scroll_done) {
         scroll_done = false;
@@ -249,6 +248,22 @@
       $(this).addClass('active');
       filter_events.removeClass('active');
       filter_all.removeClass('active');
+      filter_volunteer.removeClass('active');
+      offset = 0;
+      if (scroll_done) {
+        scroll_done = false;
+        $('#end-of-feed').remove();
+      }
+      $('.iterable-event').remove();
+      load_events();
+    }
+  });
+  filter_volunteer.on('click', function() {
+    if (!$(this).hasClass('active')) {
+      $(this).addClass('active');
+      filter_events.removeClass('active');
+      filter_all.removeClass('active');
+      filter_announcements.removeClass('active');
       offset = 0;
       if (scroll_done) {
         scroll_done = false;
@@ -263,6 +278,7 @@
       $(this).addClass('active');
       filter_announcements.removeClass('active');
       filter_events.removeClass('active');
+      filter_volunteer.removeClass('active');
       offset = 0;
       if (scroll_done) {
         scroll_done = false;
