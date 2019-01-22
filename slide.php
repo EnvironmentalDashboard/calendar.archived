@@ -172,7 +172,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <img src="images/findmoreAT.png" alt="Community Calendar" style="width: 27vw;position: fixed;bottom: 30px;right: 20px;height: auto;">
     <img src="images/communitycalendaricon.png" style="width: 23vw;position: fixed;bottom: 20px;left: 10px;height: auto;">
     <?php if ($result['event_type_id'] === '1') { ?>
-    <img src="images/calendarvolunteeropportunity2.png" style="width: 20vw;position: fixed;bottom: 90px;left: -15px;height: auto;">
+    <img src="images/calendarvolunteeropportunity2.png" style="width: 12vw;position: fixed;bottom: 50px;left: 0px;height: auto;">
     <?php } elseif ($result['announcement'] == 1) { ?>
     <img src="images/announcement.svg" style="width: 12vw;position: fixed;bottom: 65px;left: 10px;height: auto;">
     <?php } ?>
