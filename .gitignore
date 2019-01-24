@@ -3,4 +3,5 @@
 config.codekit3
 images/uploads
 includes/conn.php
+includes/forceutf8
 
