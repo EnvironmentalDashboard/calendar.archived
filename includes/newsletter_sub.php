@@ -1,5 +1,5 @@
 <?php
-require '../../includes/db.php';
+require 'db.php';
 if (isset($_POST['email'])) {
 	$_POST['email'] = trim($_POST['email']);
   if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {

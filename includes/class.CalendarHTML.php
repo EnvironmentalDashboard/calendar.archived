@@ -84,7 +84,8 @@ class CalendarHTML {
    * events that populate the calendar are expected to have been retrieved by fetch_events()
    * @param $small the small calendar as is on the home page or the larger calendar as is on detail-calendar.php
    */
-  public function print_cal($router, $small = true) {
+  public function print_cal($community, $small = true) {
+    $detail_page_sep = '?id=';
     $next_start = $this->end;
     $next_end = $this->end + 2592000;
     $prev_end = $this->start;
@@ -195,7 +196,7 @@ class CalendarHTML {
             $data_descripts = str_replace("'", "&apos;", json_encode($popover_descripts));
             echo "<button type='button' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#eventModal' data-ids='{$data_ids}' data-titles='{$data_titles}' data-descripts='{$data_descripts}' data-date='".date('F jS', $today)."'>{$count_popover_titles} events</button>";
           } elseif ($count_popover_titles === 1) {
-            echo "<p style='text-align:left'><a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$popover_ids[0]}'>{$popover_titles[0]}</a></p>";
+            echo "<p style='text-align:left'><a href='{$community}/calendar/detail{$detail_page_sep}{$popover_ids[0]}'>{$popover_titles[0]}</a></p>";
           }
           echo "</div></td>";
         }
@@ -214,7 +215,8 @@ class CalendarHTML {
     echo "</tr></table>";
   }
 
-  public function print_event_cards($router) {
+  public function print_event_cards($community) {
+    $detail_page_sep = '?id=';
     foreach ($this->rows as $result) {
       $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.intval($result['loc_id']))->fetchColumn();
       echo "<div class='card iterable-event' id='{$result['id']}'
@@ -265,7 +267,7 @@ class CalendarHTML {
                 } else {
                   $disabled = '';
                 }
-                echo "</h6><p class='card-text'>{$result['description']}</p><p class='card-text'><a href='#' class='btn btn-secondary interested-btn {$disabled}' data-eventid='{$result['id']}'>I&apos;m interested</a> <a href='{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>";
+                echo "</h6><p class='card-text'>{$result['description']}</p><p class='card-text'><a href='#' class='btn btn-secondary interested-btn {$disabled}' data-eventid='{$result['id']}'>I&apos;m interested</a> <a href='{$community}/calendar/detail{$detail_page_sep}{$result['id']}' class='btn btn-primary'>View event</a>";
                 if ($result['likes'] > 9) {
                   echo "<br><small>{$result['likes']} people are interested in this event</small>";
                 }
@@ -323,4 +325,3 @@ class CalendarHTML {
   */
 
 }
-?>

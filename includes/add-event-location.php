@@ -1,5 +1,5 @@
 <?php
-require '../../includes/db.php';
+require 'db.php';
 if (isset($_GET['location'])) {
   $stmt = $db->prepare('SELECT id FROM calendar_locs WHERE location LIKE ? LIMIT 1');
   $stmt->execute(array("%{$_GET['location']}%"));

@@ -1,9 +1,12 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../includes/db.php';
-require 'includes/class.CalendarRoutes.php';
 date_default_timezone_set("America/New_York");
+require '../includes/db.php';
+$script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
+$community = getenv("COMMUNITY");
+$detail_page_sep = '?id=';
+
 if (!isset($edit)) {
   $edit = false;
 } elseif ($edit) {
@@ -27,8 +30,8 @@ if (!isset($edit)) {
     $edit = false;
   }
 }
-$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
-include $router->header_path; ?>
+
+include "includes/snippets/{$script}_bottom.php"; ?>
       <div class="row justify-content-center">
         <div class="col-sm-7">
           <!--[if lte IE 9]>
@@ -315,4 +318,4 @@ include $router->header_path; ?>
         </div>
       </div>
       <div style="height: 130px;clear: both;"></div>
-    <?php include $router->footer_path; ?>
+    <?php include "includes/snippets/{$script}_bottom.php"; ?>

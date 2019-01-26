@@ -2,9 +2,9 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../../includes/db.php';
-require '../../includes/Parsedown.php';
-require 'forceutf8/src/ForceUTF8/Encoding.php';
+require 'db.php';
+require '/var/www/Parsedown.php';
+require '/var/www/forceutf8/src/ForceUTF8/Encoding.php';
 use \ForceUTF8\Encoding;
 
 $Parsedown = new Parsedown();

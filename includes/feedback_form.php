@@ -1,5 +1,5 @@
 <?php
-require '../../includes/db.php';
+require 'db.php';
 if (isset($_POST['feedback'])) {
 	$feedback = $_POST['feedback'];
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');

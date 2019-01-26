@@ -2,12 +2,15 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../includes/db.php';
+require 'includes/db.php';
 require 'includes/class.CalendarHTML.php';
-require 'includes/class.CalendarRoutes.php';
+// require 'includes/class.CalendarRoutes.php';
 define('CAROUSEL_SLIDES', 5);
 $time = time();
 $tomorrow = strtotime('tomorrow');
+$script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
+$community = getenv("COMMUNITY");
+$detail_page_sep = '?id=';
 
 $cal = new CalendarHTML($db);
 $cal->set_limit(5);
@@ -15,8 +18,9 @@ $cal->set_offset(0);
 $cal->fetch_events();
 $cal->generate_sponsors();
 
-$router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
-include $router->header_path; ?>
+include "includes/snippets/{$script}_top.php";
+// $router = new CalendarRoutes($_SERVER['SCRIPT_FILENAME']);
+// include $router->header_path; ?>
       <!-- modal can be placed anywhere -->
       <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -73,7 +77,7 @@ include $router->header_path; ?>
             $small_cal->set_start($start_time);
             $small_cal->set_end($end_time);
             $small_cal->fetch_events();
-            $small_cal->print_cal($router);
+            $small_cal->print_cal($community);
             ?>
           </div>
           <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
@@ -124,16 +128,16 @@ include $router->header_path; ?>
               <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>" style="height: 100%">
                 <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
                   <div class="col-sm-6 hidden-sm-down">
-                    <a href="<?php echo $router->base_url ?>/calendar/detail<?php echo $router->detail_page_sep . $result['id'] ?>">
+                    <a href="<?php echo $community ?>/calendar/detail<?php echo $detail_page_sep . $result['id'] ?>">
                       <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                       echo '<img class="d-block img-fluid" src="images/default.svg">';
                   } else {
-                      echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"{$community}/calendar/images/uploads/thumbnail{$result['id']}\">";
                   } ?>
                     </a>
                   </div>
                   <div class="col-md-6 col-sm-12">
-                    <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
+                    <a href="<?php echo "{$community}/calendar/detail{$detail_page_sep}{$result['id']}"; ?>" style='text-decoration: none;color: inherit;'>
                       <h2 style="margin-bottom:0px;font-size: <?php echo(1 - sin(deg2rad(((90) * (strlen($result['event']) - 1)) / (255 - 1))))*2 ?>rem"><?php echo $result['event']; ?></h2>
                       <h6 class="mb-0 mt-2"><?php echo (date('i', $result['start']) === '00') ? date('F jS, g A', $result['start']) : date('F jS, g:i A', $result['start']); ?></h6>
                       <p style="overflow: hidden;height: 170px;margin-top: 5px;"><?php echo $result['description'] ?></p>
@@ -199,7 +203,7 @@ include $router->header_path; ?>
                   <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
                       echo '<img src="images/default.svg" class="thumbnail img-fluid">';
                   } else {
-                      echo "<img class=\"thumbnail img-fluid\" src=\"{$router->base_url}/calendar/images/uploads/thumbnail{$result['id']}\">";
+                      echo "<img class=\"thumbnail img-fluid\" src=\"{$community}/calendar/images/uploads/thumbnail{$result['id']}\">";
                   } ?>
                 </div>
                 <div class="col-sm-12 col-md-9">
@@ -229,7 +233,7 @@ include $router->header_path; ?>
                   <p class="card-text"><?php echo $result['description'] ?></p>
                   <p class="card-text">
                     <a href='#' class='btn btn-secondary interested-btn <?php echo (isset($_COOKIE["event{$result['id']}"])) ? 'disabled' : ''; ?>' data-eventid='<?php echo $result['id'] ?>'>I&apos;m interested</a>
-                    <a href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
+                    <a href="<?php echo "{$community}/calendar/detail{$detail_page_sep}{$result['id']}"; ?>" class="btn btn-primary">View event</a>
                     <?php if ($result['likes'] > 9) {
                       echo "<br><small>{$result['likes']} people are interested in this event</small>";
                   } ?>
@@ -279,4 +283,4 @@ include $router->header_path; ?>
       </div>
       <div style="clear: both;height: 150px"></div>
       <img src="images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">
-    <?php include $router->footer_path; ?>
+    <?php include "includes/snippets/{$script}_bottom.php"; //$router->footer_path; ?>

@@ -1,3 +1,4 @@
 #!/bin/bash
 docker build -t calendar .
-docker run -dit -p 8080:80 -v $(dirname $(pwd))/includes:/var/www/includes -h environmentaldashboard.org --name oberlin-calendar calendar
+docker run -dit -p 4000:80 -e COMMUNITY="" --name oberlin-calendar calendar
+# docker run -dit -p 4001:80 -e COMMUNITY="oberlin.org" --name obp-calendar calendar

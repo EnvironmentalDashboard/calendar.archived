@@ -2,8 +2,8 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../../includes/db.php';
-require '../../includes/Parsedown.php';
+require 'db.php';
+require '/var/www/Parsedown.php';
 if (!isset($_REQUEST['token'])) {
   exit('Error: missing token');
 } else {
