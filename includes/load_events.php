@@ -27,8 +27,7 @@ if (isset($_GET['search'])) {
 // $cal->fetch_events();
 $cal->rows = $stmt->fetchAll();
 if (!empty($cal->rows)) {
-	$community = getenv("COMMUNITY");
-	$cal->print_event_cards($community);
+	$cal->print_event_cards();
 } else {
 	echo '0';
 }

@@ -10,7 +10,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
 chdir(__DIR__);
-require '../includes/db.php'; // Has $db
+require 'includes/db.php'; // Has $db
 
 // email.html needs to be converted using https://inlinestyler.torchbox.com/styler/convert/
 $html1 = '<html>
@@ -116,7 +116,7 @@ foreach ($db->query('SELECT id, recipient, subject, html_message, txt_message, u
     //This should be the same as the domain of your From address
     $mail->DKIM_domain = 'environmentaldashboard.org';
     //Path to your private key:
-    $mail->DKIM_private = '/etc/opendkim/keys/environmentaldashboard.org/mail.private';
+    $mail->DKIM_private = '/opendkim/mail.private';
     //Set this to your own selector
     $mail->DKIM_selector = 'mail';
     //Put your private key's passphrase in here if it has one

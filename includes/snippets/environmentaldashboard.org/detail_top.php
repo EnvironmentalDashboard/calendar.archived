@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../includes/db.php';
+require 'includes/db.php';
 require 'includes/class.CalendarHTML.php';
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   $id = $_GET['id'];

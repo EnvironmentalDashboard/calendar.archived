@@ -6,8 +6,8 @@ require '../includes/db.php';
 require 'includes/class.CalendarHTML.php';
 
 $script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
-$community = getenv("COMMUNITY");
-$detail_page_sep = '?id=';
+// $community = getenv("COMMUNITY");
+
 
 if (isset($_GET['month']) && isset($_GET['year'])) {
   $start_time = strtotime("{$_GET['year']}-{$_GET['month']}-01 00:00:00");
@@ -58,7 +58,7 @@ include "includes/snippets/{$script}_top.php";
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <?php $cal->print_cal($community, false); ?>
+          <?php $cal->print_cal(false); ?>
         </div>
       </div>
       <div style="clear: both;height: 100px"></div>

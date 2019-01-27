@@ -2,8 +2,8 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 $script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
-$community = getenv("COMMUNITY");
-$detail_page_sep = '?id=';
+// $community = getenv("COMMUNITY");
+
 
 include "includes/snippets/{$script}_top.php";
 $stmt = $db->prepare('SELECT id FROM calendar WHERE approved = 1 AND start >= ? AND id != ? ORDER BY start ASC LIMIT 1');
@@ -17,11 +17,11 @@ $prev_event = $stmt->fetchColumn();
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
           <h1>Oberlin Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
-          <p><a href='<?php echo $community ?>/calendar' class="btn btn-primary">&larr; Go Home</a></p>
+          <p><a href='/calendar' class="btn btn-primary">&larr; Go Home</a></p>
           <p><?php if ($prev_event != null) {
-              echo "<a href='{$community}/calendar/detail{$detail_page_sep}{$prev_event}' class='btn btn-sm btn-outline-primary'>&larr; Previous Event</a>";
+              echo "<a href='/calendar/detail/{$prev_event}' class='btn btn-sm btn-outline-primary'>&larr; Previous Event</a>";
             } if ($next_event != null) {
-              echo "<a href='{$community}/calendar/detail{$detail_page_sep}{$next_event}' class='btn btn-sm btn-outline-primary float-right'>Next Event &rarr;</a>";
+              echo "<a href='/calendar/detail/{$next_event}' class='btn btn-sm btn-outline-primary float-right'>Next Event &rarr;</a>";
             } ?></p>
         </div>
       </div>
@@ -32,7 +32,7 @@ $prev_event = $stmt->fetchColumn();
             <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
             <div id="alert-warning-text">This event is not yet approved.<?php if (isset($_COOKIE["event{$id}"])) {
               $cookie = $_COOKIE["event{$id}"];
-              echo " Since you created this event using this browser, you can click <a href='{$community}/calendar/edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
+              echo " Since you created this event using this browser, you can click <a href='/calendar/edit-event?token={$cookie}' class='alert-link'>here</a> to edit the event.";
               // if (isset($_GET['redirect']) && is_numeric($_GET['redirect'])) {
               //   echo " You will be redirected to the home page in <span id='time-remaining'>5</span> seconds.";
               // }
@@ -110,7 +110,7 @@ $prev_event = $stmt->fetchColumn();
             <div class="card-body">
               <h6 class="card-title"><?php echo $row['event'] ?></h6>
               <?php echo "<p class='card-text'>" . CalendarHTML::formatted_event_date($row['start'], $row['end'], $row['no_start_time'], $row['no_end_time']) . "</p>"; ?>
-              <a href="<?php echo "{$community}/calendar/detail{$detail_page_sep}{$row['id']}"; ?>" class="btn btn-primary">View event</a>
+              <a href="<?php echo "/calendar/detail/{$row['id']}"; ?>" class="btn btn-primary">View event</a>
             </div>
           </div>
         </div>
