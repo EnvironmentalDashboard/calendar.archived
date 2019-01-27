@@ -14,15 +14,14 @@ RUN apt-get update && \
   git clone https://github.com/PHPMailer/PHPMailer.git && \
   git clone https://github.com/neitanod/forceutf8.git && \
   rm /var/www/html/index.html && \
-  mkdir /var/www/html/calendar && \
   a2enmod headers rewrite
   # a2enmod proxy_http proxy ssl
   # timezone: https://serverfault.com/a/683651/456938
-COPY . /var/www/html/calendar
+COPY . /var/www/html
 # can only run this after files COPY'd over but want to take advantage of cache for prev RUN command
 RUN if [ -z "${COMMUNITY}" ] || [ "${COMMUNITY}" == "oberlin" ]; then \
-  mv /var/www/html/calendar/includes/snippets/environmentaldashboard.org/*.php /var/www/html/calendar/includes/snippets/; \
-  else mv /var/www/html/calendar/includes/snippets/${COMMUNITY}/*.php /var/www/html/calendar/includes/snippets/; fi && \
-  mv /var/www/html/calendar/apache/http.conf /etc/apache2/sites-available/000-default.conf
+  mv /var/www/html/includes/snippets/environmentaldashboard.org/*.php /var/www/html/includes/snippets/; \
+  else mv /var/www/html/includes/snippets/${COMMUNITY}/*.php /var/www/html/includes/snippets/; fi && \
+  mv /var/www/html/apache/http.conf /etc/apache2/sites-available/000-default.conf
 EXPOSE 80
 CMD /usr/sbin/apache2ctl -D FOREGROUND

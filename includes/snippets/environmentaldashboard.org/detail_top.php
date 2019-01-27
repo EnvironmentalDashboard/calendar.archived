@@ -14,7 +14,7 @@ $stmt->execute(array($id));
 $event = $stmt->fetch();
 if (!$event) {
   http_response_code(404);
-  require '/var/www/repos/environmentaldashboard.org/404.php';
+  echo file_get_contents('https://environmentaldashboard.org/404'); exit;
 }
 $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.intval($event['loc_id']))->fetch();
 $locname = $loc['location'];
