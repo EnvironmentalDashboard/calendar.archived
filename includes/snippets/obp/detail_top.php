@@ -7,7 +7,7 @@ require 'includes/class.CalendarHTML.php';
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   $id = $_GET['id'];
 } else {
-  $id = explode('/', $_SERVER['REQUEST_URI'])[3];
+  $id = explode('/', $_SERVER['REQUEST_URI'])[2];
 }
 $stmt = $db->prepare('SELECT id, loc_id, event, description, extended_description, start, `end`, no_start_time, no_end_time, repeat_end, repeat_on, has_img, event_type_id, email, phone, website, approved, sponsors FROM calendar WHERE id = ?');
 $stmt->execute(array($id));

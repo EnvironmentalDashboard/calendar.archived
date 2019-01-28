@@ -46,7 +46,7 @@ if (isset($_GET['email'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="/css/bootstrap.css?v=4">
+    <link rel="stylesheet" href="https://environmentaldashboard.org/css/bootstrap.css?v=4">
   </head>
   <body style="background: none;">
     <div class="container" style="padding: 30px">
