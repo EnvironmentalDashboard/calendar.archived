@@ -18,11 +18,10 @@ RUN apt-get update && \
   # a2enmod proxy_http proxy ssl
   # timezone: https://serverfault.com/a/683651/456938
 COPY . /var/www/html
-# can only run this after files COPY'd over but want to take advantage of cache for prev RUN command
-RUN if [ -z "${COMMUNITY}" ] || [ "${COMMUNITY}" == "oberlin" ]; then \
+EXPOSE 80
+CMD if [ -z "${COMMUNITY}" ] || [ "${COMMUNITY}" == "oberlin" ]; then \
   mv /var/www/html/includes/snippets/environmentaldashboard.org/*.php /var/www/html/includes/snippets/; \
   else mv /var/www/html/includes/snippets/${COMMUNITY}/*.php /var/www/html/includes/snippets/; fi && \
   mv /var/www/html/apache/http.conf /etc/apache2/sites-available/000-default.conf && \
-  ln -s /var/www/uploads/calendar /var/www/html/images/uploads
-EXPOSE 80
-CMD /usr/sbin/apache2ctl -D FOREGROUND
+  ln -s /var/www/uploads/calendar /var/www/html/images/uploads && \
+  /usr/sbin/apache2ctl -D FOREGROUND
