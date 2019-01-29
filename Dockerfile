@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     APACHE_PID_FILE=/var/run/apache2.pid
 WORKDIR /var/www
 RUN apt-get update && \
-  apt-get -qq -y install apt-utils tzdata apache2 php libapache2-mod-php php-mysql git && \
+  apt-get -qq -y install apt-utils tzdata apache2 php libapache2-mod-php php-mysql git postfix && \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
   git clone https://github.com/erusev/parsedown.git && \
   git clone https://github.com/PHPMailer/PHPMailer.git && \
@@ -24,4 +24,5 @@ CMD if [ -z "${COMMUNITY}" ] || [ "${COMMUNITY}" = "oberlin" ]; then \
   else mv /var/www/html/includes/snippets/${COMMUNITY}/*.php /var/www/html/includes/snippets/; fi && \
   mv /var/www/html/apache/http.conf /etc/apache2/sites-available/000-default.conf && \
   ln -s /var/www/uploads/calendar /var/www/html/images/uploads && \
+  service postfix start && \
   /usr/sbin/apache2ctl -D FOREGROUND
