@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../../includes/db.php';
+require '../includes/db.php';
 // require 'includes/check-signed-in.php';
 if (isset($_POST['delete-submit'])) {
   $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');

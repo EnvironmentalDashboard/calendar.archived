@@ -1,11 +1,13 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../../includes/db.php';
+require '../includes/db.php';
+$parts = explode('.', $_SERVER['HTTP_HOST']);
+$community = (count($parts) === 3) ? $parts[0] : 'oberlin';
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
-$stmt->execute([$symlink]);
+$stmt->execute([$community]);
 if (isset($_COOKIE['token']) && $stmt->fetchColumn() === $_COOKIE['token'] && $_COOKIE['token'] !== null) {
-  header("Location: https://environmentaldashboard.org/{$symlink}/calendar/prefs/review-events");
+  header("Location: https://{$community}.environmentaldashboard.org/calendar/prefs/review-events");
 }
 if (isset($_POST['pass']) && isset($_POST['org'])) {
   $stmt = $db->prepare('SELECT password, token FROM users WHERE slug = ?');
@@ -25,12 +27,12 @@ if (isset($_POST['pass']) && isset($_POST['org'])) {
       $stmt->execute([$token, $_POST['org']]);
     }
     setcookie('token', $token, time()+60*60*24*30);
-    header("Location: https://environmentaldashboard.org/{$symlink}/calendar/prefs/review-events.php");
+    header("Location: https://{$community}.environmentaldashboard.org/calendar/prefs/review-events");
   }
 }
 
 $stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE password IS NULL AND slug = ?');
-$stmt->execute([$symlink]);
+$stmt->execute([$community]);
 if ($stmt->fetchColumn() === '0') {
   $msg1 = 'Please sign in';
   $msg2 = 'Sign in';
@@ -102,7 +104,7 @@ select {
         <label for="inputOrg" class="sr-only"></label>
         <select id="inputOrg" name="org" class="form-control">
           <?php foreach ($db->query('SELECT name, slug FROM users ORDER BY name ASC') as $row) {
-            if ($symlink === $row['slug']) {
+            if ($community === $row['slug']) {
               echo "<option value='{$row['slug']}' selected>{$row['name']}</option>";
             } else {
               echo "<option value='{$row['slug']}'>{$row['name']}</option>";

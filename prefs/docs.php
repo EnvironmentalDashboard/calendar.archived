@@ -1,11 +1,14 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../../includes/db.php';
+require '../includes/db.php';
+$parts = explode('.', $_SERVER['HTTP_HOST']);
+$community = (count($parts) === 3) ? $parts[0] : 'oberlin';
 require 'includes/check-signed-in.php';
-$saved_emails = '/var/www/html/oberlin/calendar/prefs/emails.txt';
+// $saved_emails = '/var/www/html/oberlin/calendar/prefs/emails.txt';
 if (isset($_POST['emails'])) {
-  file_put_contents($saved_emails, $_POST['emails']);
+  // file_put_contents($saved_emails, $_POST['emails']);
+  die('Not implemented');
 }
 ?>
 <!DOCTYPE html>

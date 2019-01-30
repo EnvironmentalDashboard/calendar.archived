@@ -1,7 +1,7 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../../includes/db.php';
+require '../includes/db.php';
 date_default_timezone_set('America/New_York');
 $date = strtotime($_POST['date']);
 $date2 = strtotime($_POST['date2']);
