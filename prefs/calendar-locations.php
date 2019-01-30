@@ -2,8 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$parts = explode('.', $_SERVER['HTTP_HOST']);
-$community = (count($parts) === 3) ? $parts[0] : 'oberlin';
+$community = getenv("COMMUNITY");
 require 'includes/check-signed-in.php';
 if (!empty($_POST['loc']) &&
   file_exists($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {

@@ -10,7 +10,7 @@ require 'includes/class.CalendarHTML.php';
 function newsletter_html($db, $events, $start, $end) {
   static $cache = [];
   $start_str = date('n/j/y', $start);
-  $html_message = "<div style='padding:15px'><img src='https://environmentaldashboard.org/oberlin/calendar/images/env_logo.png' style='width:100%' /><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
+  $html_message = "<div style='padding:15px'><img src='https://environmentaldashboard.org/calendar/images/env_logo.png' style='width:100%' /><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
   $html_message .= "<h3>Promote your events, announcements, or volunteers opportunities!</h3><p>Submit an event, announcement, or volunteer opportunity to the Oberlin Community Calendar for free! Your events will be featured on the calendar <a href='https://environmentaldashboard.org/calendar'>website</a> and on digital signs installed at many locations within the Oberlin community.</p>";
   $html_message .= "<p style='color:#333'>This newsletter details events happening from ".$start_str." to ".date('n/j/y', $end).".</p>";
   foreach ($events as $event) {
