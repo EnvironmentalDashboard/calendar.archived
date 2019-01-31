@@ -130,7 +130,7 @@ include "includes/snippets/{$script}_top.php";
                   <div class="col-sm-6 hidden-sm-down">
                     <a href="/calendar/detail/<?php echo $result['id'] ?>">
                       <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
-                      echo '<img class="d-block img-fluid" src="images/default.svg">';
+                      echo '<img class="d-block img-fluid" src="/calendar/images/default.svg">';
                   } else {
                       echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"/calendar/images/uploads/thumbnail{$result['id']}\">";
                   } ?>
@@ -201,7 +201,7 @@ include "includes/snippets/{$script}_top.php";
               <div class="row">
                 <div class="col-sm-12 col-md-3">
                   <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
-                      echo '<img src="images/default.svg" class="thumbnail img-fluid">';
+                      echo '<img src="/calendar/images/default.svg" class="thumbnail img-fluid">';
                   } else {
                       echo "<img class=\"thumbnail img-fluid\" src=\"/calendar/images/uploads/thumbnail{$result['id']}\">";
                   } ?>

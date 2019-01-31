@@ -18,11 +18,6 @@ RUN apt-get update && \
   # a2enmod proxy_http proxy ssl
   # timezone: https://serverfault.com/a/683651/456938
 COPY . /var/www/html
+RUN /var/www/html/build.sh
 EXPOSE 80
-CMD if [ -z "${COMMUNITY}" ] || [ "${COMMUNITY}" = "oberlin" ]; then \
-  mv /var/www/html/includes/snippets/environmentaldashboard.org/*.php /var/www/html/includes/snippets/; \
-  else mv /var/www/html/includes/snippets/${COMMUNITY}/*.php /var/www/html/includes/snippets/; fi && \
-  mv /var/www/html/apache/http.conf /etc/apache2/sites-available/000-default.conf && \
-  ln -s /var/www/uploads/calendar /var/www/html/images/uploads && \
-  service postfix start && \
-  /usr/sbin/apache2ctl -D FOREGROUND
+CMD /usr/sbin/apache2ctl -D FOREGROUND
