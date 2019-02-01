@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set("America/New_York");
 require 'includes/db.php';
-$script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
+$script = 'event-form';//basename($_SERVER['SCRIPT_FILENAME'], '.php');
 // $community = getenv("COMMUNITY");
 
 
