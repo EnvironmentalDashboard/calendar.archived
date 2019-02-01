@@ -20,4 +20,4 @@ RUN apt-get update && \
 COPY . /var/www/html
 RUN /var/www/html/build.sh
 EXPOSE 80
-CMD /usr/sbin/apache2ctl -D FOREGROUND
+CMD service postfix start && /usr/sbin/apache2ctl -D FOREGROUND
