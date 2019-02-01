@@ -61,7 +61,7 @@ include "includes/snippets/{$script}_top.php";
       <div class="row">
         <div class="col-md-4 order-sm-12">
           <h6>Have an event, announcement, or volunteer opportunity?</h6>
-          <p><a href="add-event" class="btn btn-lg btn-primary btn-block">Post to the calendar</a></p>
+          <p><a href="/calendar/add-event" class="btn btn-lg btn-primary btn-block">Post to the calendar</a></p>
           <h6>Subscribe to our newsletter</h6>
           <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
             <label class="sr-only" for="newsletter-email">Email</label>

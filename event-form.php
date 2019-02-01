@@ -31,7 +31,7 @@ if (!isset($edit)) {
   }
 }
 
-include "includes/snippets/{$script}_bottom.php"; ?>
+include "includes/snippets/{$script}_top.php"; ?>
       <div class="row justify-content-center">
         <div class="col-sm-7">
           <!--[if lte IE 9]>
