@@ -1,7 +1,14 @@
 #!/bin/bash
+
 docker build -t calendar .
-server=$(hostname -A 2>/dev/null)
-if [ $server == "environmentaldashboard.org" ]; then
+
+# Prepare a FQDN into a domain name.
+# On Linux, dnsdomainname can be used,
+# but using cut allows for backwards-compatibility
+# with Mac OS.
+production_domain=environmentaldashboard.org
+domain=`cut -f 2- -d . <<< $HOSTNAME`
+if [ "$domain" = "$production_domain" ] || [ "$HOSTNAME" = "$production_domain" ]; then
   docker run -dit -p 4000:80 -e COMMUNITY="" --name oberlin-calendar --restart always \
     -v /etc/opendkim/keys/environmentaldashboard.org/mail.private:/opendkim/mail.private \
     -v /var/www/uploads/calendar:/var/www/uploads/calendar \
