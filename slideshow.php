@@ -1,7 +1,7 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', 'On');
-require '../includes/db.php';
+require 'includes/db.php';
 date_default_timezone_set('America/New_York');
 $time = time();
 $limit = (isset($_GET['limit'])) ? intval($_GET['limit']) : 30;

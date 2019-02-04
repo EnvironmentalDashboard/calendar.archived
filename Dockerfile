@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     APACHE_PID_FILE=/var/run/apache2.pid
 WORKDIR /var/www
 RUN apt-get update && \
-  apt-get -qq -y install apt-utils tzdata apache2 php libapache2-mod-php php-mysql git postfix && \
+  apt-get -qq -y install apt-utils tzdata apache2 php libapache2-mod-php php-mysql postfix git curl && \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
   git clone https://github.com/erusev/parsedown.git && \
   git clone https://github.com/PHPMailer/PHPMailer.git && \
@@ -19,5 +19,6 @@ RUN apt-get update && \
   # timezone: https://serverfault.com/a/683651/456938
 COPY . /var/www/html
 RUN /var/www/html/build/build.sh
+HEALTHCHECK --interval=10m --timeout=10s --retries=1 CMD ./healthcheck.sh
 EXPOSE 80
 CMD service postfix start && /usr/sbin/apache2ctl -D FOREGROUND
