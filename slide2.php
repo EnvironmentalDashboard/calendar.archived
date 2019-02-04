@@ -59,7 +59,7 @@ function formatted_event_date($start_time, $end_time, $no_start_time, $no_end_ti
     <style>
       /*@font-face {
         font-family: 'Bebas Neue';
-        src: url(/oberlin/calendar/bebas_neue/BebasNeueRegular.otf);
+        src: url(/oberlin/calendar/fonts/bebas_neue/BebasNeueRegular.otf);
         font-weight: normal;
       }*/
       html {
