@@ -1,7 +1,5 @@
 #!/bin/bash
 
-docker build -t calendar .
-
 # Prepare a FQDN into a domain name.
 # On Linux, dnsdomainname can be used,
 # but using cut allows for backwards-compatibility
