@@ -57,8 +57,8 @@ $prev_event = $stmt->fetchColumn();
           </p>
           <?php
           $json = json_decode($event['sponsors'], true);
-          $count = count($json);
-          if (is_array($json) && $count > 0) {
+          $count = (is_array($json)) ? count($json) : 0;
+          if ($count > 0) {
             echo "<h5>Sponsored by</h5><p>";
             for ($i=0; $i < $count; $i++) { 
               if ($i !== $count-1) {

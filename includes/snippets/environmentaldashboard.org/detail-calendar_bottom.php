@@ -73,7 +73,7 @@ $(document).ready(function() {
 			  var titles = JSON.parse(button.attr('data-titles'));
 			  var descripts = JSON.parse(button.attr('data-descripts'));
 			  for (var i=0; i < ids.length; i++) { 
-			  	dest.append('<h4>'+titles[i]+'</h4>'+'<p>'+descripts[i]+'</p><p><a class="btn btn-primary btn-sm" href="<?php echo "{$router->base_url}/calendar/detail{$router->detail_page_sep}"; ?>'+ids[i]+'">View more</a></p>');
+			  	dest.append('<h4>'+titles[i]+'</h4>'+'<p>'+descripts[i]+'</p><p><a class="btn btn-primary btn-sm" href="/calendar/detail/'+ids[i]+'">View more</a></p>');
 			  }
 			})
     </script>
