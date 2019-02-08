@@ -20,7 +20,7 @@ $loc = $db->query('SELECT location, address FROM calendar_locs WHERE id = '.intv
 $locname = $loc['location'];
 $locaddr = $loc['address'];
 $google_cal_loc = ($locaddr == '') ? urlencode($locname) : urlencode($locaddr);
-$this_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+$this_url = "http://{$_SERVER['HTTP_HOST']}/calendar{$_SERVER['REQUEST_URI']}";
 $encodedurl = urlencode($this_url);
 // $cal = new CalendarHTML($db);
 ?>
