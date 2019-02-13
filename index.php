@@ -80,7 +80,7 @@ include "includes/snippets/{$script}_top.php";
             $small_cal->print_cal();
             ?>
           </div>
-          <p><a class="btn btn-sm btn-primary" href="detail-calendar">View full calendar</a></p>
+          <p><a class="btn btn-sm btn-primary" href="/calendar/detail-calendar">View full calendar</a></p>
           <p style="margin-bottom: 20px"><span class="bg-dark" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Today <span style="position: relative;left: 20px"><span class="bg-primary" style="height: 20px;width: 20px;display: inline-block;position: relative;top: 2px">&nbsp;</span> Event scheduled</span></p>
           <div style="clear: both;height: 15px"></div>
           <h5>Event types</h5>
