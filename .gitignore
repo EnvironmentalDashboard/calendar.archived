@@ -1,6 +1,5 @@
-*.txt
 .DS_Store
 config.codekit3
-images/uploads
+images/uploads/
 includes/conn.php
 old_scss/
