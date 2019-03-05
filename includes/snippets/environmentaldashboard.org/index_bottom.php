@@ -13,14 +13,14 @@
       exdate.setDate(exdate.getDate() + 30);
       var c_value = "1; expires=" + exdate.toUTCString();
       document.cookie = 'event' + eventid + "=" + c_value; // https://stackoverflow.com/a/14573665/2624391
-      $.post( "includes/like_btn.php", { eventid: eventid } );
+      $.post( "/calendar/includes/like_btn.php", { eventid: eventid } );
     }
   });
   $('#newsletter-form').on('submit', function(e) {
     e.preventDefault();
     var email = $('#newsletter-email').val();
     if (email) {
-      $.post( "includes/newsletter_sub.php", { email: email } );
+      $.post( "/calendar/includes/newsletter_sub.php", { email: email } );
       alert('Please check your inbox and spam folder for a confirmation email');
     }
   });
@@ -28,7 +28,7 @@
     e.preventDefault();
     var feedback = $('#feedback').val();
     if (feedback) {
-      $.post( "includes/feedback_form.php", { feedback: feedback } );
+      $.post( "/calendar/includes/feedback_form.php", { feedback: feedback } );
       $('#feedbackModal').modal('hide');
       alert('Thanks for your feedback!');
     }
@@ -63,7 +63,7 @@
       payload.announcements = (filter_announcements.hasClass('active')) ? 1 : 0;
       payload.volunteer = (filter_volunteer.hasClass('active')) ? 1 : 0;
     }
-    $.get("includes/load_events.php", payload, function(data) {
+    $.get("/calendar/includes/load_events.php", payload, function(data) {
       if (data == '0') {
         scroll_done = true;
         $('#bottom-of-events').html(end_of_feed);
@@ -122,7 +122,7 @@
   });
   function load_small_cal() {
     $('[data-toggle="popover"]').popover('dispose');
-    $.get("includes/load_calendar.php", {month:month, year:year}, function(data) {
+    $.get("/calendar/includes/load_calendar.php", {month:month, year:year}, function(data) {
       $('#small-cal').html(data);
       $('[data-toggle="popover"]').popover({ trigger: "hover" });
     });

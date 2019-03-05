@@ -25,7 +25,7 @@ include "includes/snippets/{$script}_top.php";
       <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
-            <form action="POST" method="includes/feedback_form.php" id="feedback-form">
+            <form method="POST" action="/calendar/includes/feedback_form.php" id="feedback-form">
               <div class="modal-header">
                 <h5 class="modal-title" id="feedbackModalLabel">Leave comments or suggestions</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -63,7 +63,7 @@ include "includes/snippets/{$script}_top.php";
           <h6>Have an event, announcement, or volunteer opportunity?</h6>
           <p><a href="/calendar/add-event" class="btn btn-lg btn-primary btn-block">Post to the calendar</a></p>
           <h6>Subscribe to our newsletter</h6>
-          <form class="form-inline" id="newsletter-form" action="includes/newsletter_sub.php" action="POST">
+          <form class="form-inline" id="newsletter-form" action="/calendar/includes/newsletter_sub.php" method="POST">
             <label class="sr-only" for="newsletter-email">Email</label>
             <input type="text" class="form-control mb-2 mr-sm-2" id="newsletter-email" name="newsletter-email" id="newsletter-email" placeholder="Your email">
             <button type="submit" class="btn btn-primary mb-2" name="newsletter-submit">Subscribe</button>
@@ -282,5 +282,5 @@ include "includes/snippets/{$script}_top.php";
         </div>
       </div>
       <div style="clear: both;height: 150px"></div>
-      <img src="images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">
+      <img src="/calendar/images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">
     <?php include "includes/snippets/{$script}_bottom.php"; //$router->footer_path; ?>

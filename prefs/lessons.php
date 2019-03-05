@@ -158,7 +158,7 @@ foreach ($distinct_keys as $key) {
             key = $(this).data('key');
         var new_value = prompt('Enter a value for '+key);
         if (new_value) {
-          $.post( "includes/add-another-key.php", { lesson_id: lesson_id, key: key, new_value: new_value })
+          $.post( "/calendar/prefs/includes/add-another-key.php", { lesson_id: lesson_id, key: key, new_value: new_value })
             .done(function( data ) {
               // console.log(data);
               alert('added '+key);

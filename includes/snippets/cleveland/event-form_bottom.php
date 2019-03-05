@@ -190,7 +190,7 @@
     $(function() { // init autocomplete and datepicker
       var loc = $('#loc_id');
       var fetch_street_address = function(loc) {
-        $.get("includes/fetch-street-address.php", {loc: loc}, function(resp) {
+        $.get("/calendar/includes/fetch-street-address.php", {loc: loc}, function(resp) {
           if (resp) {
             $('#street_addr').val(resp);
             $('#street_addr').prop('disabled', true);
