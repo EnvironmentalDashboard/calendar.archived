@@ -1,7 +1,8 @@
-<?php error_reporting(-1);
+<?php
+error_reporting(-1);
 ini_set('display_errors', 'On');
 date_default_timezone_set('America/New_York');
-require '../includes/db.php';
+require 'includes/db.php';
 $submit = false;
 if (isset($_POST['submit'])) {
   if ($_POST['submit'] === 'Update Preferences') {
