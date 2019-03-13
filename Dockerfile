@@ -18,7 +18,6 @@ RUN apt-get update && \
   # a2enmod proxy_http proxy ssl
   # timezone: https://serverfault.com/a/683651/456938
 COPY . /var/www/html
-RUN /var/www/html/build/build.sh
 HEALTHCHECK --interval=10m --timeout=10s --retries=1 CMD /var/www/html/healthcheck.sh
 EXPOSE 80
-CMD service postfix start && /usr/sbin/apache2ctl -D FOREGROUND
+CMD /var/www/html/build/build.sh && service postfix start && /usr/sbin/apache2ctl -D FOREGROUND
