@@ -1,6 +1,9 @@
 <?php
 require 'conn.php';
-$dbname = 'oberlin_environmentaldashboard';
+$dbname = getenv('DB');
+if ($dbname === false) {
+  $dbname = 'oberlin_environmentaldashboard';
+}
 $conn = "mysql:host={$host};dbname={$dbname};charset=utf8";
 try {
   $db = new PDO($conn, "{$username}", "{$password}"); // cast as string bc cant pass as reference

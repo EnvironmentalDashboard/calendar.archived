@@ -17,6 +17,9 @@ if [ "$domain" = "$production_domain" ] || [ "$HOSTNAME" = "$production_domain" 
   docker run -dit -p 4002:80 -e COMMUNITY="cleveland" --name cleveland-calendar --restart always \
     -v /var/www/uploads/calendar:/var/www/uploads/calendar \
     calendar
+  docker run -dit -p 4003:80 -e COMMUNITY="sewanee" -e DB="sewanee" --name sewanee-calendar --restart always \
+    -v /var/www/uploads/sewanee/calendar:/var/www/uploads/calendar \
+    calendar
 else
   docker run -dit -p 4000:80 -e COMMUNITY="" --name test-calendar \
     -v $(pwd)/images:/var/www/uploads/calendar \
