@@ -7,7 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title><?php echo ($edit) ? 'Edit' : 'Add' ?> event</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="css/repos/bootstrap.css?<?php echo time(); ?>">
+    <link rel="stylesheet" href="/calendar/css/repos/bootstrap.css?<?php echo time(); ?>">
     <link rel="stylesheet" href="js/jquery-ui-1.12.1.custom/jquery-ui.min.css">
     <link rel="stylesheet" href="js/jquery.timepicker.min.css">
     <style>

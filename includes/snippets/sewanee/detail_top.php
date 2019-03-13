@@ -32,7 +32,7 @@ $encodedurl = urlencode($this_url);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Community Events Calendar</title>
-    <link rel="stylesheet" href="css/repos/bootstrap.css?v=4">
+    <link rel="stylesheet" href="/calendar/css/repos/bootstrap.css?v=4">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65902947-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
