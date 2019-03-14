@@ -1,11 +1,11 @@
 <?php
 require 'conn.php';
 $community = getenv("COMMUNITY");
-if ($community === false) {
+if ($community == '') {
 	$community = 'oberlin';
 }
 $dbname = getenv('DB');
-if ($dbname === false) {
+if ($dbname == '') {
   $dbname = 'oberlin_environmentaldashboard';
 }
 $conn = "mysql:host={$host};dbname={$dbname};charset=utf8";

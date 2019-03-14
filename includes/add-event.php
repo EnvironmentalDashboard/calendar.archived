@@ -83,7 +83,7 @@ elseif (!$date2) {
   $new_event = array($_POST['event'], $rand, $date, $date2, $_POST['description'], $extended_description_html, $extended_description_md, $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($sponsors), $no_start_time, $no_end_time, $_POST['room_num'], $_POST['announcement']);
   $stmt->execute($new_event);
   $success = $db->lastInsertId();
-  save_emails($db, $_POST['event'], $success);
+  save_emails($db, $_POST['event'], $success, $community);
 
   $file_uploaded = false;
   if (isset($_FILES['file']['tmp_name']) && file_exists($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
@@ -127,7 +127,7 @@ if (isset($error)) {
   echo $success;
 }
 
-function save_emails($db, $event_name, $event_id) {
+function save_emails($db, $event_name, $event_id, $community) {
   foreach ($db->query('SELECT email FROM calendar_admin') as $row) {
     $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
     $stmt->execute(array($row['email'], "New event submission: {$event_name}", "{$event_name} is available to review.", "<a href='https://{$community}.environmentaldashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://{$community}.environmentaldashboard.org/calendar/prefs/review-events.php'>review</a>."));
