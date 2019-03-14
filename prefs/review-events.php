@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$community = getenv("COMMUNITY");
+
 require 'includes/check-signed-in.php';
 date_default_timezone_set("America/New_York");
 if (isset($_POST['review-events'])) {
@@ -26,7 +26,7 @@ if (isset($_POST['review-events'])) {
         notify_wobc($db, $row);
         if ($count > 0) { // event being shown on digital signage
           $s = ($count === 1) ? '' : 's';
-          $html_message = "<h1>Your event is live</h1><p><a href='https://environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
+          $html_message = "<h1>Your event is live</h1><p><a href='https://{$community}.environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on {$count} screen{$s}:</p><ul class='padded'>";
           foreach ($screens as $screen_id) {
             $stmt = $db->prepare('SELECT name FROM calendar_screens WHERE id = ?');
             $stmt->execute([$screen_id]);
@@ -35,13 +35,13 @@ if (isset($_POST['review-events'])) {
           }
           $html_message .= "</ul>";
         } else { // event only on website
-          $html_message = "<h1>Your event is live</h1><p><a href='https://environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
+          $html_message = "<h1>Your event is live</h1><p><a href='https://{$community}.environmentaldashboard.org/calendar/slide.php?id={$key}' class='strong'>{$row['event']}</a> was approved and is now being shown on our website.</p>";
         }
         if ($feedback) {
           $html_message .= "<p>{$feedback}</p>";
         }
-        $html_message .= "<p>You can use this <a href='https://environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
-        $txt_message = "Your event was approved an can be viewed here: https://environmentaldashboard.org/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
+        $html_message .= "<p>You can use this <a href='https://{$community}.environmentaldashboard.org/calendar/edit-event?token={$row['token']}'>special link</a> to edit your event. Be aware that sharing this link will allow others to edit the event.</p><br><br>";
+        $txt_message = "Your event was approved an can be viewed here: https://{$community}.environmentaldashboard.org/calendar/slide.php?id={$key} \nTo view the rest of this message, please enable HTML emails.";
         $subject = "Your event, {$row['event']}, is now live!";
       } else { // event rejected
         if ($feedback) {
@@ -138,7 +138,7 @@ function notify_wobc($db, $event) {
             ?>
               <div class="form-group row">
                 <div class="col-sm-9">
-                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://environmentaldashboard.org/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
+                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://<?php echo $community ?>environmentaldashboard.org/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
                 </div>
                 <div class="col-sm-3">
                   <div class="form-group">
@@ -187,7 +187,7 @@ function notify_wobc($db, $event) {
                   }?></p>
                   <p>Phone: <?php echo preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $event['phone']); ?></p>
                   <p>
-                    <a class="btn btn-primary" href="https://environmentaldashboard.org/calendar/edit-event?token=<?php echo $event['token']; ?>">Edit event</a>
+                    <a class="btn btn-primary" href="https://<?php echo $community ?>.environmentaldashboard.org/calendar/edit-event?token=<?php echo $event['token']; ?>">Edit event</a>
                   </p>
                 </div>
               </div>
@@ -270,7 +270,7 @@ function notify_wobc($db, $event) {
         $('#rejection-reasons > p').on('click', function() {
           $('#rejectModal').modal('hide');
           console.log('#feedback' + id);
-          $('#feedback' + id).val('<br><br><p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
+          $('#feedback' + id).val('<br><br><p>Greetings,</p><br><p>We are unable to approve the event you submitted because it breaches the following policy: ' + $(this).text() + '</p><p>We would recommend that you attempt to make changes to your event based on our feedback by going to this <a href="https://<?php echo $community ?>.environmentaldashboard.org/calendar/edit-event?id='+id+'&token='+$token+'">link here</a>. Feel free to reach out to us at dashboard@oberlin.edu if you have any more questions.</p><br><p>Sincerely,<br>Dashboard Team</p><br><br>');
         });
       });
       $('#note-btn').on('click', function() {

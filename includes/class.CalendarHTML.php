@@ -215,7 +215,10 @@ class CalendarHTML {
   }
 
   public function print_event_cards() {
-    
+    $community = getenv("COMMUNITY");
+    if ($community === false) {
+      $community = 'oberlin';
+    }
     foreach ($this->rows as $result) {
       $locname = $this->db->query('SELECT location FROM calendar_locs WHERE id = '.intval($result['loc_id']))->fetchColumn();
       echo "<div class='card iterable-event' id='{$result['id']}'
@@ -230,9 +233,9 @@ class CalendarHTML {
               <div class='row'>
                 <div class='col-sm-12 col-md-3'>";
                 if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
-                  echo '<img src="https://environmentaldashboard.org/calendar/images/default.svg" class="thumbnail img-fluid">';
+                  echo "<img src=\"https://{$community}.environmentaldashboard.org/calendar/images/default.svg\" class=\"thumbnail img-fluid\">";
                 } else {
-                  echo "<img class='thumbnail img-fluid' src='https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}'>";
+                  echo "<img class='thumbnail img-fluid' src='https://{$community}.environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}'>";
                 }
                 echo "</div>
                 <div class='col-sm-12 col-md-9'>

@@ -10,8 +10,8 @@ require 'includes/class.CalendarHTML.php';
 function newsletter_html($db, $events, $start, $end) {
   static $cache = [];
   $start_str = date('n/j/y', $start);
-  $html_message = "<div style='padding:15px'><img src='https://environmentaldashboard.org/calendar/images/env_logo.png' style='width:100%' /><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
-  $html_message .= "<h3>Promote your events, announcements, or volunteers opportunities!</h3><p>Submit an event, announcement, or volunteer opportunity to the Oberlin Community Calendar for free! Your events will be featured on the calendar <a href='https://environmentaldashboard.org/calendar'>website</a> and on digital signs installed at many locations within the Oberlin community.</p>";
+  $html_message = "<div style='padding:15px'><img src='https://{$community}.environmentaldashboard.org/calendar/images/env_logo.png' style='width:100%' /><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
+  $html_message .= "<h3>Promote your events, announcements, or volunteers opportunities!</h3><p>Submit an event, announcement, or volunteer opportunity to the Oberlin Community Calendar for free! Your events will be featured on the calendar <a href='https://{$community}.environmentaldashboard.org/calendar'>website</a> and on digital signs installed at many locations within the Oberlin community.</p>";
   $html_message .= "<p style='color:#333'>This newsletter details events happening from ".$start_str." to ".date('n/j/y', $end).".</p>";
   foreach ($events as $event) {
     if (array_key_exists($event['id'], $cache)) {
@@ -36,11 +36,11 @@ function newsletter_html($db, $events, $start, $end) {
     $date = CalendarHTML::formatted_event_date($event['start'], $event['end'], $event['no_start_time'], $event['no_end_time']);
     $realpath = realpath("images/uploads/thumbnail{$event['id']}");
     if ($event['has_img'] == '0' || !file_exists($realpath)) {
-      $img = 'https://environmentaldashboard.org/calendar/images/default.png'; // most email clients wont display svg
+      $img = "https://{$community}.environmentaldashboard.org/calendar/images/default.png"; // most email clients wont display svg
       $width = 200;
       $height = 200;
     } else {
-      $img = "https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$event['id']}";
+      $img = "https://{$community}.environmentaldashboard.org/calendar/images/uploads/thumbnail{$event['id']}";
       list($width, $height) = getimagesize($realpath);
       if ($width != 200) {
         $height = $height * (1/($width/200));
@@ -59,7 +59,7 @@ function newsletter_html($db, $events, $start, $end) {
                       <h3 style='margin:0;margin-top:10px;color:#333'>{$date}</h3>
                       <h4 style='margin:0;color:#333'>{$info}</h4>
                       <p style='margin:0;color:#333'>{$event['description']}</p>
-                      <p style='margin:0;margin-bottom:25px'><a href='https://environmentaldashboard.org/calendar/detail?{$query_string}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View Event Details</a> <a href='{$gcal_href}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Add to my Calendar</a></p>
+                      <p style='margin:0;margin-bottom:25px'><a href='https://{$community}.environmentaldashboard.org/calendar/detail?{$query_string}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>View Event Details</a> <a href='{$gcal_href}' class='btn' style='padding:4px 10px;width:initial;line-height:1rem;margin:0px 0px 20px 0px;background-color:#2196F3;border:1px solid #2196F3;border-radius:2px;color:#ffffff;line-height:36px;text-align:center;text-decoration:none;height: 30px;margin: 0;outline: 0;outline-offset: 0;'>Add to my Calendar</a></p>
                     </div>";
   }
   return $html_message;
@@ -70,7 +70,7 @@ foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id NOT IN (SE
     break;
   }
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message, unsub_header) VALUES (?, ?, ?, ?, ?)');
-  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $unfiltered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
+  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $unfiltered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
 }
 if (count($unfiltered_events) > 0) {
   foreach ($db->query('SELECT id, email FROM newsletter_recipients WHERE id IN (SELECT recipient_id FROM newsletter_prefs)') as $row) {
@@ -87,7 +87,6 @@ if (count($unfiltered_events) > 0) {
       continue;
     }
     $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message, unsub_header) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $filtered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
+    $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $filtered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
   }
 }
-?>

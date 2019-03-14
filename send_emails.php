@@ -45,7 +45,7 @@ $html1 = '<html>
             <tbody>
             <tr>
                 <td class="title" width="300" style="padding: 8px 0;vertical-align: top;text-align: left;width: 300px;color: #616161;font-family: Roboto, Helvetica, sans-serif;font-weight: 400;font-size: 12px;line-height: 14px">Environmental Dashboard Community Calendar</td>
-                <td class="subject" width="300" style="padding: 8px 0;vertical-align: top;text-align: right;width: 300px;color: #616161;font-family: Roboto, Helvetica, sans-serif;font-weight: 400;font-size: 12px;line-height: 14px"><a class="strong" href="https://environmentaldashboard.org/calendar" target="_blank" style="font-weight: 700;text-decoration: none;color: #616161">environmentaldashboard.org/calendar</a></td>
+                <td class="subject" width="300" style="padding: 8px 0;vertical-align: top;text-align: right;width: 300px;color: #616161;font-family: Roboto, Helvetica, sans-serif;font-weight: 400;font-size: 12px;line-height: 14px"><a class="strong" href="https://'.$community.'.environmentaldashboard.org/calendar" target="_blank" style="font-weight: 700;text-decoration: none;color: #616161">environmentaldashboard.org/calendar</a></td>
             </tr>
             <tr>
                 <td class="border" colspan="2" style="padding: 0;vertical-align: top;font-size: 1px;line-height: 1px;background-color: #e0e0e0;width: 1px"> </td>
@@ -93,7 +93,7 @@ $html2 = '</td>
                 </td>
                 <td class="subscription" width="300" style="padding: 0;vertical-align: bottom;width: 300px;padding-top: 8px;margin-bottom: 16px;text-align: right">
                     <div class="logo-image" style="">
-                        <a href="https://environmentaldashboard.org/calendar" target="_blank" style="text-decoration: none;color: #616161"><img src="https://environmentaldashboard.org/calendar/images/watermark.png" alt="Environmental Dashboard logo" width="70" height="70" style="border: 0;-ms-interpolation-mode: bicubic"/></a>
+                        <a href="https://'.$community.'.environmentaldashboard.org/calendar" target="_blank" style="text-decoration: none;color: #616161"><img src="https://'.$community.'.environmentaldashboard.org/calendar/images/watermark.png" alt="Environmental Dashboard logo" width="70" height="70" style="border: 0;-ms-interpolation-mode: bicubic"/></a>
                     </div>
                 </td>
             </tr>

@@ -1,5 +1,9 @@
 <?php
 require 'conn.php';
+$community = getenv("COMMUNITY");
+if ($community === false) {
+	$community = 'oberlin';
+}
 $dbname = getenv('DB');
 if ($dbname === false) {
   $dbname = 'oberlin_environmentaldashboard';

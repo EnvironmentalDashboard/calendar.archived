@@ -4,7 +4,6 @@ ini_set('display_errors', 'On');
 date_default_timezone_set("America/New_York");
 require 'includes/db.php';
 $script = 'event-form';//basename($_SERVER['SCRIPT_FILENAME'], '.php');
-// $community = getenv("COMMUNITY");
 
 
 if (!isset($edit)) {
@@ -22,7 +21,7 @@ if (!isset($edit)) {
       if (isset($_GET['delete']) && $_GET['delete'] === 'true') {
         $stmt = $db->prepare('DELETE FROM calendar WHERE id = ?');
         $stmt->execute([$event['id']]);
-        header("Location: https://environmentaldashboard.org/calendar/");
+        header("Location: https://{$community}.environmentaldashboard.org/calendar/");
         exit;
       }
     }

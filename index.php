@@ -9,7 +9,6 @@ define('CAROUSEL_SLIDES', 5);
 $time = time();
 $tomorrow = strtotime('tomorrow');
 $script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
-// $community = getenv("COMMUNITY");
 
 
 $cal = new CalendarHTML($db);

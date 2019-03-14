@@ -136,7 +136,7 @@ $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
                 if ($event['has_img'] == 0) {
                   echo "<td><p>No image for this event</p>";
                 } else {
-                  echo "<td style='max-width:250px'><img class='img-fluid' src='https://environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
+                  echo "<td style='max-width:250px'><img class='img-fluid' src='https://{$community}.environmentaldashboard.org/images/uploads/calendar/event{$event['id']}' />";
                 }
                 echo "<input type='file' class='form-control-file' id='edit-img' name='edit-img' value=''></td>";
                 echo "<td><label for='event'>Event</label> <input id='event' type='text' name='event' value='{$event['event']}' class='form-control'>";

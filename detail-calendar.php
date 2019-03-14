@@ -6,7 +6,6 @@ require 'includes/db.php';
 require 'includes/class.CalendarHTML.php';
 
 $script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
-// $community = getenv("COMMUNITY");
 
 
 if (isset($_GET['month']) && isset($_GET['year'])) {

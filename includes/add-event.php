@@ -130,7 +130,7 @@ if (isset($error)) {
 function save_emails($db, $event_name, $event_id) {
   foreach ($db->query('SELECT email FROM calendar_admin') as $row) {
     $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message) VALUES (?, ?, ?, ?)');
-    $stmt->execute(array($row['email'], "New event submission: {$event_name}", "{$event_name} is available to review.", "<a href='https://environmentaldashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://environmentaldashboard.org/calendar/prefs/review-events.php'>review</a>."));
+    $stmt->execute(array($row['email'], "New event submission: {$event_name}", "{$event_name} is available to review.", "<a href='https://{$community}.environmentaldashboard.org/calendar/slide.php?id={$event_id}'>{$event_name}</a> is available to <a href='https://{$community}.environmentaldashboard.org/calendar/prefs/review-events.php'>review</a>."));
   } 
 }
 function duplicate_event($db, $date, $date2, $event, $img) {

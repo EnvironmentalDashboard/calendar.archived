@@ -2,10 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$community = getenv("COMMUNITY");
-if ($community == '') {
-  $community = 'oberlin'; // default to oberlin
-}
+
 $stmt = $db->prepare('SELECT token FROM users WHERE slug = ?');
 $stmt->execute([$community]);
 if (isset($_COOKIE['token']) && $stmt->fetchColumn() === $_COOKIE['token'] && $_COOKIE['token'] !== null) {

@@ -23,11 +23,11 @@ var str = `
     <div class="carousel-item <?php echo ($counter===0) ? 'active' : '' ?>">
       <div class="row" style="width: 80%;margin: 0 auto;padding-top: 20px">
         <div class="col-sm-6 hidden-sm-down">
-          <a href="https://environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>">
+          <a href="https://<?php echo $community; ?>.environmentaldashboard.org/calendar/detail/<?php echo $result['id'] ?>">
             <?php if ($result['has_img'] == '0' || !file_exists("/var/www/uploads/calendar/thumbnail{$result['id']}")) {
               echo '<img class="d-block img-fluid" src="images/default.svg">';
             } else {
-              echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
+              echo "<img class=\"d-block img-fluid\" style=\"overflow:hidden;max-height: 250px\" src=\"https://{$community}.environmentaldashboard.org/calendar/images/uploads/thumbnail{$result['id']}\">";
             } ?>
           </a>
         </div>

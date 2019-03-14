@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$community = getenv("COMMUNITY");
+
 require 'includes/check-signed-in.php';
 $distinct_keys = $db->query('SELECT DISTINCT `key` FROM cv_lesson_meta')->fetchAll();
 $values = $db->query('SELECT DISTINCT value FROM cv_lesson_meta')->fetchAll();

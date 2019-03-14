@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 require '../includes/db.php';
-$community = getenv("COMMUNITY");
+
 require 'includes/check-signed-in.php';
 // $saved_emails = '/var/www/html/oberlin/calendar/prefs/emails.txt';
 if (isset($_POST['emails'])) {

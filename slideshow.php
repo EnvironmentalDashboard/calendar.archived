@@ -67,17 +67,17 @@ if (empty($event_ids)) {
       var iframe2 = $('#iframe2');
       var current_iframe = 1;
       var i = 0;
-      iframe1.attr('src', 'https://environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
+      iframe1.attr('src', 'https://<?php echo $community ?>.environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
       setInterval(function() {
         if (len === i) {
           i = 0;
         }
         if (current_iframe === 1) {
           current_iframe = 2;
-          iframe2.attr('src', 'https://environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
+          iframe2.attr('src', 'https://<?php echo $community ?>.environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
         } else {
           current_iframe = 1;
-          iframe1.attr('src', 'https://environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
+          iframe1.attr('src', 'https://<?php echo $community ?>.environmentaldashboard.org/calendar/slide.php?id=' + event_ids[i++]);
         }
       }, <?php echo isset($_GET['t']) ? $_GET['t'] : 15 ?> * 1000);
       function hide1() {
