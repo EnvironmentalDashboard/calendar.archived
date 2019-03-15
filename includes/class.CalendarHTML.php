@@ -216,7 +216,7 @@ class CalendarHTML {
 
   public function print_event_cards() {
     $community = getenv("COMMUNITY");
-    if ($community === false) {
+    if (!in_array($community, ['oberlin', 'obp', 'cleveland', 'sewanee'])) {
       $community = 'oberlin';
     }
     foreach ($this->rows as $result) {

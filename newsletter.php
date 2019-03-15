@@ -7,7 +7,7 @@ $end = $start + 864000;
 chdir(__DIR__);
 require 'includes/db.php';
 require 'includes/class.CalendarHTML.php';
-function newsletter_html($db, $events, $start, $end) {
+function newsletter_html($db, $events, $start, $end, $community = 'oberlin') {
   static $cache = [];
   $start_str = date('n/j/y', $start);
   $html_message = "<div style='padding:15px'><img src='https://{$community}.environmentaldashboard.org/calendar/images/env_logo.png' style='width:100%' /><h1 style='font-family: Multicolore, Roboto, Tahoma, Helvetica, sans-serif;color: #5aba50'>Oberlin Community Calendar Event Newsletter</h1>";
@@ -70,7 +70,7 @@ foreach ($db->query('SELECT email FROM newsletter_recipients WHERE id NOT IN (SE
     break;
   }
   $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message, unsub_header) VALUES (?, ?, ?, ?, ?)');
-  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $unfiltered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
+  $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $unfiltered_events, $start, $end, $community) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
 }
 if (count($unfiltered_events) > 0) {
   foreach ($db->query('SELECT id, email FROM newsletter_recipients WHERE id IN (SELECT recipient_id FROM newsletter_prefs)') as $row) {
@@ -87,6 +87,6 @@ if (count($unfiltered_events) > 0) {
       continue;
     }
     $stmt = $db->prepare('INSERT INTO outbox (recipient, subject, txt_message, html_message, unsub_header) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $filtered_events, $start, $end) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
+    $stmt->execute([$row['email'], 'Oberlin Community Calendar Event Newsletter', '', newsletter_html($db, $filtered_events, $start, $end, $community) . "<p style='color:#333'>You can customize the events you receive by clicking <a href='https://{$community}.environmentaldashboard.org/calendar/customize-sub.php?email={$row['email']}'>here</a>.</p><p style='color:#333'><small>Click <a href='https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}'>here</a> to unsubscribe.</small></p></div>", "<root@environmentaldashboard.org>, <https://{$community}.environmentaldashboard.org/calendar/unsubscribe?email={$row['email']}>"]);
   }
 }

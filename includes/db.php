@@ -1,7 +1,7 @@
 <?php
 require 'conn.php';
 $community = getenv("COMMUNITY");
-if ($community == '') {
+if (!in_array($community, ['oberlin', 'obp', 'cleveland', 'sewanee'])) {
 	$community = 'oberlin';
 }
 $dbname = getenv('DB');
