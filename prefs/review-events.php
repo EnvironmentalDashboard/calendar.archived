@@ -138,7 +138,7 @@ function notify_wobc($db, $event) {
             ?>
               <div class="form-group row">
                 <div class="col-sm-9">
-                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://<?php echo $community ?>environmentaldashboard.org/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
+                  <iframe style="border: 0;min-height: 700px;width: 100%;" src="https://<?php echo $community ?>.environmentaldashboard.org/calendar/slide.php?id=<?php echo $event['id'] ?>" id="iframe<?php echo $i ?>"></iframe>
                 </div>
                 <div class="col-sm-3">
                   <div class="form-group">
