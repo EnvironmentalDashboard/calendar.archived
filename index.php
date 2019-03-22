@@ -47,7 +47,7 @@ include "includes/snippets/{$script}_top.php";
 
       <div class="row">
         <div class="col-sm-12 d-flex justify-content-between" style="margin-bottom: 20px;margin-top: 20px">
-          <h1>Oberlin Community Calendar</h1>
+          <h1><?php echo ucwords($community) ?> Community Calendar</h1>
           <h6 class="hidden-sm-down"><?php echo date('l, F j, Y') ?></h6>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
         </div>

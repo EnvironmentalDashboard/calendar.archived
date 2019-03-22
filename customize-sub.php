@@ -56,7 +56,7 @@ if (isset($_GET['email'])) {
           <?php if ($submit) {
             echo "<p style='margin-bottom:20px;color:#5aba50'>Your preferences have been updated.</p>";
           } ?>
-          <h1>Oberlin Community Calendar</h1>
+          <h1><?php echo ucwords($community) ?> Community Calendar</h1>
           <p><a href="/calendar" class="btn btn-primary btn-sm">&larr; Back to calendar</a></p>
         </div>
       </div>

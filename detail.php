@@ -14,7 +14,7 @@ $prev_event = $stmt->fetchColumn();
 ?>
       <div class="row">
         <div class="col-sm-12" style="margin-bottom: 20px;margin-top: 20px">
-          <h1>Oberlin Community Calendar</h1>
+          <h1><?php echo ucwords($community) ?> Community Calendar</h1>
           <!-- <img src="images/env_logo.png" class="img-fluid" style="margin-bottom:15px"> -->
           <p><a href='/calendar' class="btn btn-primary">&larr; Go Home</a></p>
           <p><?php if ($prev_event != null) {
