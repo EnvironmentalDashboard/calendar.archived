@@ -80,7 +80,7 @@ elseif (!$date2) {
   $error = "Error parsing date \"{$_POST['date2']} {$_POST['time2']}\", your event was not submitted";
 } else { // no errors
   $stmt = $db->prepare('INSERT INTO calendar (event, token, start, `end`, description, extended_description, extended_description_md, event_type_id, loc_id, screen_ids, contact_email, email, phone, website, repeat_end, repeat_on, sponsors, no_start_time, no_end_time, room_num, announcement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  $new_event = array($_POST['event'], $rand, $date, $date2, $_POST['description'], $extended_description_html, $extended_description_md, $_POST['event_type_id'], $_POST['loc_id'], implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($sponsors), $no_start_time, $no_end_time, $_POST['room_num'], $_POST['announcement']);
+  $new_event = array($_POST['event'], $rand, $date, $date2, $_POST['description'], $extended_description_html, $extended_description_md, $_POST['event_type_id'], $_POST['loc_id'], (empty($_POST['screen_ids'])) ? '' : implode(',', $_POST['screen_ids']), $_POST['contact_email'], $_POST['email'], preg_replace('/\D/', '', $_POST['phone']), $_POST['website'], $repeat_end, (isset($_POST['repeat_on'])) ? json_encode($_POST['repeat_on']) : null, json_encode($sponsors), $no_start_time, $no_end_time, $_POST['room_num'], $_POST['announcement']);
   $stmt->execute($new_event);
   $success = $db->lastInsertId();
   save_emails($db, $_POST['event'], $success, $community);

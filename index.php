@@ -111,6 +111,9 @@ include "includes/snippets/{$script}_top.php";
           </form>
           <p class="mt-3">Have a suggestion? <a href="#" data-toggle="modal" data-target="#feedbackModal">Leave feedback</a>.</p>
         </div>
+        <?php if (empty($cal->rows)) {
+          echo "<p>No upcoming events.</p>";
+        } else { ?>
         <div class="col-md-8 col-sm-12">
           <div id="carousel-indicators" class="carousel slide" data-ride="carousel" style="height: 320px;">
             <ol class="carousel-indicators">
@@ -279,6 +282,7 @@ include "includes/snippets/{$script}_top.php";
               </circle>
           </svg>
         </div>
+        <?php } // /empty($cal->rows) ?>
       </div>
       <div style="clear: both;height: 150px"></div>
       <img src="/calendar/images/up.svg" alt="Back to top" style="position: fixed;bottom: 20px;right: 30px;height: 35px;width: 35px;display: none;cursor: pointer;" onclick="topFunction()" id="to-top">

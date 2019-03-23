@@ -3,3 +3,4 @@ config.codekit3
 images/uploads/
 includes/conn.php
 old_scss/
+.sass-cache
