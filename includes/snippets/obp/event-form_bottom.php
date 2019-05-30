@@ -79,6 +79,11 @@
       var form_files = $(this);
       if ($('#img').val() !== '') {
         var file = ($('#img'))[0].files[0];
+        if (file.size > 16000000) { // 16MB
+          $('#alert-warning').css('display', 'block');
+          $('#alert-warning-text').text('The image you selected is too large; please upload an image no larger than 16MB');
+          return;
+        }
         var img = new Image();
         img.src = window.URL.createObjectURL(file);
         img.onload = function() {
