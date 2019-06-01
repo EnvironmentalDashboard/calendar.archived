@@ -1,10 +1,12 @@
 <?php
-require 'conn.php';
 $community = getenv("COMMUNITY");
 if (!in_array($community, ['oberlin', 'obp', 'cleveland', 'sewanee'])) {
 	$community = 'oberlin';
 }
-$dbname = getenv('DB');
+$host = getenv('MYSQL_HOST');
+$username = getenv('MYSQL_USER');
+$password = getenv('MYSQL_PASS');
+$dbname = getenv('MYSQL_DB');
 if ($dbname == '') {
   $dbname = 'oberlin_environmentaldashboard';
 }
